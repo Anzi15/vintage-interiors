@@ -69,4 +69,4 @@ const loadProductsWithPagination = async (collectionName, numDocs, lastVisibleDo
   }
 };
 
-export { getDocument, getMultipleDocuments, loadProductsWithPagination }
+export { getDocument, getMultipleDocuments, loadProductsWithPagination, db }

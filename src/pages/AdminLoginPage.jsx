@@ -4,10 +4,16 @@ import { FaGoogle } from "react-icons/fa";
 import icyProduct from "../assets/icy-product-delivery-1.png"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { auth } from "../modules/Firebase modules/fireauth"
+
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
+
   const [forgotPassEmail, setForgotPassEmail] = useState(null)
     const MySwal = withReactContent(Swal);
 
@@ -37,6 +43,22 @@ const AdminLoginPage = () => {
     }
   };
 
+  const handleSubmission = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(email, password);
+    } catch (error) {
+      console.log('Error signing in:', error.message);
+    }
+  
+    if (error) {
+      console.log('Firebase Authentication Error:', error.message);
+    }
+    if(user){
+      console.log(user)
+    }
+  };
+  
   return (
     <div className="font-[sans-serif]">
   <div className="flex gap-4 h-screen m-auto items-center justify-center">
@@ -49,7 +71,7 @@ const AdminLoginPage = () => {
     </div> */}
 
     <div className="w-full p-6 max-w-[30rem]">
-      <form>
+      <form onSubmit={(e)=>{handleSubmission(e)}}>
         <div className="mb-8">
           <h3 className="text-gray-800 text-3xl font-extrabold">Log in</h3>
           <p className="text-sm mt-4 text-gray-800">
@@ -142,7 +164,7 @@ const AdminLoginPage = () => {
             </label>
           </div>
           <div>
-            <a onClick={()=>{handleForgotPassword()}} href="#" className="text-blue-600 font-semibold text-sm hover:underline">
+            <a onClick={(e)=>{handleForgotPassword(e)}} href="#" className="text-blue-600 font-semibold text-sm hover:underline">
               Forgot Password?
             </a>
           </div>
@@ -150,10 +172,10 @@ const AdminLoginPage = () => {
 
         <div className="mt-8">
           <button
-            type="button"
+            type="submit"
             className="w-full py-3 px-6 text-sm tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
           >
-            Log in
+            {/* {loading ? "Loading" : "Log In"} */}
           </button>
         </div>
 

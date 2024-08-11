@@ -1,11 +1,11 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail  } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import app from "./firebase"; // Make sure this points to your Firebase configuration
+const auth = getAuth();
 
 // Check if the user is logged in
 function isUserLoggedIn() {
     return new Promise((resolve) => {
-        const auth = getAuth();
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 resolve(true);
@@ -90,4 +90,4 @@ async function doesAdminEmailExist(email) {
 }
 
 
-export { isUserLoggedIn, signUpWithEmail, loginWithEmail, signInWithGoogle, forgotPassword };
+export { isUserLoggedIn, signUpWithEmail, loginWithEmail, signInWithGoogle, forgotPassword, auth };
