@@ -1,4 +1,5 @@
 import { Outlet, Link, Navigate, useNavigate } from "react-router-dom";
+import { IoPersonSharp } from "react-icons/io5";
 import AdminSidebar from "../components/AdminSidebar";
 import eyeGif from "../assets/eye-gif.gif";
 import {
@@ -25,6 +26,7 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const [userIsAdmin, setUserIsAdmin] = useState(false);
   const [user, loading, error] = useAuthState(auth);
+  console.log(user)
   const [Adminvalue, AdminLoading, AdminError] = useCollection(
     collection(db, "Admins"),
     {
@@ -90,11 +92,14 @@ const AdminLayout = () => {
                       ></path>
                     </svg>
                   </button>
-                  <a href="https://flowbite.com" className="flex ms-2 md:me-24">
-                    <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                      Flowbite
-                    </span>
-                  </a>
+                  <Link to="/admin" className="flex ms-2 md:me-24">
+                    <div className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
+                      <h1>
+                        Al Zehra
+                        </h1>
+                        <p className="text-sm text-gray-600">Admin config</p>
+                    </div>
+                  </Link>
                 </div>
                 <div className="flex items-center">
                   <div className="flex items-center ms-3">
@@ -105,6 +110,13 @@ const AdminLayout = () => {
                         aria-expanded="false"
                         data-dropdown-toggle="dropdown-user"
                       >
+                        {
+                          user.photoURL  ? 
+                            <img src={user.photoURL} alt="user photo" className="h-10 rounded-full"/>
+                          :
+                            <IoPersonSharp />
+                          
+                        }
                         <span className="sr-only">Open user menu</span>
                       </button>
                     </div>
@@ -155,13 +167,13 @@ const AdminLayout = () => {
                           </a>
                         </li>
                         <li>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                          <button
+                            onClick={()=>{handleLogout()}}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600min-w-full dark:hover:text-white"
                             role="menuitem"
                           >
                             Sign out
-                          </a>
+                          </button>
                         </li>
                       </ul>
                     </div>

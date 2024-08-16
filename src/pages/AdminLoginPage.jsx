@@ -62,7 +62,11 @@ const AdminLoginPage = () => {
 
   const handleSubmission = async (e) => {
     e.preventDefault();
-    if(userAlreadyExist) navigate("/admin")
+    useEffect(() => {
+      if (userAlreadyExist) {
+        navigate("/admin");
+      }
+    }, [userAlreadyExist, navigate]);
 
     try {
       await signInWithEmailAndPassword(email, password);
