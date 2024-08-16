@@ -1,13 +1,6 @@
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: [
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_1,
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_2,
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_3,
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_4,
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_5,
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_6,
-  ],
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN_1,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,

@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import AllProductsPage from "./pages/AllProductsPage.jsx"
 import AdminLoginPage from './pages/AdminLoginPage.jsx';
 import AdminSignUpPage from './pages/AdminSignUpPage.jsx';
+import AdminUnAuthorized from './pages/AdminUnAuthorized.jsx';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from './layouts/MainLayout';
@@ -32,6 +33,7 @@ function App() {
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />
+          <Route path='/admin/unauthorized' element={<AdminUnAuthorized />} />
 
       </Routes>
     </BrowserRouter>

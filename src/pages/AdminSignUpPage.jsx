@@ -5,6 +5,7 @@ import icyProduct from "../assets/icy-product-delivery-1.png"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
+
 const AdminSignUpPage = () => {
 
   return (

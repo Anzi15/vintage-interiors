@@ -1,21 +1,29 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
 import icyProduct from "../assets/icy-product-delivery-1.png"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useSignInWithEmailAndPassword, useAuthState, useSignInWithGoogle, useSendPasswordResetEmail} from 'react-firebase-hooks/auth';
 import { auth } from "../modules/Firebase modules/fireauth"
+import tubeSpinner from "../assets/tube-spinner.svg"
 
 
 const AdminLoginPage = () => {
+  const [sendPasswordResetEmail, passResetSending, passResetError] = useSendPasswordResetEmail(
+    auth
+  );
+  const [userAlreadyExist, userExistLoading, userExistError] = useAuthState(auth);
+  const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth);
+  const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
 
-  const [forgotPassEmail, setForgotPassEmail] = useState(null)
     const MySwal = withReactContent(Swal);
+
+    if(userAlreadyExist) navigate("/admin")
 
   const handleForgotPassword = async () => {
     const { value: email } = await MySwal.fire({
@@ -30,21 +38,32 @@ const AdminLoginPage = () => {
     });
 
     if (email) {
-      setForgotPassEmail(email)
-      MySwal.fire({
-        iconHtml: '<img src="https://ouch-cdn2.icons8.com/Qij4124AsXem96Za5Vdf8k2wfo6GR6dA06iPlmXQm5Q/rs:fit:368:368/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvNTMz/LzFlZGFiMWQ0LWMw/MzAtNGYwMy05Nzll/LWI4NmI2ZjI0N2U3/NS5zdmc.png">',
-        customClass: {
-          icon: 'no-border'
-        },
-        title: "Check you inbox",
-      confirmButtonText: "Done",
-      confirmButtonColor: "blue"
-      })
+      sendPasswordResetEmail(email)
+      if(passResetError){
+        MySwal.fire({
+          icon:"error",
+          title: passResetError.message,
+        confirmButtonText: "Done",
+        confirmButtonColor: "red"
+        })
+      }else{
+        MySwal.fire({
+          iconHtml: '<img src="https://ouch-cdn2.icons8.com/Qij4124AsXem96Za5Vdf8k2wfo6GR6dA06iPlmXQm5Q/rs:fit:368:368/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvNTMz/LzFlZGFiMWQ0LWMw/MzAtNGYwMy05Nzll/LWI4NmI2ZjI0N2U3/NS5zdmc.png">',
+          customClass: {
+            icon: 'no-border'
+          },
+          title: "Check your inbox",
+        confirmButtonText: "Done",
+        confirmButtonColor: "blue"
+        })
+      }
     }
   };
 
   const handleSubmission = async (e) => {
     e.preventDefault();
+    if(userAlreadyExist) navigate("/admin")
+
     try {
       await signInWithEmailAndPassword(email, password);
     } catch (error) {
@@ -52,10 +71,13 @@ const AdminLoginPage = () => {
     }
   
     if (error) {
+
       console.log('Firebase Authentication Error:', error.message);
     }
-    if(user){
-      console.log(user)
+    if(!loading && !googleLoading ){
+      if(user || googleUser){
+        navigate("/admin")
+      }
     }
   };
   
@@ -171,11 +193,12 @@ const AdminLoginPage = () => {
         </div>
 
         <div className="mt-8">
+          <p className={`text-red-600 font-semibold ${error ? "" : "hidden"}`}>{error?.message}</p>
           <button
             type="submit"
             className="w-full py-3 px-6 text-sm tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
           >
-            {/* {loading ? "Loading" : "Log In"} */}
+            {loading ? "Loading.." : "Log In"}
           </button>
         </div>
 
@@ -188,9 +211,14 @@ const AdminLoginPage = () => {
         <button
           type="button"
           className="w-full flex items-center justify-center gap-4 py-3 px-6 text-sm tracking-wide text-gray-800 border border-gray-300 rounded-md bg-gray-50 hover:bg-gray-100 focus:outline-none"
-        >
+          onClick={()=>{signInWithGoogle()}}
+       >
+            {googleLoading ? "..." :
+            <>
             <FaGoogle className='text-2xl' />
           <span>Sign in with Google</span>
+          </>
+          }
         </button>
       </form>
     </div>
