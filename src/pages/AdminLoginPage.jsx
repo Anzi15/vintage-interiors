@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
 import icyProduct from "../assets/icy-product-delivery-1.png"
@@ -60,13 +60,13 @@ const AdminLoginPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (userAlreadyExist) {
+      navigate("/admin");
+    }
+  }, [userAlreadyExist, navigate]);
   const handleSubmission = async (e) => {
     e.preventDefault();
-    useEffect(() => {
-      if (userAlreadyExist) {
-        navigate("/admin");
-      }
-    }, [userAlreadyExist, navigate]);
 
     try {
       await signInWithEmailAndPassword(email, password);

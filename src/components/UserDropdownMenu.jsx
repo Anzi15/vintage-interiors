@@ -1,5 +1,8 @@
 import { signInAnonymously } from 'firebase/auth';
 import React, { useState } from 'react';
+import { auth } from '../modules/Firebase modules/fireauth';
+import { signOut } from "firebase/auth";
+import { toast } from 'react-toastify';
 
 // Predefined user details and menu items
 
@@ -14,7 +17,18 @@ const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-
+  
+  const handleSignout = () => {
+    console.log("meow trying")
+    signOut(auth)
+      .then(() => {
+        toast("Signed out");
+        navigate("/admin/login"); // Use navigate here instead of <Navigate />
+      })
+      .catch((error) => {
+        console.error("Error logging out: ", error);
+      });
+  };
   return (
     <div className='relative'>
       <img
@@ -39,9 +53,7 @@ const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
 
           <div className="py-1">
             <button
-              onClick={()=>{signOutFunc()}}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-            >
+              onClick={handleSignout}>
                 Sign out
             </button>
           </div>
