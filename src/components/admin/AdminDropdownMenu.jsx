@@ -1,12 +1,12 @@
 import { signInAnonymously } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
-import { auth } from '../modules/Firebase modules/fireauth';
+import { auth } from '../../modules/Firebase modules/fireauth';
 import { signOut } from "firebase/auth";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 
-const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
+const AdminDropdownMenu = ({userImg, name, email, signOutFunc}) => {
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,7 +53,7 @@ const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          id="UserDropdownMenuUserDropdownMenu"
+          id="AdminDropdownMenu"
           className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 fixed right-0"
         >
           <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
@@ -73,4 +73,4 @@ const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
   );
 };
 
-export default UserDropdownMenu;
+export default AdminDropdownMenu;

@@ -8,10 +8,12 @@ import { AiFillMoneyCollect } from "react-icons/ai";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { CiSettings } from "react-icons/ci";
 import { IoSettings } from "react-icons/io5";
+import { MdHeight } from "react-icons/md";
 
 export function AdminSidebar({expanded=false}) {
+  const windowHieght = window.innerHeight;
   return (
-    <Sidebar aria-label="Default sidebar example" className={`md:block md:static h-screen pt-8 fixed z-20 ${!expanded && "hidden"}`}>
+    <Sidebar aria-label="Default sidebar example" className={`md:block md:sticky top-0 h-screen pt-8 fixed z-20 ${!expanded && "hidden"}`}>
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/admin">
@@ -19,26 +21,26 @@ export function AdminSidebar({expanded=false}) {
             Dashboard
           </Sidebar.Item>
           </Link>
-          <Link to={"/products"}>
-          <Sidebar.Item href="#" icon={HiShoppingBag}>
+          <Link to={"/admin/products"}>
+          <Sidebar.Item icon={HiShoppingBag}>
             Products
           </Sidebar.Item>
           </Link>
 
-          <Link to={"/inbox"}>
-          <Sidebar.Item href="#" icon={HiInbox}>
+          <Link to={"/admin/inbox"}>
+          <Sidebar.Item icon={HiInbox}>
             Inbox
           </Sidebar.Item>
           </Link>
 
-          <Link to={"/orders"}>
-          <Sidebar.Item href="#" icon={AiFillMoneyCollect}>
+          <Link to={"/admin/orders"}>
+          <Sidebar.Item icon={AiFillMoneyCollect}>
             Orders
           </Sidebar.Item>
           </Link>
           
-        <Link to={"/management"}>
-          <Sidebar.Item href="#" icon={IoSettings}>
+        <Link to={"/admin/management"}>
+          <Sidebar.Item icon={IoSettings}>
             Management
           </Sidebar.Item>
         </Link>

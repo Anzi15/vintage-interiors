@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
-import icyProduct from "../assets/icy-product-delivery-1.png"
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { useSignInWithEmailAndPassword, useAuthState, useSignInWithGoogle, useSendPasswordResetEmail} from 'react-firebase-hooks/auth';
-import { auth } from "../modules/Firebase modules/fireauth"
-import tubeSpinner from "../assets/tube-spinner.svg"
+import { auth } from "../../modules/Firebase modules/fireauth"
+import tubeSpinner from "../../assets/tube-spinner.svg"
 
 
 const AdminLoginPage = () => {

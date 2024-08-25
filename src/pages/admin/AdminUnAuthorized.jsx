@@ -1,5 +1,5 @@
 import React from 'react'
-import { auth } from '../modules/Firebase modules/fireauth';
+import { auth } from '../../modules/Firebase modules/fireauth';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 

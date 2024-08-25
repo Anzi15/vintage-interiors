@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
-import icyProduct from "../assets/icy-product-delivery-1.png"
 import Swal from 'sweetalert2'
 import { useCreateUserWithEmailAndPassword, useAuthState, useSignInWithGoogle, useSendPasswordResetEmail} from 'react-firebase-hooks/auth';
-import { auth } from "../modules/Firebase modules/fireauth"
+import { auth } from "../../modules/Firebase modules/fireauth"
 
 import withReactContent from 'sweetalert2-react-content'
 

@@ -1,7 +1,8 @@
 import { Outlet, Link, Navigate, useNavigate } from "react-router-dom";
 import { IoPersonSharp } from "react-icons/io5";
-import AdminSidebar from "../components/AdminSidebar";
+import AdminSidebar from "../components/admin/AdminSidebar";
 import eyeGif from "../assets/eye-gif.gif";
+import adminIcon from "../assets/admin-icon.webp"
 import {
   Disclosure,
   DisclosureButton,
@@ -21,8 +22,7 @@ import { collection } from "firebase/firestore";
 import { Value } from "sass";
 
 import { Sidebar } from "flowbite-react";
-import userDropdownMenu from "../components/UserDropdownMenu";
-import UserDropdownMenu from "../components/UserDropdownMenu";
+import AdminDropdownMenu from "../components/admin/AdminDropdownMenu";
 import { toast } from "react-toastify";
 
 const AdminLayout = () => {
@@ -92,18 +92,18 @@ const AdminLayout = () => {
                       ></path>
                     </svg>
                   </button>
-                  <a href="https://flowbite.com" className="flex ms-2 md:me-24">
+                  <Link to="/admin" className="flex ms-2 md:me-24">
                     <img
-                      src="https://flowbite.com/docs/images/logo.svg"
+                      src={adminIcon}
                       className="h-8 me-3"
-                      alt="FlowBite Logo"
+                      alt="Admin"
                     />
-                    <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                      Al Zehra
+                    <span className="self-center text-xl  sm:text-2xl whitespace-nowrap dark:text-white">
+                      Admin Panel
                     </span>
-                  </a>
+                  </Link>
                 </div>
-                <UserDropdownMenu
+                <AdminDropdownMenu
                   userImg={user.photoURL}
                   name={user.displayName}
                   email={user.email}
@@ -113,8 +113,8 @@ const AdminLayout = () => {
             </div>
           </nav>
 
-          <main className="flex pt=6">
-            <AdminSidebar expanded={sideBarExpanded} />
+          <main className="flex pt=6 overflowa">
+            <AdminSidebar expanded={sideBarExpanded} className="" />
 
             <div
               className={`p-4 mt-[3rem] md:bg-white ${
