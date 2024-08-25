@@ -10,6 +10,7 @@ import AllProductsPage from "./pages/AllProductsPage.jsx"
 import AdminLoginPage from './pages/admin/AdminLoginPage.jsx';
 import AdminSignUpPage from './pages/admin/AdminSignUpPage.jsx';
 import AdminUnAuthorized from './pages/admin/AdminUnAuthorized.jsx';
+import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from './layouts/MainLayout';
@@ -30,6 +31,7 @@ function App() {
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />
+          <Route path='/admin/products' element={<AdminProductsPage />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />
