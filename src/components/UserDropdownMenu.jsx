@@ -1,14 +1,5 @@
-import { signInAnonymously } from 'firebase/auth';
 import React, { useState } from 'react';
 
-// Predefined user details and menu items
-
-const menuItems = [
-  { label: 'Dashboard', href: '#' },
-  { label: 'Settings', href: '#' },
-  { label: 'Earnings', href: '#' },
-  { label: 'Sign out', href: '#' },
-];
 
 const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
   const [isOpen, setIsOpen] = useState(false);
