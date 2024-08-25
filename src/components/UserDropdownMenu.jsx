@@ -1,8 +1,9 @@
 import { signInAnonymously } from 'firebase/auth';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { auth } from '../modules/Firebase modules/fireauth';
 import { signOut } from "firebase/auth";
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 // Predefined user details and menu items
 
@@ -14,16 +15,33 @@ const menuItems = [
 ];
 
 const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   
+  const indicateSignout = ()=>{
+    toast('🦄 signed out successfully!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000);
+  }
+
   const handleSignout = () => {
     console.log("meow trying")
     signOut(auth)
       .then(() => {
-        toast("Signed out");
-        navigate("/admin/login"); // Use navigate here instead of <Navigate />
+        indicateSignout()
       })
       .catch((error) => {
         console.error("Error logging out: ", error);
