@@ -19,10 +19,11 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../modules/Firebase modules/firestore";
 import { collection } from "firebase/firestore";
 import { Value } from "sass";
-import { signOut } from "firebase/auth";
+
 import { Sidebar } from "flowbite-react";
 import userDropdownMenu from "../components/UserDropdownMenu";
 import UserDropdownMenu from "../components/UserDropdownMenu";
+import { toast } from "react-toastify";
 
 const AdminLayout = () => {
   const [sideBarExpanded, setSideBarExpanded] = useState(false);
@@ -40,24 +41,15 @@ const AdminLayout = () => {
     }
   );
 
-  const handleSignout = () => {
-    signOut(auth)
-      .then(() => {
-        <Navigate to={"/admin/login"} />;
-      })
-      .catch((error) => {
-        console.error("Error logging out: ", error);
-      });
-  };
-
+  
   useEffect(() => {
+
     if (user && Adminvalue) {
       Adminvalue.docs.map((doc) => {
         console.log(doc);
         console.log(doc.data().Email == user.email);
         console.log(user.email);
         if (user.email !== doc.data().Email) {
-          <Navigate to={"/admin/unauthorized"} />;
           navigate("/admin/unauthorized");
         } else {
           setUserIsAdmin(true);
@@ -69,57 +61,96 @@ const AdminLayout = () => {
   return (
     //
     <>
-      <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div className="px-3 py-3 lg:px-5 lg:pl-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-start rtl:justify-end">
-              <button
-                data-drawer-target="logo-sidebar"
-                data-drawer-toggle="logo-sidebar"
-                aria-controls="logo-sidebar"
-                type="button"
-                onClick={()=>{setSideBarExpanded(!sideBarExpanded)}}
-                className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-              >
-                <span className="sr-only">Open sidebar</span>
-                <svg
-                  className="w-6 h-6"
-                  aria-hidden="true"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    clip-rule="evenodd"
-                    fill-rule="evenodd"
-                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                  ></path>
-                </svg>
-              </button>
-              <a href="https://flowbite.com" className="flex ms-2 md:me-24">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  className="h-8 me-3"
-                  alt="FlowBite Logo"
+      {loading || AdminLoading ? <p>Loading..</p> : userIsAdmin ? (
+        <>
+          <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <div className="px-3 py-3 lg:px-5 lg:pl-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-start rtl:justify-end">
+                  <button
+                    data-drawer-target="logo-sidebar"
+                    data-drawer-toggle="logo-sidebar"
+                    aria-controls="logo-sidebar"
+                    type="button"
+                    onClick={() => {
+                      setSideBarExpanded(!sideBarExpanded);
+                    }}
+                    className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                  >
+                    <span className="sr-only">Open sidebar</span>
+                    <svg
+                      className="w-6 h-6"
+                      aria-hidden="true"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        fill-rule="evenodd"
+                        d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+                      ></path>
+                    </svg>
+                  </button>
+                  <a href="https://flowbite.com" className="flex ms-2 md:me-24">
+                    <img
+                      src="https://flowbite.com/docs/images/logo.svg"
+                      className="h-8 me-3"
+                      alt="FlowBite Logo"
+                    />
+                    <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
+                      Al Zehra
+                    </span>
+                  </a>
+                </div>
+                <UserDropdownMenu
+                  userImg={user.photoURL}
+                  name={user.displayName}
+                  email={user.email}
+                  signOutFun={()=>{handleSignout()}}
                 />
-                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                  Al Zehra
-                </span>
-              </a>
+              </div>
             </div>
-           <UserDropdownMenu userImg={user.photoURL} name={user.displayName} email={user.email} signOutFun={handleSignout}/>
+          </nav>
+
+          <main className="flex pt=6">
+            <AdminSidebar expanded={sideBarExpanded} />
+
+            <div
+              className={`p-4 mt-[3rem] md:bg-white ${
+                sideBarExpanded && "bg-gray-300"
+              }`}
+            >
+              {<Outlet />}
+            </div>
+          </main>
+        </>
+      ) : (
+        <>
+          <div className="h-screen w-screen flex items-center justify-center flex-col gap-6">
+            <h1 className="text-3xl">Please Log in to continue</h1>
+            <img
+              src={eyeGif}
+              alt="ghostIllustration"
+              className="h-[20rem] my-4 select-none"
+              draggable={false}
+            />
+            <Link
+              to="/admin/login"
+              className="blue-outline-hover-animation-btn"
+            >
+              Log In
+              <svg fill="currentColor" viewBox="0 0 24 24" className="icon">
+                <path
+                  clipRule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                  fillRule="evenodd"
+                ></path>
+              </svg>
+            </Link>
           </div>
-        </div>
-      </nav>
-
-      <main className="flex pt=6">
-      <AdminSidebar expanded={sideBarExpanded} />
-
-      <div className={`p-4 mt-[3rem] md:bg-white ${sideBarExpanded && "bg-gray-300"}`}>
-        {<Outlet />}
-        </div>
-      </main>
-
+        </>
+      )}
     </>
     // <>
     //   {loading ? (

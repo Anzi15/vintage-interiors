@@ -1,11 +1,44 @@
-import React, { useState } from 'react';
+import { signInAnonymously } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { auth } from '../modules/Firebase modules/fireauth';
+import { signOut } from "firebase/auth";
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
+  
+  const indicateSignout = ()=>{
+    toast('🦄 signed out successfully!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
 
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000);
+  }
+
+  const handleSignout = () => {
+    console.log("meow trying")
+    signOut(auth)
+      .then(() => {
+        indicateSignout()
+      })
+      .catch((error) => {
+        console.error("Error logging out: ", error);
+      });
+  };
   return (
     <div className='relative'>
       <img
@@ -30,9 +63,7 @@ const UserDropdownMenu = ({userImg, name, email, signOutFunc}) => {
 
           <div className="py-1">
             <button
-              onClick={()=>{signOutFunc()}}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-            >
+              onClick={handleSignout}>
                 Sign out
             </button>
           </div>
