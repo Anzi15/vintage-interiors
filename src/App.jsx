@@ -11,6 +11,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage.jsx';
 import AdminSignUpPage from './pages/admin/AdminSignUpPage.jsx';
 import AdminUnAuthorized from './pages/admin/AdminUnAuthorized.jsx';
 import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
+import AdminNewProductPage from './pages/admin/AdminNewProductPage.jsx';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from './layouts/MainLayout';
@@ -32,6 +33,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />
           <Route path='/admin/products' element={<AdminProductsPage />} />
+          <Route path='/admin/products/new' element={<AdminNewProductPage />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />

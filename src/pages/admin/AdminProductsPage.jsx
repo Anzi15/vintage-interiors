@@ -113,7 +113,7 @@ const AdminProductsPage = () => {
     comparedPrice: 7999, // Comparison price, set to undefined if not applicable
     collection: "Furniture",
   };
-
+  
   return (
     <main className="my-8">
       <h1 className="text-5xl text-left   ">Manage Products</h1>
@@ -138,6 +138,7 @@ const AdminProductsPage = () => {
 
         {initialLoading ? (
           <>
+          
             <AdminProductCard loading={true} />
             <AdminProductCard loading={true} />
             <AdminProductCard loading={true} />
