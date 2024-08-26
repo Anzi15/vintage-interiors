@@ -2,7 +2,7 @@ import { Outlet, Link, Navigate, useNavigate } from "react-router-dom";
 import { IoPersonSharp } from "react-icons/io5";
 import AdminSidebar from "../components/admin/AdminSidebar";
 import eyeGif from "../assets/eye-gif.gif";
-import adminIcon from "../assets/admin-icon.webp"
+import adminIcon from "../assets/admin-icon.webp";
 import {
   Disclosure,
   DisclosureButton,
@@ -41,9 +41,7 @@ const AdminLayout = () => {
     }
   );
 
-  
   useEffect(() => {
-
     if (user && Adminvalue) {
       Adminvalue.docs.map((doc) => {
         console.log(doc);
@@ -61,7 +59,9 @@ const AdminLayout = () => {
   return (
     //
     <>
-      {loading || AdminLoading ? <p>Loading..</p> : userIsAdmin ? (
+      {loading || AdminLoading ? (
+        <p>Loading..</p>
+      ) : userIsAdmin ? (
         <>
           <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
             <div className="px-3 py-3 lg:px-5 lg:pl-3">
@@ -86,18 +86,14 @@ const AdminLayout = () => {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
+                        clipRule="evenodd"
+                        fillRule="evenodd"
                         d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
                       ></path>
                     </svg>
                   </button>
                   <Link to="/admin" className="flex ms-2 md:me-24">
-                    <img
-                      src={adminIcon}
-                      className="h-8 me-3"
-                      alt="Admin"
-                    />
+                    <img src={adminIcon} className="h-8 me-3" alt="Admin" />
                     <span className="self-center text-xl  sm:text-2xl whitespace-nowrap dark:text-white">
                       Admin Panel
                     </span>
@@ -107,7 +103,9 @@ const AdminLayout = () => {
                   userImg={user.photoURL}
                   name={user.displayName}
                   email={user.email}
-                  signOutFun={()=>{handleSignout()}}
+                  signOutFun={() => {
+                    handleSignout();
+                  }}
                 />
               </div>
             </div>

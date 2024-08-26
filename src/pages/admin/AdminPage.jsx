@@ -21,40 +21,40 @@ const AdminPage = () => {
        </div>
       </section>
 
-      <section className="my-16 max-w-[80vw] overflow-hidden   flex flex-wrap gap-4 justify-between" >
+      <section className="my-16 md:max-w-[80vw] overflow-hidden   flex flex-wrap gap-4 md:justify-between justify-center" >
         <p className="w-full text-left">
           Let's get Started with
         </p>
         
-        <Link to={"/admin"} className="max-w-[45%] bg-blue-100 h-[35rem]  rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center">
+        <Link to={"/admin"} className="md:max-w-[45%]  bg-blue-100 rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center md:h-fit w-full">
           <h2 className="text-left text-3xl text-blue-gray-800 font-bold">
             Managing Products  
           </h2>
 
-          <img className="h-[90%]" src={productsImg} alt="" />
+          <img className="w-full" src={productsImg} alt="" />
         </Link>
 
-        <Link to={"/admin/inbox"} className="w-[45%] bg-blue-100 h-[35rem]  rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center">
+        <Link to={"/admin/inbox"} className="md:max-w-[45%]  bg-blue-100 rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center md:h-fit w-full">
           <h2 className="text-left text-3xl text-blue-gray-800 font-bold">
             Answering Queries  
           </h2>
 
-          <img className="h-[90%]" src={inboxImg} alt="" />
+          <img className="w-full" src={inboxImg} alt="" />
         </Link>
-        <Link to={"/admin/orders"} className="max-w-[45%] bg-blue-100 h-[35rem]  rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center">
+        <Link to={"/admin/orders"} className="md:max-w-[45%]  bg-blue-100 rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center md:h-fit w-full ">
           <h2 className="text-left text-3xl text-blue-gray-800 font-bold">
             Receiving Orders  
           </h2>
 
-          <img className="h-[90%]" src={orderImg} alt="" />
+          <img className="w-full" src={orderImg} alt="" />
         </Link>
 
-        <Link to={"/admin/management"} className="w-[45%] bg-blue-100 h-[35rem]  rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center">
+        <Link to={"/admin/management"} className="md:max-w-[45%]  bg-blue-100 rounded my-6 p-6 hover:scale-[1.02] transition-all flex flex-col items-center justify-center md:h-fit w-full">
           <h2 className="text-left text-3xl text-blue-gray-800 font-bold">
             Managing Store  
           </h2>
 
-          <img className="h-[90%]" src={businessManagementImg} alt="" />
+          <img className="w-full" src={businessManagementImg} alt="" />
         </Link>
 
       </section>
