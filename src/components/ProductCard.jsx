@@ -4,17 +4,18 @@ import { Link } from 'react-router-dom'
 const ProductCard = ({ link, title, image1, price, comparedPrice = null, loading}) => {
   return (
     <Link to={link} className="group my-4 md:my-10 flex m-[1%] w-[48%] md:max-w-[15rem] flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-small hover:shadow-md ">
-    <div className="flex rounded-xl" >
+    <div className="flex rounded-xl relative" >
       <img 
         className="peer right-0 w-full object-cover aspect-square skeleton-loading object-center" 
         src={image1} 
         alt={title} 
       />
 <span
-  className={`absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white ${comparedPrice == null || isNaN(comparedPrice) || comparedPrice <= price ? "hidden" : ""}`}
+  className={`absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white ${comparedPrice == null || isNaN(comparedPrice) || comparedPrice <= price ? "hidden" : "block"}`}
 >
-  {Math.round((comparedPrice - price) / comparedPrice * 100)}% OFF
+  {comparedPrice > 0 && Math.round(((comparedPrice - price) / comparedPrice) * 100)}% OFF
 </span>
+
 
     </div>
     <div className="mt-4 px-5 pb-5 md:min-h-[12rem]">
