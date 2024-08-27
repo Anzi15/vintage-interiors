@@ -115,7 +115,7 @@ const AdminLayout = () => {
             <AdminSidebar expanded={sideBarExpanded} className="" />
 
             <div
-              className={`p-4 mt-[3rem] md:max-w-[80vw] md:bg-white ${
+              className={`p-4 mt-[3rem] md:w-[80vw] w-[100vw] flex justify-center items-center md:bg-white ${
                 sideBarExpanded && "bg-gray-300"
               }`}
             >

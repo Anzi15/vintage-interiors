@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-const ImageDropZone = () => {
+const ImageDropZone = ({storeFileToUpload}) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*', // Ensure only images are accepted
+    accept: 'image/*', 
     onDrop: (acceptedFiles) => {
       setUploadedFiles(acceptedFiles.map((file) => ({
         ...file,
-        preview: URL.createObjectURL(file), // Create a preview URL for each file
+        store: storeFileToUpload(file),
+        preview: URL.createObjectURL(file), 
       })));
     },
   });
@@ -23,7 +24,7 @@ const ImageDropZone = () => {
   };
 
   // Cleanup object URLs when component unmounts
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       uploadedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
     };
@@ -36,7 +37,7 @@ const ImageDropZone = () => {
         onDragLeave: handleDragLeave,
         onDrop: handleDragLeave
       })}
-      className="aspect-square min-h-[10rem] flex items-center justify-center bg-blue-50 border-blue-300 border-2 rounded-lg transition-all duration-200"
+      className={`aspect-square min-h-[10rem] flex items-center justify-center bg-blue-50 border-blue-300 border-2 rounded-lg transition-all duration-200 ${!uploadedFiles.length && "p-4"}`}
     >
       <input {...getInputProps()} />
       {!uploadedFiles.length && <p>Drag and drop files here or click to browse.</p>}

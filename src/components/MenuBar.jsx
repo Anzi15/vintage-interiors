@@ -1,131 +1,158 @@
-import './MenuBar.scss';
-import { Fragment } from 'react';
-import MenuItem from './MenuItem.jsx';
+import "./MenuBar.scss";
+import {
+  FaBold,
+  FaCode,
+  FaHighlighter,
+  FaItalic,
+  FaLevelDownAlt,
+  FaParagraph,
+  FaQuoteLeft,
+  FaRedo,
+  FaStrikethrough,
+  FaUndo,
+  FaYoutube,
+} from "react-icons/fa";
+import { Fragment } from "react";
+import MenuItem from "./MenuItem.jsx";
+import {
+  MdFormatItalic,
+  MdFormatListBulleted,
+  MdOutlineHorizontalRule,
+} from "react-icons/md";
+import { LuHeading1, LuHeading2 } from "react-icons/lu";
+import { GoListOrdered } from "react-icons/go";
+import Iframe from "./IframeExtensionTipTap";
+
+function extractYouTubeVideoId(url) {
+  // Regular YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
+  const regularUrlPattern = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|.*[?&]v=)([a-zA-Z0-9_-]{11})/;
+  // Shortened YouTube URL (e.g., https://youtu.be/VIDEO_ID)
+  const shortUrlPattern = /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})/;
+
+  let match = url.match(regularUrlPattern);
+  if (match) {
+    return match[1];
+  }
+
+  match = url.match(shortUrlPattern);
+  if (match) {
+    return match[1];
+  }
+
+  return null;
+}
 
 export default function MenuBar({ editor }) {
   const items = [
     {
-      icon: 'bold',
-      title: 'Bold',
+      icon: <FaBold />,
+      title: <FaBold />,
       action: () => editor.chain().focus().toggleBold().run(),
-      isActive: () => editor.isActive('bold'),
+      isActive: () => editor.isActive("bold"),
     },
     {
-      icon: 'italic',
-      title: 'Italic',
+      icon: <FaItalic />,
+      title: <FaItalic />,
       action: () => editor.chain().focus().toggleItalic().run(),
-      isActive: () => editor.isActive('italic'),
+      isActive: () => editor.isActive("italic"),
     },
     {
-      icon: 'strikethrough',
-      title: 'Strike',
+      icon: <FaStrikethrough />,
+      title: <FaStrikethrough />,
       action: () => editor.chain().focus().toggleStrike().run(),
-      isActive: () => editor.isActive('strike'),
+      isActive: () => editor.isActive("strike"),
     },
     {
-      icon: 'code-view',
-      title: 'Code',
+      icon: <FaCode />,
+      title: <FaCode />,
       action: () => editor.chain().focus().toggleCode().run(),
-      isActive: () => editor.isActive('code'),
+      isActive: () => editor.isActive("code"),
     },
     {
-      icon: 'mark-pen-line',
-      title: 'Highlight',
+      icon: <FaHighlighter />,
+      title: <FaHighlighter />,
       action: () => editor.chain().focus().toggleHighlight().run(),
-      isActive: () => editor.isActive('highlight'),
+      isActive: () => editor.isActive("highlight"),
     },
     {
-      type: 'divider',
-    },
-    {
-      icon: 'h-1',
-      title: 'Heading 1',
+      icon: <LuHeading1 />,
+      title: <LuHeading1 />,
       action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      isActive: () => editor.isActive('heading', { level: 1 }),
+      isActive: () => editor.isActive("heading", { level: 1 }),
     },
     {
-      icon: 'h-2',
-      title: 'Heading 2',
+      icon: <LuHeading2 />,
+      title: <LuHeading2 />,
       action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      isActive: () => editor.isActive('heading', { level: 2 }),
+      isActive: () => editor.isActive("heading", { level: 2 }),
     },
     {
-      icon: 'paragraph',
-      title: 'Paragraph',
+      icon: <FaParagraph />,
+      title: <FaParagraph />,
       action: () => editor.chain().focus().setParagraph().run(),
-      isActive: () => editor.isActive('paragraph'),
+      isActive: () => editor.isActive("paragraph"),
     },
     {
-      icon: 'list-unordered',
-      title: 'Bullet List',
+      icon: <MdFormatListBulleted />,
+      title: <MdFormatListBulleted />,
       action: () => editor.chain().focus().toggleBulletList().run(),
-      isActive: () => editor.isActive('bulletList'),
+      isActive: () => editor.isActive("bulletList"),
     },
     {
-      icon: 'list-ordered',
-      title: 'Ordered List',
+      icon: <GoListOrdered />,
+      title: <GoListOrdered />,
       action: () => editor.chain().focus().toggleOrderedList().run(),
-      isActive: () => editor.isActive('orderedList'),
+      isActive: () => editor.isActive("orderedList"),
     },
     {
-      icon: 'list-check-2',
-      title: 'Task List',
-      action: () => editor.chain().focus().toggleTaskList().run(),
-      isActive: () => editor.isActive('taskList'),
-    },
-    {
-      icon: 'code-box-line',
-      title: 'Code Block',
-      action: () => editor.chain().focus().toggleCodeBlock().run(),
-      isActive: () => editor.isActive('codeBlock'),
-    },
-    {
-      type: 'divider',
-    },
-    {
-      icon: 'double-quotes-l',
-      title: 'Blockquote',
+      icon: <FaQuoteLeft />,
+      title: <FaQuoteLeft />,
       action: () => editor.chain().focus().toggleBlockquote().run(),
-      isActive: () => editor.isActive('blockquote'),
+      isActive: () => editor.isActive("blockquote"),
     },
     {
-      icon: 'separator',
-      title: 'Horizontal Rule',
+      icon: <MdOutlineHorizontalRule />,
+      title: <MdOutlineHorizontalRule />,
       action: () => editor.chain().focus().setHorizontalRule().run(),
     },
     {
-      type: 'divider',
+      icon: <FaYoutube/>,
+      title: <FaYoutube />,
+      action: () => {
+        const url = prompt("Enter YouTube video URL");
+        const videoId = extractYouTubeVideoId(url);
+        if (videoId) {
+          const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+          editor.chain().focus().setIframe({ src: embedUrl }).run();
+        } else {
+          alert("Invalid YouTube URL");
+        }
+      },
     },
     {
-      icon: 'text-wrap',
-      title: 'Hard Break',
+      icon: <FaLevelDownAlt />,
+      title: <FaLevelDownAlt />,
       action: () => editor.chain().focus().setHardBreak().run(),
     },
+
     {
-      icon: 'format-clear',
-      title: 'Clear Format',
-      action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
-    },
-    {
-      type: 'divider',
-    },
-    {
-      icon: 'arrow-go-back-line',
-      title: 'Undo',
+      icon: <FaUndo />,
+      title: <FaUndo />,
       action: () => editor.chain().focus().undo().run(),
     },
     {
-      icon: 'arrow-go-forward-line',
-      title: 'Redo',
+      icon: <FaRedo />,
+      title: <FaRedo />,
       action: () => editor.chain().focus().redo().run(),
     },
+
   ];
 
   return (
     <div className="editor__header">
       {items.map((item, index) => (
         <Fragment key={index}>
-          {item.type === 'divider' ? (
+          {item.type === "divider" ? (
             <div className="divider" />
           ) : (
             <MenuItem {...item} />
