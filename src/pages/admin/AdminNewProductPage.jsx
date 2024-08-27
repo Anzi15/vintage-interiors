@@ -18,7 +18,6 @@ const AdminNewProductPage = () => {
   const [comparePrice, setComparePrice] = useState(0);
   const [descriptionHtml, setDescriptionHtml] = useState(null);
 
-  console.log(primaryImg);
   const [openTab, setOpenTab] = useState(1);
   const uploadImage = async (file) => {
     const formData = new FormData();
@@ -122,6 +121,13 @@ const AdminNewProductPage = () => {
               </div>
 
               <TiptapEditor updateHtml={setDescriptionHtml} />
+
+              <div className="">
+                <p className="text-left">Add Variants:</p>
+                <button className="">
+                  Add Variant
+                </button>
+              </div>
             </div>
           </div>
 
