@@ -11,7 +11,7 @@ import { Typography } from "@material-tailwind/react";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
-ProductPagePreview;
+import uploadFileToCloudinary from "../../components/uploadFileToCloudinary.jsx";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
@@ -20,6 +20,7 @@ import { TagsInput } from "react-tag-input-component";
 import { subtitles } from "@cloudinary/url-gen/qualifiers/source";
 import { useAsyncError } from "react-router-dom";
 import InputField from "../../components/InputField.jsx";
+import Swal from "sweetalert2";
 
 const AdminNewProductPage = () => {
   const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false)
@@ -38,7 +39,7 @@ const AdminNewProductPage = () => {
   const [docId, setDocId] = useState("")
 
   const [variants, setVariants] = useState([
-    { name: "Default Variant", price },
+    { name: "Default Variant", price, comparePrice },
   ]);
 
   useEffect(()=>{
@@ -69,6 +70,7 @@ const AdminNewProductPage = () => {
     setVariants((prevVariants) => {
       const updatedVariants = [...prevVariants];
       updatedVariants[0].price = price;
+      updatedVariants[0].comparePrice = comparePrice
       return updatedVariants;
     });
   }, [price]);
@@ -97,7 +99,7 @@ const AdminNewProductPage = () => {
   const addVariant = () => {
     setVariants([
       ...variants,
-      { name: `${variants.length + 1} Variant Name `, price: 0, images: [] },
+      { name: `${variants.length + 1} Variant Name `, price: 0, comparePrice: 0 },
     ]);
   };
 
@@ -127,26 +129,34 @@ const AdminNewProductPage = () => {
         theme: "light",
       });
     } else {
-      const productData = {
-        primaryImg: await uploadImage(primaryImg),
-        secondary1Img: await uploadImage(secondary1Img),
-        secondary2Img: await uploadImage(secondary2Img),
-        title,
-        subTitle,
-        descriptionHtml,
-        price,
-        comparePrice,
-        tags: selectedTags,
-      };
-      try {
-        const collectionName = productSavingType == "publish" ? "Products" : "archives";
-        // const documentId = 
-        const docRef = doc(db, collectionName, docId); // Specify the custom ID here
-        await setDoc(docRef, productData); // Upload document with custom ID
-        console.log('Document written with ID: ', docId);
-      } catch (e) {
-        console.error('Error adding document: ', e);
-      }
+      // const productData = {
+      //   primaryImg: await uploadImage(primaryImg),
+      //   secondary1Img: await uploadImage(secondary1Img),
+      //   secondary2Img: await uploadImage(secondary2Img),
+      //   title,
+      //   subTitle,
+      //   descriptionHtml,
+      //   price,
+      //   comparePrice,
+      //   tags: selectedTags,
+      //   variants
+      // };
+      // try {
+      //   const collectionName = productSavingType == "publish" ? "Products" : "archives";
+      //   // const documentId = 
+      //   const docRef = doc(db, collectionName, docId); // Specify the custom ID here
+      //   await setDoc(docRef, productData); // Upload document with custom ID
+      //   console.log('Document written with ID: ', docId);
+      //   Swal.fire({
+      //     text: "Product Added",
+      //     icon: "success"
+      //   })
+      // } catch (e) {
+      //   console.error('Error adding document: ', e);
+      // }
+      console.log(primaryImg)
+      const imgURl = await uploadFileToCloudinary(primaryImg)
+      console.log(imgURl)
     }
   };
 
@@ -193,47 +203,15 @@ const AdminNewProductPage = () => {
                 <TiptapEditor updateHtml={setDescriptionHtml} />
               </div>
 
-              {/* <div className="">
-                <p className="text-left">Add Variants:</p>
-                <div className="flex w-full">
-                  <div className="flex w-[80%]">
-                  <input type="text" placeholder="Default Variant Name" className="w-[60%] rounded-l-md"/>
-                  <input type="number" readOnly value={price} className="w-[40%]"/>
-                  </div>
-                  <button className="w-fit text-nowrap p-4 bg-blue-gray-800 text-white text-lg rounded-r-md">
-                    Add Variant
-                  </button>
-                </div>
-                <Typography
-        variant="small"
-        color="gray"
-        className="mt-2 flex gap-1 font-normal text-left"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="-mt-px h-4 w-4"
-        >
-          <path
-            fillRule="evenodd"
-            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
-            clipRule="evenodd"
-          />
-        </svg>
-        
-        The First Variant is default variant, so it takes the default price
-       
-      </Typography>
-              </div> */}
 
               {/* Variants Management */}
               <div className="mt-6">
                 <h4 className="text-left text-lg">Add Variants:</h4>
                 <br />
-                <div className="flex py-3  border rounded-md border-b-0">
-                  <p className="w-1/3 font-semibold">Variant Name</p>
-                  <p className="w-1/3 font-semibold">Variant Price</p>
+                <div className="flex py-3  border rounded-md border-b-0 items-center justify-between">
+                  <p className=" font-semibold">Variant Name</p>
+                  <p className=" font-semibold">Price</p>
+                  <p className=" font-semibold">Compared Price</p>
                   <button
                     className={`p-2 bg-blue-500 text-white rounded-md `}
                     onClick={() => {
@@ -267,6 +245,21 @@ const AdminNewProductPage = () => {
                           updateVariant(
                             index,
                             "price",
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
+                      />
+                      <input
+                        type="number"
+                        placeholder="Compared Price (optional)"
+                        className="w-1/3 mr-2 p-2 border rounded-md"
+                        {...(index == 0
+                          ? { value: comparePrice, readOnly: true }
+                          : { value: variant.comparePrice })}
+                        onChange={(e) =>
+                          updateVariant(
+                            index,
+                            "comparePrice",
                             parseFloat(e.target.value) || 0
                           )
                         }
