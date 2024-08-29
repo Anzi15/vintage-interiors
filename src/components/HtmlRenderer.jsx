@@ -21,7 +21,7 @@ const HtmlRenderer = ({ rawHtml }) => {
   return (
     <div
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-      className="text-left"
+      className="text-left man-made-html"
     />
   );
 };

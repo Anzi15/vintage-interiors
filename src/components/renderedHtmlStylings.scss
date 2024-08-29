@@ -1,6 +1,23 @@
-h1{
-    font-size: 1.5rem;
+.man-made-html{
+    h1{
+        font-size: 1.5rem;
+    }
+    h2{
+        font-size: 1.2rem;
+    }
+    ul{
+    
+        li{
+            list-style:disc;
+        }
+    }
+    ol{
+        li{
+            list-style: decimal;
+        }
+    }
 }
-h2{
-    font-size: 1.2rem;
+iframe{
+    max-width: 100%;
+    border-radius: 2%;
 }

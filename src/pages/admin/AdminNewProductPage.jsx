@@ -1,14 +1,29 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { db } from "../../modules/Firebase modules/firestore.js"
+import { useState, useEffect, useRef } from "react";
 import ImageDropZone from "../../components/admin/ImageDropZone";
 import TiptapEditor from "../../components/admin/TiptapEditor";
 import HtmlRenderer from "../../components/HtmlRenderer";
 import ProductCard from "../../components/ProductCard.jsx";
 import placeholderImg from "../../assets/placeholder-image-icon.webp";
 import ProductPagePreview from "../../components/admin/ProductPagePreview.jsx";
+import { Typography } from "@material-tailwind/react";
+import { GoGoal } from "react-icons/go";
+import { MdOutlineArchive } from "react-icons/md";
+import "rsuite/TagInput/styles/index.css";
 ProductPagePreview;
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { Toast } from "flowbite-react";
+import { toast } from "react-toastify";
+import { TagInput } from "rsuite";
+import { TagsInput } from "react-tag-input-component";
+import { subtitles } from "@cloudinary/url-gen/qualifiers/source";
+import { useAsyncError } from "react-router-dom";
+import InputField from "../../components/InputField.jsx";
 
 const AdminNewProductPage = () => {
+  const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false)
+  const [isFormDirty, setIsFormDirty] = useState(false);
   const [primaryImg, setPrimaryImg] = useState(null);
   const [secondary1Img, setSecondary1Img] = useState(null);
   const [secondary2Img, setSecondary2Img] = useState(null);
@@ -17,8 +32,50 @@ const AdminNewProductPage = () => {
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(0);
   const [descriptionHtml, setDescriptionHtml] = useState(null);
+  const [productSavingType, setProductSavingType] = useState("publish");
+  const [selectedTags, setSelectedTags] = useState([]);
+  const FormRef = useRef(null);
+  const [docId, setDocId] = useState("")
+
+  const [variants, setVariants] = useState([
+    { name: "Default Variant", price },
+  ]);
+
+  useEffect(()=>{
+    setDocId(title.replace(/ /g, "-"))
+    const checkForExistence = async ()=>{
+      if(title.length){
+        try {
+          const docRef = doc(db, "Products", title.replace(/ /g, "-")); // Specify the collection and document ID
+          const docSnap = await getDoc(docRef);
+      
+          if (docSnap.exists()) {
+            setIsTitleAlreadyExisting(true)
+          } else {
+            setIsTitleAlreadyExisting(false)
+          }
+        } catch (error) {
+          console.error('Error checking document:', error);
+        }
+      }else{
+        setIsTitleAlreadyExisting(false)
+      }
+    }
+    checkForExistence()
+  },[title])
+
+  useEffect(() => {
+    // Update the price of the default variant when `price` changes
+    setVariants((prevVariants) => {
+      const updatedVariants = [...prevVariants];
+      updatedVariants[0].price = price;
+      return updatedVariants;
+    });
+  }, [price]);
+
 
   const [openTab, setOpenTab] = useState(1);
+
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -36,6 +93,63 @@ const AdminNewProductPage = () => {
       await uploadImage(file);
     }
   };
+
+  const addVariant = () => {
+    setVariants([
+      ...variants,
+      { name: `${variants.length + 1} Variant Name `, price: 0, images: [] },
+    ]);
+  };
+
+  const removeVariant = (index) => {
+    setVariants(variants.filter((_, i) => i !== index));
+  };
+
+  const updateVariant = (index, key, value) => {
+    setVariants((prevVariants) => {
+      const updatedVariants = [...prevVariants];
+      updatedVariants[index][key] = value;
+      return updatedVariants;
+    });
+  };
+
+  const handleFormSubmission = async (e) => {
+    e.preventDefault();
+    if (!primaryImg || !secondary1Img || !secondary2Img) {
+      toast.error("Upload All Images!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      const productData = {
+        primaryImg: await uploadImage(primaryImg),
+        secondary1Img: await uploadImage(secondary1Img),
+        secondary2Img: await uploadImage(secondary2Img),
+        title,
+        subTitle,
+        descriptionHtml,
+        price,
+        comparePrice,
+        tags: selectedTags,
+      };
+      try {
+        const collectionName = productSavingType == "publish" ? "Products" : "archives";
+        // const documentId = 
+        const docRef = doc(db, collectionName, docId); // Specify the custom ID here
+        await setDoc(docRef, productData); // Upload document with custom ID
+        console.log('Document written with ID: ', docId);
+      } catch (e) {
+        console.error('Error adding document: ', e);
+      }
+    }
+  };
+
   return (
     <>
       <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
@@ -47,10 +161,14 @@ const AdminNewProductPage = () => {
         </div>
 
         <section className="md:flex ">
-          <div className="md:w-1/2 w-full md:px-10">
+          <form
+            className="md:w-1/2 w-full md:px-10"
+            onSubmit={handleFormSubmission}
+            ref={FormRef}
+          >
             <h4 className="py-8 text-left">Add few details to get started</h4>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 ">
               <ImageDropZone storeFileToUpload={setPrimaryImg} />
               <div className="w-full grid grid-cols-2 gap-4">
                 <ImageDropZone
@@ -62,82 +180,180 @@ const AdminNewProductPage = () => {
                   className={"w-1/2"}
                 />
               </div>
-              <div className="relative w-full min-w-[200px] h-11 ">
-                <input
-                  className="w-full h-full px-3 py-3 font-sans text-sm font-normal transition-all bg-transparent border rounded-md peer text-blue-gray-700 outline-none focus:outline-none focus:ring-0 focus:border-gray-900 disabled:bg-blue-gray-50 disabled:border-0 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 border-t-transparent focus:border-t-transparent border-blue-gray-200"
-                  placeholder=" "
-                  type="text"
-                  onInput={(e) => {
-                    setTitle(e.target.value.trim());
-                  }}
-                />
-                <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[4.1] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
-                  Title
-                </label>
+              < InputField inputName={"Title"} inputType="text" valueReturner={setTitle} requiredInput={true} errorMsg={isTitleAlreadyExisting && "Product Already exist, kindly change the title"} />
+
+              < InputField inputName={"Sub title (optional)"} inputType="text" valueReturner={setSubTitle} requiredInput={false} />
+
+              < InputField inputName={"Price"} inputType="number" valueReturner={setPrice} requiredInput={true} />
+
+              < InputField inputName={"Compared Price (optional)"} inputType="number" valueReturner={setComparePrice} requiredInput={false} />
+
+
+              <div className="max-w-full">
+                <TiptapEditor updateHtml={setDescriptionHtml} />
               </div>
 
-              <div className="relative w-full min-w-[200px] h-11 ">
-                <input
-                  className="w-full h-full px-3 py-3 font-sans text-sm font-normal transition-all bg-transparent border rounded-md peer text-blue-gray-700 outline-none focus:outline-none focus:ring-0 focus:border-gray-900 disabled:bg-blue-gray-50 disabled:border-0 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 border-t-transparent focus:border-t-transparent border-blue-gray-200"
-                  placeholder=" "
-                  type="text"
-                  onInput={(e) => {
-                    setSubTitle(e.target.value.trim());
-                  }}
-                />
-                <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[4.1] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900 ">
-                  Sub Title (optional)
-                </label>
-              </div>
-
-              <div className="relative w-full min-w-[200px] h-11 ">
-                <input
-                  className="w-full h-full px-3 py-3 font-sans text-sm font-normal transition-all bg-transparent border rounded-md peer text-blue-gray-700 outline-none focus:outline-none focus:ring-0 focus:border-gray-900 disabled:bg-blue-gray-50 disabled:border-0 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 border-t-transparent focus:border-t-transparent border-blue-gray-200"
-                  placeholder=" "
-                  type="numbers"
-                  onInput={(e) => {
-                    setPrice(e.target.value.trim());
-                  }}
-                />
-
-                <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[4.1] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
-                  Price
-                </label>
-              </div>
-
-              <div className="relative w-full min-w-[200px] h-11 ">
-                <input
-                  className="w-full h-full px-3 py-3 font-sans text-sm font-normal transition-all bg-transparent border rounded-md peer text-blue-gray-700 outline-none focus:outline-none focus:ring-0 focus:border-gray-900 disabled:bg-blue-gray-50 disabled:border-0 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 border-t-transparent focus:border-t-transparent border-blue-gray-200"
-                  placeholder=" "
-                  type="numbers"
-                  onInput={(e) => {
-                    setComparePrice(e.target.value.trim());
-                  }}
-                />
-
-                <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[4.1] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
-                  Compared Price (optional)
-                </label>
-              </div>
-
-              <TiptapEditor updateHtml={setDescriptionHtml} />
-
-              <div className="">
+              {/* <div className="">
                 <p className="text-left">Add Variants:</p>
-                <button className="">
-                  Add Variant
-                </button>
+                <div className="flex w-full">
+                  <div className="flex w-[80%]">
+                  <input type="text" placeholder="Default Variant Name" className="w-[60%] rounded-l-md"/>
+                  <input type="number" readOnly value={price} className="w-[40%]"/>
+                  </div>
+                  <button className="w-fit text-nowrap p-4 bg-blue-gray-800 text-white text-lg rounded-r-md">
+                    Add Variant
+                  </button>
+                </div>
+                <Typography
+        variant="small"
+        color="gray"
+        className="mt-2 flex gap-1 font-normal text-left"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="-mt-px h-4 w-4"
+        >
+          <path
+            fillRule="evenodd"
+            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+            clipRule="evenodd"
+          />
+        </svg>
+        
+        The First Variant is default variant, so it takes the default price
+       
+      </Typography>
+              </div> */}
+
+              {/* Variants Management */}
+              <div className="mt-6">
+                <h4 className="text-left text-lg">Add Variants:</h4>
+                <br />
+                <div className="flex py-3  border rounded-md border-b-0">
+                  <p className="w-1/3 font-semibold">Variant Name</p>
+                  <p className="w-1/3 font-semibold">Variant Price</p>
+                  <button
+                    className={`p-2 bg-blue-500 text-white rounded-md `}
+                    onClick={() => {
+                      addVariant();
+                    }}
+                    type="button"
+                  >
+                    Add Variant
+                  </button>
+                </div>
+                {variants.map((variant, index) => (
+                  <div key={index} className="mb-4 p-4 border rounded-md">
+                    <div className="flex items-center mb-2">
+                      <input
+                        type="text"
+                        placeholder="Variant Name"
+                        className="w-1/3 mr-2 p-2 border rounded-md"
+                        value={variant.name}
+                        onChange={(e) =>
+                          updateVariant(index, "name", e.target.value)
+                        }
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        className="w-1/3 mr-2 p-2 border rounded-md"
+                        {...(index == 0
+                          ? { value: price, readOnly: true }
+                          : { value: variant.price })}
+                        onChange={(e) =>
+                          updateVariant(
+                            index,
+                            "price",
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
+                      />
+                      <button
+                        {...(index == 0 ? { disabled: true } : {})}
+                        className={`p-2 bg-red-500 text-white rounded-md ${
+                          index == 0
+                            ? "bg-red-200 cursor-not-allowed"
+                            : "bg-red-500"
+                        }`}
+                        type="button"
+                        onClick={() => {
+                          if (index !== 0) {
+                            removeVariant(index);
+                          }
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-end gap-4 my-4 text-left flex-col ">
+                  <div className="flex w-full items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="-mt-px h-4 w-4"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p>
+                      Default Variants Price is the default price of the
+                      product.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div
-            className="md:w-1/2 w-full md:m-0 my-10
-    "
-          >
-            <div className="md:sticky top-8">
-              <div className="p-8">
-                <div className="max-w-md mx-auto">
+            <div>
+              <TagsInput
+                value={selectedTags}
+                onChange={(tags) => setSelectedTags(tags.map(tag => tag.toLowerCase()))}
+                name="tags"
+                placeHolder="Enter Tags"
+                separators={["Enter", ",", " "]}
+              />
+              <em className="text-left">
+                Add tags to show them in relevant collections{" "}
+              </em>
+            </div>
+
+            <div className="my-10 gap-4 flex ">
+              <button
+                class="w-full justify-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none flex items-center gap-3"
+                type="submit"
+                onClick={() => {
+                  setProductSavingType("publish");
+                }}
+              >
+                <GoGoal className="text-2xl" />
+                Publish
+              </button>
+              <button
+                class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg border border-gray-900 text-gray-900 hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] flex items-center gap-3"
+                type="submit"
+                onClick={() => {
+                  setProductSavingType("archive");
+                }}
+              >
+                Archive
+                <MdOutlineArchive className="text-2xl" />
+              </button>
+            </div>
+          </form>
+
+          <div className="md:w-1/2 md:m-0 my-10">
+            <div className="md:sticky top-8 max-w-full">
+              <div className="p-8 w-full">
+                <div className=" mx-auto">
                   <div className="mb-4 flex space-x-4 p-2 bg-white rounded-lg shadow-md">
                     <button
                       onClick={() => setOpenTab(1)}
@@ -198,6 +414,8 @@ const AdminNewProductPage = () => {
                           ? URL.createObjectURL(secondary2Img)
                           : placeholderImg
                       }
+                      descriptionHtml={descriptionHtml}
+                      variants={variants}
                     />
                   )}
 
