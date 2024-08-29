@@ -11,14 +11,11 @@ import { Typography } from "@material-tailwind/react";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
-import uploadFileToCloudinary from "../../components/uploadFileToCloudinary.jsx";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
 import { TagInput } from "rsuite";
 import { TagsInput } from "react-tag-input-component";
-import { subtitles } from "@cloudinary/url-gen/qualifiers/source";
-import { useAsyncError } from "react-router-dom";
 import InputField from "../../components/InputField.jsx";
 import Swal from "sweetalert2";
 
@@ -154,9 +151,7 @@ const AdminNewProductPage = () => {
       // } catch (e) {
       //   console.error('Error adding document: ', e);
       // }
-      console.log(primaryImg)
-      const imgURl = await uploadFileToCloudinary(primaryImg)
-      console.log(imgURl)
+      
     }
   };
 

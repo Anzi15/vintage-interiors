@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'flowbite';
 
 #root {
   max-width: 100vw;
