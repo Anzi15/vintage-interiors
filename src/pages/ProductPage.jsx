@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, Navigate, useLocation } from "react-router-dom";
-
+import CustomerBenefits from "../components/CustomerBenefits.jsx"
 import { getDocument } from "../modules/Firebase modules/firestore";
 import ProductSuggestions from "../components/ProductSuggestions";
 import ProductCardGroup from "../components/ProductCardGroup.jsx";
@@ -8,6 +8,31 @@ import HtmlRenderer from "../components/HtmlRenderer.jsx";
 import { placeholder } from "@cloudinary/react";
 import orangePerfumeImg from "../assets/jessica-weiller-So4eFi-d1nc-unsplash.webp"
 import flowersWithPerfume from "../assets/olena-bohovyk-KPkR3e6BZG0-unsplash.webp"
+import lavenderBottleImg from "../assets/lavender-bottle.webp"
+import roseScentImg from "../assets/scent-of-roses.webp"
+import Testimonials from "../components/Testimonials.jsx";
+const reviews = [
+  {
+    stars: 5,
+    text: "This product exceeded my expectations! The quality is top-notch, and the customer service was amazing.",
+    author: "Jane Doe",
+  },
+  {
+    stars: 4,
+    text: "Very satisfied with my purchase. The delivery was fast, and the product is as described.",
+    author: "John Smith",
+  },
+  {
+    stars: 5,
+    text: "Fantastic experience! I will definitely be a returning customer. Highly recommend this store.",
+    author: "Emily Johnson",
+  },
+  {
+    stars: 3,
+    text: "The product is decent, but the packaging was a bit damaged upon arrival.",
+    author: "Michael Brown",
+  },
+];
 
 const ProductPage = () => {
   const placeholderImg =
@@ -442,11 +467,42 @@ const ProductPage = () => {
             enhancing your daily presence.
           </p>
         </div>
-        <div className="md:w-1/2 w-screen">
-        <img src={flowersWithPerfume} className="md:w-[80%] w-full rounded-lg" alt="" />
+        <div className="md:w-1/2 w-screen flex justify-center items-center">
+        <img src={flowersWithPerfume} className="md:w-[80%] w-[90%] rounded-lg" alt="" />
 
         </div>
       </div>
+
+      <CustomerBenefits />
+
+      <div className="flex w-[98%] justify-center py-9 flex-wrap md:px-4"  >
+        <img src={lavenderBottleImg} className="md:w-1/2 object-cover rounded-lg w-[90%] aspect-video" alt="" />
+        <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center">
+          <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%] w-full">
+          Elevate Your Senses with Exquisite Fragrances
+          </h1>
+          <p className="text-left md:w-[80%]">
+          Transform your daily routine into a luxurious experience with our premium collection of perfumes. Crafted with the finest ingredients, each scent embodies elegance and sophistication, making it the perfect companion for any occasion.
+
+
+          </p>
+        </div>
+      </div>
+      <div className="flex w-[98%] justify-center py-9 flex-wrap"  >
+        <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center md:px-4">
+          <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%] w-full">
+          Discover Your Signature Scent
+          </h1>
+          <p className="text-left md:w-[80%]">
+          Discover the art of self-expression with our captivating range of fragrances. Whether you prefer the allure of a floral bouquet or the depth of a woody aroma, our perfumes are designed to leave a lasting impression, effortlessly enhancing your presence.
+
+
+          </p>
+        </div>
+        <img src={roseScentImg} className="md:w-1/2 object-cover rounded-lg w-[90%] aspect-video" alt="" />
+      </div>
+
+      <Testimonials reviews={reviews} />
 
       {!isLoading ? (
         <ProductSuggestions
