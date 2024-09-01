@@ -32,7 +32,7 @@ const Testimonials = ({ reviews }) => {
             className="flex w-full p-8 items-center justify-center flex-col h-[15rem] gap-4"
           >
             <StarRating activeStars={review.stars} />
-            <p className="w-[50%]">{review.text}</p>
+            <p className="md:w-[50%] w-[90%]">{review.text}</p>
             <b className="uppercase">{review.author}</b>
           </div>
         ))}

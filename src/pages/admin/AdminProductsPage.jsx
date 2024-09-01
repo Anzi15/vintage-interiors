@@ -3,18 +3,17 @@ import { Link } from "react-router-dom";
 import { CiSquarePlus } from "react-icons/ci";
 import BouncingBallLoader from "../../components/BouncingBallLoader";
 import AdminProductCard from "../../components/admin/AdminProductCard";
-import { loadProductsWithPagination } from '../../modules/Firebase modules/firestore';
-
+import { loadProductsWithPagination } from "../../modules/Firebase modules/firestore";
+import Swal from "sweetalert2";
 
 const AdminProductsPage = () => {
-
-    const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [sortOrder, setSortOrder] = useState('title'); // Default sort by title
-  const [filterTag, setFilterTag] = useState(''); // Default no filter
+  const [sortOrder, setSortOrder] = useState("title"); // Default sort by title
+  const [filterTag, setFilterTag] = useState(""); // Default no filter
   const loader = useRef(null);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const AdminProductsPage = () => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '0px',
+      rootMargin: "0px",
       threshold: 1.0,
     };
 
@@ -45,7 +44,7 @@ const AdminProductsPage = () => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '0px',
+      rootMargin: "0px",
       threshold: 1.0,
     };
 
@@ -65,25 +64,37 @@ const AdminProductsPage = () => {
 
   const loadMoreProducts = async () => {
     setLoading(true);
-    const PAGE_SIZE = 15
+    const PAGE_SIZE = 15;
     try {
-      const productsData = await loadProductsWithPagination('Products', PAGE_SIZE, lastVisible, sortOrder, filterTag);
-      
+      const productsData = await loadProductsWithPagination(
+        "Products",
+        PAGE_SIZE,
+        lastVisible,
+        sortOrder,
+        filterTag
+      );
+
       if (productsData.length === 0) {
         setHasMore(false);
       } else {
         setLastVisible(productsData[productsData.length - 1].doc); // Update last visible document
 
-        setProducts(prevProducts => {
-          const newProducts = productsData.map(doc => ({ id: doc.id, ...doc }));
+        setProducts((prevProducts) => {
+          const newProducts = productsData.map((doc) => ({
+            id: doc.id,
+            ...doc,
+          }));
           const uniqueProducts = newProducts.filter(
-            newProduct => !prevProducts.some(prevProduct => prevProduct.id === newProduct.id)
+            (newProduct) =>
+              !prevProducts.some(
+                (prevProduct) => prevProduct.id === newProduct.id
+              )
           );
           return [...prevProducts, ...uniqueProducts];
         });
       }
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error("Error loading products:", error);
     }
 
     setLoading(false);
@@ -106,14 +117,20 @@ const AdminProductsPage = () => {
 
   const productData = {
     product_id: "001",
-    primary_img:
+    primaryImg:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-YIGV8GTRHiW_KACLMhhi9fEq2T5BDQcEyA&s", // Placeholder image of a product
     title: "Elegant Wooden Chair",
     price: 5999,
     comparedPrice: 7999, // Comparison price, set to undefined if not applicable
     collection: "Furniture",
   };
-  
+
+  const handleDeleteProduct = (docId) => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== docId)
+    );
+  };
+
   return (
     <main className="my-8">
       <h1 className="text-5xl text-left   ">Manage Products</h1>
@@ -132,25 +149,29 @@ const AdminProductsPage = () => {
         {/* <BouncingBallLoader className="w-[80vw]" /> */}
 
         <div className="w-full my-12 text-left text-3xl pl-4 mb-0">
-            Your Products:
+          Your Products:
         </div>
         <div className="grid gap-4 p-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-
-        {initialLoading ? (
-          <>
-          
-            <AdminProductCard loading={true} />
-            <AdminProductCard loading={true} />
-            <AdminProductCard loading={true} />
-          </>
-        ) : (
+          {initialLoading ? (
+            <>
+              <AdminProductCard loading={true} />
+              <AdminProductCard loading={true} />
+              <AdminProductCard loading={true} />
+            </>
+          ) : (
             products.map((product) => (
-                <AdminProductCard key={product.id} title={product.title} image1={product.primary_img} price={product.price} comparedPrice={product?.comparedPrice} link={product.id} />
+              <AdminProductCard
+                key={product.id}
+                title={product.title}
+                image1={product.primaryImg}
+                price={product.price}
+                comparedPrice={product?.comparedPrice}
+                link={product.id}
+                onDeleteProduct={handleDeleteProduct}
+              />
             ))
-          
-        )}
-        <div ref={loader} />
-
+          )}
+          <div ref={loader} />
         </div>
         {loading && <AdminProductCard loading={true} />}
       </section>

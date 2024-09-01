@@ -18,8 +18,13 @@ import { TagInput } from "rsuite";
 import { TagsInput } from "react-tag-input-component";
 import InputField from "../../components/InputField.jsx";
 import Swal from "sweetalert2";
+import storage from "../../modules/Firebase modules/firestorage.js"
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import BouncingBallLoader from "../../components/BouncingBallLoader.jsx";
+import { useNavigate } from "react-router-dom";
 
 const AdminNewProductPage = () => {
+  const navigate = useNavigate()
   const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false)
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [primaryImg, setPrimaryImg] = useState(null);
@@ -28,23 +33,27 @@ const AdminNewProductPage = () => {
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [price, setPrice] = useState(0);
-  const [comparePrice, setComparePrice] = useState(0);
+  const [comparePrice, setComparePrice] = useState(null);
   const [descriptionHtml, setDescriptionHtml] = useState(null);
   const [productSavingType, setProductSavingType] = useState("publish");
   const [selectedTags, setSelectedTags] = useState([]);
   const FormRef = useRef(null);
   const [docId, setDocId] = useState("")
+  const [publishing, setPublishing] = useState(false)
+  const [publishingMsg, setPublishingMsg] = useState("Publishing..")
+
+
 
   const [variants, setVariants] = useState([
     { name: "Default Variant", price, comparePrice },
   ]);
 
   useEffect(()=>{
-    setDocId(title.replace(/ /g, "-"))
+    setDocId(title.toLowerCase().replace(/ /g, "-"))
     const checkForExistence = async ()=>{
       if(title.length){
         try {
-          const docRef = doc(db, "Products", title.replace(/ /g, "-")); // Specify the collection and document ID
+          const docRef = doc(db, "Products", title.toLowerCase().replace(/ /g, "-")); // Specify the collection and document ID
           const docSnap = await getDoc(docRef);
       
           if (docSnap.exists()) {
@@ -76,16 +85,24 @@ const AdminNewProductPage = () => {
   const [openTab, setOpenTab] = useState(1);
 
   const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("image", file);
-    const response = await axios.post(
-      "https://api.imgbb.com/1/upload?key=5d7edd7bd9bc6cbfa53d30c3e83e3970",
-      formData
-    );
-    console.log(response.data);
-    return response.data.data.url;
+    try {
+      // Create a reference to the file in Firebase Storage
+      const storageRef = ref(storage, `images/${file.name}`);
+  
+      // Upload the file
+      await uploadBytes(storageRef, file);
+  
+      // Get the download URL
+      const url = await getDownloadURL(storageRef);
+  
+      // Return the URL
+      return url;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
   };
-
+  
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -126,37 +143,65 @@ const AdminNewProductPage = () => {
         theme: "light",
       });
     } else {
-      // const productData = {
-      //   primaryImg: await uploadImage(primaryImg),
-      //   secondary1Img: await uploadImage(secondary1Img),
-      //   secondary2Img: await uploadImage(secondary2Img),
-      //   title,
-      //   subTitle,
-      //   descriptionHtml,
-      //   price,
-      //   comparePrice,
-      //   tags: selectedTags,
-      //   variants
-      // };
-      // try {
-      //   const collectionName = productSavingType == "publish" ? "Products" : "archives";
-      //   // const documentId = 
-      //   const docRef = doc(db, collectionName, docId); // Specify the custom ID here
-      //   await setDoc(docRef, productData); // Upload document with custom ID
-      //   console.log('Document written with ID: ', docId);
-      //   Swal.fire({
-      //     text: "Product Added",
-      //     icon: "success"
-      //   })
-      // } catch (e) {
-      //   console.error('Error adding document: ', e);
-      // }
+      setPublishing(true)
+      const primaryImgUrl = await uploadImage(primaryImg);
+      setPublishingMsg("Uploading Img 1/3..")
+      const secondary1ImgUrl = await uploadImage(secondary1Img)
+      setPublishingMsg("Uploading Img 2/3..")
+      const secondary2ImgUrl = await uploadImage(secondary2Img)
+      setPublishingMsg("Uploading Img 3/3..")
+      const productData = {
+        primaryImg: primaryImgUrl,
+        secondary1Img: secondary1ImgUrl,
+        secondary2Img: secondary2ImgUrl,
+        title,
+        subTitle,
+        descriptionHtml,
+        price,
+        comparePrice,
+        tags: selectedTags,
+        variants
+      };
+      try {
+        setPublishingMsg("Connecting to database..")
+        const collectionName = productSavingType == "publish" ? "Products" : "archives";
+        // const documentId = 
+        const docRef = doc(db, collectionName, docId); // Specify the custom ID here
+        await setDoc(docRef, productData); // Upload document with custom ID
+        setPublishingMsg("All Set !!")
+        Swal.fire({
+          text: "Product Added",
+          icon: "success",
+          showCancelButton: true,
+          confirmButtonText: "View Products",
+          cancelButtonText: "Add another Product"
+        }).then((result)=>{
+          if(result.isConfirmed){
+            navigate("/admin/products")
+          }else{
+            window.location.reload()
+          }
+        })
+      } catch (e) {
+        console.error('Error adding document: ', e);
+      }
       
     }
   };
 
   return (
     <>
+    {
+      publishing && (
+        <div className="w-full h-screen fixed z-30 inset-0 bg-white flex items-center justify-center flex-col">
+        <h1 className="text-black z-50 text-2xl">Publishing Product</h1>
+        <img src="https://cdnb.artstation.com/p/assets/images/images/028/712/381/original/tim-gilardi-bunny-loading-animation3.gif?1595286299" className="w-1/2 md:w-[15rem] mx-auto my-5" alt="Loading.." /> 
+        <p>{publishingMsg}</p>       
+      </div>
+      )
+    }
+      
+
       <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
         <div className="w-full flex flex-col justify-center items-center mb-16">
           <h1 className="text-4xl text-left text-gray-800 ">Add a product </h1>
@@ -319,6 +364,7 @@ const AdminNewProductPage = () => {
                 class="w-full justify-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none flex items-center gap-3"
                 type="submit"
                 onClick={() => {
+                  
                   setProductSavingType("publish");
                 }}
               >
@@ -370,16 +416,22 @@ const AdminNewProductPage = () => {
                   </div>
 
                   {openTab === 1 && (
-                    <ProductCard
-                      title={title ? title : "Product Name"}
-                      price={price ? price : 100}
-                      image1={
-                        primaryImg
-                          ? URL.createObjectURL(primaryImg)
-                          : placeholderImg
+                    <div className="w-full">
+                      
+                      <ProductCard 
+                      className={
+                        "min-w-[20rem]"
                       }
-                      comparedPrice={comparePrice ? comparePrice : 200}
-                    />
+                        title={title ? title : "Product Name"}
+                        price={price ? price : 100}
+                        image1={
+                          primaryImg
+                            ? URL.createObjectURL(primaryImg)
+                            : placeholderImg
+                        }
+                        comparedPrice={comparePrice ? comparePrice : 200}
+                      />
+                    </div>
                   )}
 
                   {openTab === 2 && (

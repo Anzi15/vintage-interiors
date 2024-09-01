@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEye } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore';
+import {db} from "../../modules/Firebase modules/firestore" 
 
 const AdminProductCard = ({
   link,
@@ -10,7 +14,64 @@ const AdminProductCard = ({
   price,
   comparedPrice = null,
   loading,
+  onDeleteProduct
 }) => {
+
+const deleteProduct = async (docId) => {
+  Swal.fire({
+    icon: "warning",
+    text: "to delete this product permanently",
+    title: "Are you sure?",
+    confirmButtonText: "delete",
+    confirmButtonColor: "red",
+    cancelButtonText: "cancel",
+    showCancelButton: true
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        Swal.fire({
+          title: 'Deleting...',
+          text: 'Please wait while the product is being deleted.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        const productRef = doc(db, 'Products', docId);
+        const docSnapshot = await getDoc(productRef);
+
+        if (docSnapshot.exists()) {
+          const productData = docSnapshot.data();
+
+          await setDoc(doc(db, 'trashProducts', docId), productData);
+
+          await deleteDoc(productRef);
+          onDeleteProduct(docId);
+          Swal.fire({
+            icon: "success",
+            text: "Product has been deleted and moved to trash.",
+            title: "Deleted"
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: "Product not found.",
+            title: "Error"
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          text: "An error occurred while deleting the product.",
+          title: "Error"
+        });
+        console.error("Error deleting product: ", error);
+      }
+    }
+  });
+};
+
   return (
     <>
       <div className="bg-gray-100 border border-blue-200 rounded-lg shadow hover:scale-105 transition-all">
@@ -50,6 +111,7 @@ const AdminProductCard = ({
             <button
               className="text-2xl text-red-600 hover:text-red-800 transition"
               data-product_id={""}
+              onClick={()=>{deleteProduct(link)}}
             >
               <MdDeleteOutline />
             </button>
