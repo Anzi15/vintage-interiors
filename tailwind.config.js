@@ -15,7 +15,10 @@ export default withMT(
         },
         backgroudImage:{
           'low-resolution-hero-cover':"url(/src/assets/website cover blur 100.png)"
-        }
+        },
+        fontFamily: {
+          futura: ['Futura'],
+        },
       },
     },
     plugins: [require('flowbite/plugin')]
