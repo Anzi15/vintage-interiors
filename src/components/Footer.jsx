@@ -77,8 +77,10 @@ const Footer = () => {
   
       <hr className="my-6 border-gray-200 md:my-8 dark:border-gray-700 h-2" />
   
-      <div className="sm:flex sm:items-center sm:justify-end">
-
+      <div className="sm:flex sm:items-center sm:justify-between">
+      <p className="font-sans p-8 text-start md:text-center md:text-lg md:p-4">
+        © 2023 Your Company Inc. All rights reserved.
+      </p>
   
         <div className="flex gap-4 hover:cursor-pointer">
           <img
@@ -125,9 +127,7 @@ const Footer = () => {
           />
         </div>
       </div>
-      <p className="font-sans p-8 text-start md:text-center md:text-lg md:p-4">
-        © 2023 Your Company Inc. All rights reserved.
-      </p>
+
     </div>
   </footer>
   
