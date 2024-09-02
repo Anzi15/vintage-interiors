@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-const ImageDropZone = ({storeFileToUpload}) => {
+const ImageDropZone = ({storeFileToUpload, displayImg}) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*', 
@@ -13,6 +13,7 @@ const ImageDropZone = ({storeFileToUpload}) => {
       })));
     },
   });
+  console.log(uploadedFiles.length)
 
   const handleDragOver = (e) => {
     e.preventDefault(); // Ensure the dropzone works
@@ -37,16 +38,22 @@ const ImageDropZone = ({storeFileToUpload}) => {
         onDragLeave: handleDragLeave,
         onDrop: handleDragLeave
       })}
-      className={`aspect-square min-h-[10rem] flex items-center justify-center bg-blue-50 border-blue-300 border-2 rounded-lg transition-all duration-200 ${!uploadedFiles.length && "p-4"}`}
+      className={`aspect-square min-h-[10rem] flex items-center justify-center bg-blue-50 border-blue-300 border-2 rounded-lg transition-all duration-200 ${!uploadedFiles.length && !displayImg && "p-4"}`}
     >
       <input {...getInputProps()} />
-      {!uploadedFiles.length && <p>Drag and drop files here or click to browse.</p>}
+      {!uploadedFiles.length ? !displayImg ? <p>Drag and drop files here or click to browse.</p> : "" :" "}
       <ul className="flex flex-wrap gap-2">
         {uploadedFiles.map((file) => (
           <li key={file.name} className="relative">
             <img src={file.preview} alt={file.name} className="w-full aspect-square object-cover rounded" />
           </li>
         ))}
+        {
+          displayImg ? !uploadedFiles.length ? 
+        (<li className="relative w-full">
+            <img src={displayImg} alt={"preview"} className="w-full aspect-square object-cover rounded " />
+        </li>) :"":""
+        }
       </ul>
     </div>
   );

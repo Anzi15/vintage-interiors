@@ -13,7 +13,7 @@ import AdminSignUpPage from './pages/admin/AdminSignUpPage.jsx';
 import AdminUnAuthorized from './pages/admin/AdminUnAuthorized.jsx';
 import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 import AdminNewProductPage from './pages/admin/AdminNewProductPage.jsx';
-
+import AdminEditProductPage from './pages/admin/AdminEditProductPage.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout.jsx';
@@ -36,6 +36,7 @@ function App() {
           <Route index element={<AdminPage />} />
           <Route path='/admin/products' element={<AdminProductsPage />} />
           <Route path='/admin/products/new' element={<AdminNewProductPage />} />
+          <Route path='/admin/products/:id/edit' element={<AdminEditProductPage />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />

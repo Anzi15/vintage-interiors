@@ -3,7 +3,6 @@ import { db } from "../../modules/firebase-modules/firestore.js";
 import { useState, useEffect, useRef } from "react";
 import ImageDropZone from "../../components/admin/ImageDropZone";
 import TiptapEditor from "../../components/admin/TiptapEditor";
-import HtmlRenderer from "../../components/HtmlRenderer";
 import ProductCard from "../../components/ProductCard.jsx";
 import placeholderImg from "../../assets/placeholder-image-icon.webp";
 import ProductPagePreview from "../../components/admin/ProductPagePreview.jsx";
