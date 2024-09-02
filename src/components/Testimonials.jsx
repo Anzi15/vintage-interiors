@@ -1,13 +1,15 @@
 import { Carousel } from "@material-tailwind/react";
 import StarRating from "./StarRating";
 
-const Testimonials = ({ reviews, bgColor = "#1b1b1b", textColor = "white" }) => {
+const Testimonials = ({ reviews, bgColor = "#5E2C05", textColor = "white" }) => {
   return (
     <section
       className="my-20 max-w-screen"
       style={{ backgroundColor: bgColor }}
     >
-      <h1 className={`py-8 text-3xl font-bold uppercase ${textColor} md:w-1/2 m-auto`}>
+      <h1 className={`py-8 text-3xl font-bold uppercase text-[${textColor}] md:w-1/2 m-auto`}
+      style={{ color: textColor }}
+      >
         We take pride in our customer's words
       </h1>
       <Carousel
@@ -33,9 +35,9 @@ const Testimonials = ({ reviews, bgColor = "#1b1b1b", textColor = "white" }) => 
         {reviews.map((review, index) => (
           <div
             key={index}
-            className={`flex w-full p-8 items-center justify-center flex-col h-[15rem] gap-4 ${textColor}`}
+            className={`flex w-full p-8 items-center justify-center flex-col h-[15rem] gap-4 text-[${textColor}]`}
             aria-labelledby={`review-${index}`}
-          >
+            style={{ color: textColor }}>
             <StarRating activeStars={review.stars} />
             <p className="md:w-[50%] w-[90%]">{review.text}</p>
             <b className="uppercase">{review.author}</b>

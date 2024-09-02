@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { Carousel } from "@material-tailwind/react";
-import ProductCardGroup from '../components/ProductCardGroup';
-import { getMultipleDocuments } from '../modules/Firebase modules/firestore';
-import coverImg from "../assets/website cover.png"
+import ProductCardGroup from "../components/ProductCardGroup";
+import { getMultipleDocuments } from "../modules/firebase-modules/firestore";
+import coverImg from "../assets/website cover.png";
 import coverImg640 from "../assets/website cover 640 px.png";
 import coverImg800 from "../assets/website cover 800 px.png";
 import coverImgDefault from "../assets/website cover.png";
 import coverImgBlur from "../assets/website cover blur 100.png";
-import { Link } from 'react-router-dom';
-import CustomerBenefits from "../components/CustomerBenefits"
-import Testimonials from "../components/Testimonials"
+import { Link } from "react-router-dom";
+import CustomerBenefits from "../components/CustomerBenefits";
+import Testimonials from "../components/Testimonials";
 const reviews = [
   {
     stars: 5,
@@ -48,30 +48,28 @@ const reviews = [
   },
 ];
 
-
 const HomePage = () => {
   // const [menuOpen, setMenuOpen] = useState(false);
   const [topProducts, setTopProducts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
-  useEffect(()=>{
-    const fetchProducts = async()=>{
-      try{
-        const products = await getMultipleDocuments("Products",4);
-        console.log(products)
-        setTopProducts(products)
-      }catch{
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await getMultipleDocuments("Products", 4);
+        console.log(products);
+        setTopProducts(products);
+      } catch {
         setError(error);
-        console.log(error)
-      }finally{
-        setLoading(false)
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProducts()
-  },[])
+    fetchProducts();
+  }, []);
   return (
     <main>
       <div className="w-full flex items-center justify-center">
@@ -259,25 +257,30 @@ const HomePage = () => {
         link={"/products"}
       />
 
-      <section className='w-screen md:p-8 p-4 '>
-        <div className='bg-black text-white rounded-3xl flex md:flex-row flex-col items-center justify-between gap-5'>
-          <img src="https://scentsnstories.pk/cdn/shop/files/Scent_Quiz_Web_Banner_2_1.png?v=1721319533&width=1200" className='md:w-1/2 w-full aspect-square object-cover md:rounded-l-3xl rounded-t-2xl' alt="" />
+      <section className="w-screen md:p-8 p-4 ">
+        <div className="bg-black text-white rounded-3xl flex md:flex-row flex-col items-center justify-between gap-5">
+          <img
+            src="https://scentsnstories.pk/cdn/shop/files/Scent_Quiz_Web_Banner_2_1.png?v=1721319533&width=1200"
+            className="md:w-1/2 w-full aspect-square object-cover md:rounded-l-3xl rounded-t-2xl"
+            alt=""
+          />
 
           <div className="md:w-1/2 flex flex-col  items-center justify-center ">
-          <h1 className='uppercase font-black text-white md:text-[60px] text-3xl md:text-left text-center leading-snug  w-fit md:w-1/2'>Can't figure out where to begin?</h1>
-          <div className='md:w-1/2 pl-4 flex justify-start my-6'>
-
-          <Link className='bg-brandRed text-white px-4 py-3 rounded-full hover:bg-red-800 transition-all duration-100'>
-            Try Our Samples
-          </Link>
-          </div>
+            <h1 className="uppercase font-black text-white md:text-[60px] text-3xl md:text-left text-center leading-snug  w-fit md:w-1/2">
+              Can't figure out where to begin?
+            </h1>
+            <div className="md:w-1/2 pl-4 flex justify-start my-6">
+              <Link className="bg-brandRed text-white px-4 py-3 rounded-full hover:bg-red-800 transition-all duration-100">
+                Try Our Samples
+              </Link>
+            </div>
           </div>
         </div>
       </section>
       <CustomerBenefits />
-      <Testimonials reviews={reviews} bgColor="blue-500" textColor="black"  />
+      <Testimonials reviews={reviews} bgColor="blue-500" textColor="black" />
     </main>
   );
-}
+};
 
-export default HomePage
+export default HomePage;

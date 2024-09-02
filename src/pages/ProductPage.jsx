@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, Navigate, useLocation } from "react-router-dom";
 import CustomerBenefits from "../components/CustomerBenefits.jsx";
-import { getDocument } from "../modules/Firebase modules/firestore";
+import { getDocument } from "../modules/firebase-modules/firestore";
 import ProductSuggestions from "../components/ProductSuggestions";
 import ProductCardGroup from "../components/ProductCardGroup.jsx";
 import HtmlRenderer from "../components/HtmlRenderer.jsx";
@@ -169,7 +169,7 @@ const ProductPage = () => {
         <div className="details-section flex flex-col pt-6 text-left gap-3 w-full md:w-1/2 px-6">
           <div className="product-data flex flex-col md:gap-6 gap-3 md:pb-8 py-4">
             <div className="flex flex-col gap-4">
-            {data.subTitle && (
+              {data.subTitle && (
                 <p
                   className={`capitalize ${
                     isLoading ? "skeleton-loading" : ""
@@ -178,49 +178,46 @@ const ProductPage = () => {
                   {data.subTitle}
                 </p>
               )}
-            <h1
-              className={`product-title text-3xl tracking-wide font-bold text-left uppercase ${
-                isLoading ? "skeleton-loading" : ""
-              }`}
-              id="product-title-elem"
-            >
-              {data.title}
-            </h1>
-            </div>
-
-
-
-            <div className="flex items-end gap-3">
-
-            <div className="flex gap-4 md:p-0 pt-3">
-              <h3
-                className={`product-price text-2xl text-brandRed font-medium tracking-wide ${
+              <h1
+                className={`product-title text-3xl tracking-wide font-bold text-left uppercase ${
                   isLoading ? "skeleton-loading" : ""
                 }`}
-                id="product-price-elem"
+                id="product-title-elem"
               >
-                Rs.
-                {selectedVariant
-                  ? selectedVariant.price * quantity
-                  : data.price * quantity}
-              </h3>
+                {data.title}
+              </h1>
             </div>
 
-            <div>
-              {(selectedVariant?.comparePrice || data.comparePrice) &&
-                ((selectedVariant.comparePrice !== 0 &&
-                  selectedVariant.comparePrice !== "0") ||
-                  (data.comparePrice !== 0 && data.comparePrice !== "0")) && (
-                  <div>
-                    Rs.
-                    <s className="line-through">
-                      {selectedVariant.comparePrice
-                        ? selectedVariant.comparePrice * quantity
-                        : data.comparePrice * quantity}
-                    </s>
-                  </div>
-                )}
-            </div>
+            <div className="flex items-end gap-3">
+              <div className="flex gap-4 md:p-0 pt-3">
+                <h3
+                  className={`product-price text-2xl text-brandRed font-medium tracking-wide ${
+                    isLoading ? "skeleton-loading" : ""
+                  }`}
+                  id="product-price-elem"
+                >
+                  Rs.
+                  {selectedVariant
+                    ? selectedVariant.price * quantity
+                    : data.price * quantity}
+                </h3>
+              </div>
+
+              <div>
+                {(selectedVariant?.comparePrice || data.comparePrice) &&
+                  ((selectedVariant.comparePrice !== 0 &&
+                    selectedVariant.comparePrice !== "0") ||
+                    (data.comparePrice !== 0 && data.comparePrice !== "0")) && (
+                    <div>
+                      Rs.
+                      <s className="line-through">
+                        {selectedVariant.comparePrice
+                          ? selectedVariant.comparePrice * quantity
+                          : data.comparePrice * quantity}
+                      </s>
+                    </div>
+                  )}
+              </div>
             </div>
 
             {data.variants && data.variants.length > 1 && (
@@ -542,7 +539,7 @@ const ProductPage = () => {
         />
       </div>
 
-      <Testimonials reviews={reviews} />
+      <Testimonials reviews={reviews} textColor="#FFFFFF" bgColor="#7f5539 " />
 
       {!isLoading ? (
         <ProductSuggestions

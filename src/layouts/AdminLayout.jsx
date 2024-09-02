@@ -12,12 +12,12 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { isUserLoggedIn } from "../modules/Firebase modules/fireauth";
+import { isUserLoggedIn } from "../modules/firebase-modules/fireauth";
 import { useEffect, useState } from "react";
-import { auth } from "../modules/Firebase modules/fireauth";
+import { auth } from "../modules/firebase-modules/fireauth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { db } from "../modules/Firebase modules/firestore";
+import { db } from "../modules/firebase-modules/firestore";
 import { collection } from "firebase/firestore";
 import { Value } from "sass";
 

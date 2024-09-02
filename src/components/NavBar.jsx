@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import 'flowbite';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import "flowbite";
+import { Link } from "react-router-dom";
 import { LuShoppingCart } from "react-icons/lu";
-import { getDocument } from '../modules/Firebase modules/firestore';
-import perfumeIcon from "../assets/perfume-icon.png"
+import { getDocument } from "../modules/firebase-modules/firestore";
+import perfumeIcon from "../assets/perfume-icon.png";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,28 +15,36 @@ const Navbar = () => {
     setMenuOpen(!menuOpen);
   };
 
-  useEffect(()=>{
-    const fetchHeadline = async ()=>{
+  useEffect(() => {
+    const fetchHeadline = async () => {
       try {
-        const documentData = await getDocument("storeManagement", "headerNotificationMsg");
+        const documentData = await getDocument(
+          "storeManagement",
+          "headerNotificationMsg"
+        );
         setData(documentData);
       } catch (error) {
         setError(error);
-        console.log(error)
+        console.log(error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchHeadline();
-  }, []) 
+  }, []);
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="bg-brandBrown w-full min-h-10 text-[1.2rem] flex items-center justify-center text-white">
-        <p className={"text-[1rem]"}> 
-
-        {loading ? `Al Zehra Perfumes` : error ? `Al Zehra Perfumes` : data ? data.value : 'Al Zehra Perfumes'}
-           </p>
+        <p className={"text-[1rem]"}>
+          {loading
+            ? `Al Zehra Perfumes`
+            : error
+            ? `Al Zehra Perfumes`
+            : data
+            ? data.value
+            : "Al Zehra Perfumes"}
+        </p>
       </div>
       <div className="flex flex-wrap items-center justify-between max-w-screen-xl px-8 mx-auto  py-6">
         <Link to="/" className="flex items-center">
@@ -54,11 +62,8 @@ const Navbar = () => {
             <span></span>
           </div>
 
-          <Link
-            to="/cart"
-            className=""
-          >
-            <LuShoppingCart className='text-2xl' />
+          <Link to="/cart" className="">
+            <LuShoppingCart className="text-2xl" />
           </Link>
           <button
             data-collapse-toggle="mobile-menu-2"
@@ -70,7 +75,7 @@ const Navbar = () => {
           >
             <span className="sr-only">Open main menu</span>
             <svg
-              className={`w-6 h-6 ${menuOpen ? 'hidden' : ''}`}
+              className={`w-6 h-6 ${menuOpen ? "hidden" : ""}`}
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +87,7 @@ const Navbar = () => {
               ></path>
             </svg>
             <svg
-              className={`w-6 h-6 ${menuOpen ? '' : 'hidden'}`}
+              className={`w-6 h-6 ${menuOpen ? "" : "hidden"}`}
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +101,9 @@ const Navbar = () => {
           </button>
         </div>
         <div
-          className={`items-center justify-between w-full lg:flex lg:w-auto lg:order-1 ${menuOpen ? '' : 'hidden'}`}
+          className={`items-center justify-between w-full lg:flex lg:w-auto lg:order-1 ${
+            menuOpen ? "" : "hidden"
+          }`}
           id="mobile-menu-2"
         >
           <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">

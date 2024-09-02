@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CiSquarePlus } from "react-icons/ci";
 import BouncingBallLoader from "../../components/BouncingBallLoader";
 import AdminProductCard from "../../components/admin/AdminProductCard";
-import { loadProductsWithPagination } from "../../modules/Firebase modules/firestore";
+import { loadProductsWithPagination } from "../../modules/firebase-modules/firestore";
 import Swal from "sweetalert2";
 
 const AdminProductsPage = () => {

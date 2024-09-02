@@ -1,19 +1,18 @@
-import { signInAnonymously } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
-import { auth } from '../../modules/Firebase modules/fireauth';
+import { signInAnonymously } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import { auth } from "../../modules/firebase-modules/fireauth";
 import { signOut } from "firebase/auth";
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-
-const AdminDropdownMenu = ({userImg, name, email, signOutFunc}) => {
-  const navigate = useNavigate()
+const AdminDropdownMenu = ({ userImg, name, email, signOutFunc }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-  
-  const indicateSignout = ()=>{
-    toast('🦄 signed out successfully!', {
+
+  const indicateSignout = () => {
+    toast("🦄 signed out successfully!", {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -22,31 +21,35 @@ const AdminDropdownMenu = ({userImg, name, email, signOutFunc}) => {
       draggable: true,
       progress: undefined,
       theme: "light",
-      });
+    });
 
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000);
-  }
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
 
   const handleSignout = () => {
-    console.log("meow trying")
+    console.log("meow trying");
     signOut(auth)
       .then(() => {
-        indicateSignout()
+        indicateSignout();
       })
       .catch((error) => {
         console.error("Error logging out: ", error);
       });
   };
   return (
-    <div className='relative'>
+    <div className="relative">
       <img
         id="avatarButton"
         type="button"
         onClick={toggleDropdown}
         className="w-10 h-10 rounded-full cursor-pointer"
-        src={userImg.length ? userImg : "https://cdn-icons-png.flaticon.com/128/1077/1077114.png" }
+        src={
+          userImg.length
+            ? userImg
+            : "https://cdn-icons-png.flaticon.com/128/1077/1077114.png"
+        }
         alt="User dropdown"
       />
 
@@ -62,10 +65,7 @@ const AdminDropdownMenu = ({userImg, name, email, signOutFunc}) => {
           </div>
 
           <div className="py-1">
-            <button
-              onClick={handleSignout}>
-                Sign out
-            </button>
+            <button onClick={handleSignout}>Sign out</button>
           </div>
         </div>
       )}

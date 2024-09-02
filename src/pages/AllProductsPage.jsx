@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { loadProductsWithPagination } from '../modules/Firebase modules/firestore';
+import React, { useState, useEffect, useRef } from "react";
+import { loadProductsWithPagination } from "../modules/firebase-modules/firestore";
 import ProductCardGroup from "../components/ProductCardGroup";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { IoIosOptions } from 'react-icons/io';
+import { IoIosOptions } from "react-icons/io";
 
 const PAGE_SIZE = 12; // Number of products per page
 
@@ -12,8 +12,8 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [sortOrder, setSortOrder] = useState('title'); // Default sort by title
-  const [filterTag, setFilterTag] = useState(''); // Default no filter
+  const [sortOrder, setSortOrder] = useState("title"); // Default sort by title
+  const [filterTag, setFilterTag] = useState(""); // Default no filter
   const loader = useRef(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const ProductsPage = () => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '0px',
+      rootMargin: "0px",
       threshold: 1.0,
     };
 
@@ -45,23 +45,35 @@ const ProductsPage = () => {
     setLoading(true);
 
     try {
-      const productsData = await loadProductsWithPagination('Products', PAGE_SIZE, lastVisible, sortOrder, filterTag);
-      
+      const productsData = await loadProductsWithPagination(
+        "Products",
+        PAGE_SIZE,
+        lastVisible,
+        sortOrder,
+        filterTag
+      );
+
       if (productsData.length === 0) {
         setHasMore(false);
       } else {
         setLastVisible(productsData[productsData.length - 1].doc); // Update last visible document
 
-        setProducts(prevProducts => {
-          const newProducts = productsData.map(doc => ({ id: doc.id, ...doc }));
+        setProducts((prevProducts) => {
+          const newProducts = productsData.map((doc) => ({
+            id: doc.id,
+            ...doc,
+          }));
           const uniqueProducts = newProducts.filter(
-            newProduct => !prevProducts.some(prevProduct => prevProduct.id === newProduct.id)
+            (newProduct) =>
+              !prevProducts.some(
+                (prevProduct) => prevProduct.id === newProduct.id
+              )
           );
           return [...prevProducts, ...uniqueProducts];
         });
       }
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error("Error loading products:", error);
     }
 
     setLoading(false);
@@ -89,7 +101,7 @@ const ProductsPage = () => {
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <MenuButton className="inline-flex items-center gap-2 w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              <IoIosOptions className='2xl' />
+              <IoIosOptions className="2xl" />
               Options
             </MenuButton>
           </div>
@@ -100,7 +112,7 @@ const ProductsPage = () => {
             <div className="py-1">
               <MenuItem>
                 <button
-                  onClick={() => handleSortChange('title')}
+                  onClick={() => handleSortChange("title")}
                   className="block px-4 py-2 text-sm text-gray-700"
                 >
                   Sort by Title
@@ -108,7 +120,7 @@ const ProductsPage = () => {
               </MenuItem>
               <MenuItem>
                 <button
-                  onClick={() => handleSortChange('price')}
+                  onClick={() => handleSortChange("price")}
                   className="block px-4 py-2 text-sm text-gray-700"
                 >
                   Sort by Price
@@ -116,7 +128,7 @@ const ProductsPage = () => {
               </MenuItem>
               <MenuItem>
                 <button
-                  onClick={() => handleFilterChange('Perfumes')}
+                  onClick={() => handleFilterChange("Perfumes")}
                   className="block px-4 py-2 text-sm text-gray-700"
                 >
                   Filter by Perfumes
@@ -124,7 +136,7 @@ const ProductsPage = () => {
               </MenuItem>
               <MenuItem>
                 <button
-                  onClick={() => handleFilterChange('Attars')}
+                  onClick={() => handleFilterChange("Attars")}
                   className="block px-4 py-2 text-sm text-gray-700"
                 >
                   Filter by Attars
@@ -132,7 +144,7 @@ const ProductsPage = () => {
               </MenuItem>
               <MenuItem>
                 <button
-                  onClick={() => handleFilterChange('')}
+                  onClick={() => handleFilterChange("")}
                   className="block px-4 py-2 text-sm text-gray-700"
                 >
                   Clear Filter

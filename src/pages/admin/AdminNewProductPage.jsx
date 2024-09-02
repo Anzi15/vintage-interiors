@@ -1,5 +1,5 @@
 import axios from "axios";
-import { db } from "../../modules/Firebase modules/firestore.js"
+import { db } from "../../modules/firebase-modules/firestore.js";
 import { useState, useEffect, useRef } from "react";
 import ImageDropZone from "../../components/admin/ImageDropZone";
 import TiptapEditor from "../../components/admin/TiptapEditor";
@@ -11,21 +11,21 @@ import { Typography } from "@material-tailwind/react";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
 import { TagInput } from "rsuite";
 import { TagsInput } from "react-tag-input-component";
 import InputField from "../../components/InputField.jsx";
 import Swal from "sweetalert2";
-import storage from "../../modules/Firebase modules/firestorage.js"
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import storage from "../../modules/firebase-modules/firestorage.js";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import BouncingBallLoader from "../../components/BouncingBallLoader.jsx";
 import { useNavigate } from "react-router-dom";
 
 const AdminNewProductPage = () => {
-  const navigate = useNavigate()
-  const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false)
+  const navigate = useNavigate();
+  const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [primaryImg, setPrimaryImg] = useState(null);
   const [secondary1Img, setSecondary1Img] = useState(null);
@@ -38,49 +38,50 @@ const AdminNewProductPage = () => {
   const [productSavingType, setProductSavingType] = useState("publish");
   const [selectedTags, setSelectedTags] = useState([]);
   const FormRef = useRef(null);
-  const [docId, setDocId] = useState("")
-  const [publishing, setPublishing] = useState(false)
-  const [publishingMsg, setPublishingMsg] = useState("Publishing..")
-
-
+  const [docId, setDocId] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishingMsg, setPublishingMsg] = useState("Publishing..");
 
   const [variants, setVariants] = useState([
     { name: "Default Variant", price, comparePrice },
   ]);
 
-  useEffect(()=>{
-    setDocId(title.toLowerCase().replace(/ /g, "-"))
-    const checkForExistence = async ()=>{
-      if(title.length){
+  useEffect(() => {
+    setDocId(title.toLowerCase().replace(/ /g, "-"));
+    const checkForExistence = async () => {
+      if (title.length) {
         try {
-          const docRef = doc(db, "Products", title.toLowerCase().replace(/ /g, "-")); // Specify the collection and document ID
+          const docRef = doc(
+            db,
+            "Products",
+            title.toLowerCase().replace(/ /g, "-")
+          ); // Specify the collection and document ID
           const docSnap = await getDoc(docRef);
-      
+
           if (docSnap.exists()) {
-            setIsTitleAlreadyExisting(true)
+            setIsTitleAlreadyExisting(true);
           } else {
-            setIsTitleAlreadyExisting(false)
+            setIsTitleAlreadyExisting(false);
           }
         } catch (error) {
-          console.error('Error checking document:', error);
+          console.error("Error checking document:", error);
         }
-      }else{
-        setIsTitleAlreadyExisting(false)
+      } else {
+        setIsTitleAlreadyExisting(false);
       }
-    }
-    checkForExistence()
-  },[title])
+    };
+    checkForExistence();
+  }, [title]);
 
   useEffect(() => {
     // Update the price of the default variant when `price` changes
     setVariants((prevVariants) => {
       const updatedVariants = [...prevVariants];
       updatedVariants[0].price = price;
-      updatedVariants[0].comparePrice = comparePrice
+      updatedVariants[0].comparePrice = comparePrice;
       return updatedVariants;
     });
   }, [price]);
-
 
   const [openTab, setOpenTab] = useState(1);
 
@@ -88,13 +89,13 @@ const AdminNewProductPage = () => {
     try {
       // Create a reference to the file in Firebase Storage
       const storageRef = ref(storage, `images/${file.name}`);
-  
+
       // Upload the file
       await uploadBytes(storageRef, file);
-  
+
       // Get the download URL
       const url = await getDownloadURL(storageRef);
-  
+
       // Return the URL
       return url;
     } catch (error) {
@@ -102,7 +103,7 @@ const AdminNewProductPage = () => {
       throw error;
     }
   };
-  
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -113,7 +114,11 @@ const AdminNewProductPage = () => {
   const addVariant = () => {
     setVariants([
       ...variants,
-      { name: `${variants.length + 1} Variant Name `, price: 0, comparePrice: 0 },
+      {
+        name: `${variants.length + 1} Variant Name `,
+        price: 0,
+        comparePrice: 0,
+      },
     ]);
   };
 
@@ -143,13 +148,13 @@ const AdminNewProductPage = () => {
         theme: "light",
       });
     } else {
-      setPublishing(true)
+      setPublishing(true);
       const primaryImgUrl = await uploadImage(primaryImg);
-      setPublishingMsg("Uploading Img 1/3..")
-      const secondary1ImgUrl = await uploadImage(secondary1Img)
-      setPublishingMsg("Uploading Img 2/3..")
-      const secondary2ImgUrl = await uploadImage(secondary2Img)
-      setPublishingMsg("Uploading Img 3/3..")
+      setPublishingMsg("Uploading Img 1/3..");
+      const secondary1ImgUrl = await uploadImage(secondary1Img);
+      setPublishingMsg("Uploading Img 2/3..");
+      const secondary2ImgUrl = await uploadImage(secondary2Img);
+      setPublishingMsg("Uploading Img 3/3..");
       const productData = {
         primaryImg: primaryImgUrl,
         secondary1Img: secondary1ImgUrl,
@@ -160,47 +165,48 @@ const AdminNewProductPage = () => {
         price,
         comparePrice,
         tags: selectedTags,
-        variants
+        variants,
       };
       try {
-        setPublishingMsg("Connecting to database..")
-        const collectionName = productSavingType == "publish" ? "Products" : "archives";
-        // const documentId = 
+        setPublishingMsg("Connecting to database..");
+        const collectionName =
+          productSavingType == "publish" ? "Products" : "archives";
+        // const documentId =
         const docRef = doc(db, collectionName, docId); // Specify the custom ID here
         await setDoc(docRef, productData); // Upload document with custom ID
-        setPublishingMsg("All Set !!")
+        setPublishingMsg("All Set !!");
         Swal.fire({
           text: "Product Added",
           icon: "success",
           showCancelButton: true,
           confirmButtonText: "View Products",
-          cancelButtonText: "Add another Product"
-        }).then((result)=>{
-          if(result.isConfirmed){
-            navigate("/admin/products")
-          }else{
-            window.location.reload()
+          cancelButtonText: "Add another Product",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/admin/products");
+          } else {
+            window.location.reload();
           }
-        })
+        });
       } catch (e) {
-        console.error('Error adding document: ', e);
+        console.error("Error adding document: ", e);
       }
-      
     }
   };
 
   return (
     <>
-    {
-      publishing && (
+      {publishing && (
         <div className="w-full h-screen fixed z-30 inset-0 bg-white flex items-center justify-center flex-col">
-        <h1 className="text-black z-50 text-2xl">Publishing Product</h1>
-        <img src="https://cdnb.artstation.com/p/assets/images/images/028/712/381/original/tim-gilardi-bunny-loading-animation3.gif?1595286299" className="w-1/2 md:w-[15rem] mx-auto my-5" alt="Loading.." /> 
-        <p>{publishingMsg}</p>       
-      </div>
-      )
-    }
-      
+          <h1 className="text-black z-50 text-2xl">Publishing Product</h1>
+          <img
+            src="https://cdnb.artstation.com/p/assets/images/images/028/712/381/original/tim-gilardi-bunny-loading-animation3.gif?1595286299"
+            className="w-1/2 md:w-[15rem] mx-auto my-5"
+            alt="Loading.."
+          />
+          <p>{publishingMsg}</p>
+        </div>
+      )}
 
       <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
         <div className="w-full flex flex-col justify-center items-center mb-16">
@@ -230,19 +236,41 @@ const AdminNewProductPage = () => {
                   className={"w-1/2"}
                 />
               </div>
-              < InputField inputName={"Title"} inputType="text" valueReturner={setTitle} requiredInput={true} errorMsg={isTitleAlreadyExisting && "Product Already exist, kindly change the title"} />
+              <InputField
+                inputName={"Title"}
+                inputType="text"
+                valueReturner={setTitle}
+                requiredInput={true}
+                errorMsg={
+                  isTitleAlreadyExisting &&
+                  "Product Already exist, kindly change the title"
+                }
+              />
 
-              < InputField inputName={"Sub title (optional)"} inputType="text" valueReturner={setSubTitle} requiredInput={false} />
+              <InputField
+                inputName={"Sub title (optional)"}
+                inputType="text"
+                valueReturner={setSubTitle}
+                requiredInput={false}
+              />
 
-              < InputField inputName={"Price"} inputType="number" valueReturner={setPrice} requiredInput={true} />
+              <InputField
+                inputName={"Price"}
+                inputType="number"
+                valueReturner={setPrice}
+                requiredInput={true}
+              />
 
-              < InputField inputName={"Compared Price (optional)"} inputType="number" valueReturner={setComparePrice} requiredInput={false} />
-
+              <InputField
+                inputName={"Compared Price (optional)"}
+                inputType="number"
+                valueReturner={setComparePrice}
+                requiredInput={false}
+              />
 
               <div className="max-w-full">
                 <TiptapEditor updateHtml={setDescriptionHtml} />
               </div>
-
 
               {/* Variants Management */}
               <div className="mt-6">
@@ -349,7 +377,9 @@ const AdminNewProductPage = () => {
             <div>
               <TagsInput
                 value={selectedTags}
-                onChange={(tags) => setSelectedTags(tags.map(tag => tag.toLowerCase()))}
+                onChange={(tags) =>
+                  setSelectedTags(tags.map((tag) => tag.toLowerCase()))
+                }
                 name="tags"
                 placeHolder="Enter Tags"
                 separators={["Enter", ",", " "]}
@@ -364,7 +394,6 @@ const AdminNewProductPage = () => {
                 class="w-full justify-center align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none flex items-center gap-3"
                 type="submit"
                 onClick={() => {
-                  
                   setProductSavingType("publish");
                 }}
               >
@@ -417,11 +446,8 @@ const AdminNewProductPage = () => {
 
                   {openTab === 1 && (
                     <div className="w-full">
-                      
-                      <ProductCard 
-                      className={
-                        "min-w-[20rem]"
-                      }
+                      <ProductCard
+                        className={"min-w-[20rem]"}
                         title={title ? title : "Product Name"}
                         price={price ? price : 100}
                         image1={

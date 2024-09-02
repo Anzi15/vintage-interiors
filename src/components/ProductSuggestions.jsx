@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import ProductCardGroup from '../components/ProductCardGroup';
-import { getMultipleDocuments } from '../modules/Firebase modules/firestore';
+import React, { useEffect, useState } from "react";
+import ProductCardGroup from "../components/ProductCardGroup";
+import { getMultipleDocuments } from "../modules/firebase-modules/firestore";
 
 const ProductSuggestions = ({ heading, dontUse = null }) => {
   const [data, setData] = useState([]);
@@ -16,7 +16,9 @@ const ProductSuggestions = ({ heading, dontUse = null }) => {
 
         // If dontUse is provided, filter out the unwanted product
         if (dontUse !== null) {
-          const filteredProducts = products.filter(doc => doc.title !== dontUse);
+          const filteredProducts = products.filter(
+            (doc) => doc.title !== dontUse
+          );
           // Ensure we have exactly 4 products
           setData(filteredProducts.slice(0, 4));
         } else {
