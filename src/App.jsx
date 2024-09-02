@@ -7,6 +7,7 @@ import AdminPage from "./pages/admin/AdminPage.jsx"
 import ProductPage from "./pages/ProductPage.jsx";
 import ScrollToTop from './components/ScrollToTop.jsx';
 import AllProductsPage from "./pages/AllProductsPage.jsx"
+import CollectionPage from "./pages/CollectionPage.jsx"
 import AdminLoginPage from './pages/admin/AdminLoginPage.jsx';
 import AdminSignUpPage from './pages/admin/AdminSignUpPage.jsx';
 import AdminUnAuthorized from './pages/admin/AdminUnAuthorized.jsx';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="product/:id" element={<ProductPage />} />
+          <Route path="collection/:collectionName" element={<CollectionPage />} />
           <Route path="products" element={<AllProductsPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>

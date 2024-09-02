@@ -71,7 +71,7 @@ const HomePage = () => {
     fetchProducts();
   }, []);
   return (
-    <main>
+    <main className="hide-overflow-by-default">
       <div className="w-full flex items-center justify-center">
         <img
           src={coverImgDefault}
