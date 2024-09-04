@@ -236,7 +236,6 @@ const AdminEditProductPage = () => {
     console.log("primary img updated", initialPrimaryImg !== primaryImg)
     console.log("secondary 1 img updated", initialSecondary1Img !== secondary1Img)
     console.log("secondary 2 img updated", initialSecondary2Img !== secondary2Img)
-    const docId = updatedData.title == data.title ? productId : title.toLowerCase().replace(/ /g, "-");
     const updatedData = {
         title,
         subTitle,
@@ -250,6 +249,7 @@ const AdminEditProductPage = () => {
         secondary2Img: initialSecondary2Img == secondary2Img ? data.secondary2Img : uploadImage(secondary2Img),
         
     }
+    const docId = updatedData.title == data.title ? productId : title.toLowerCase().replace(/ /g, "-");
     console.log(updatedData)
 
       try {
@@ -278,6 +278,13 @@ const AdminEditProductPage = () => {
       }
 
     
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      // Prevent form submission when Enter is pressed
+      event.preventDefault();
+    }
   };
 
   return (
@@ -310,6 +317,7 @@ const AdminEditProductPage = () => {
               className="md:w-1/2 w-full md:px-10"
               onSubmit={handleFormSubmission}
               ref={FormRef}
+              onKeyDown={handleKeyDown}
             >
 
               <div className="flex flex-col gap-4 ">

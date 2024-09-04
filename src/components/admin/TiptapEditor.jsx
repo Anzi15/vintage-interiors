@@ -97,7 +97,7 @@ export default function TiptapEditor({ updateHtml, initialHtml = '<p>Your descri
   };
 
   return (
-    <div className="editor">
+    <div  className="editor">
       {editor && <MenuBar editor={editor} />}
       <EditorContent
         className="editor__content w-full min-h-[20rem]"
