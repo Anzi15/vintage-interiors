@@ -240,6 +240,7 @@ const AdminNewProductPage = () => {
                 inputType="text"
                 valueReturner={setTitle}
                 requiredInput={true}
+                inputValue={title}
                 errorMsg={
                   isTitleAlreadyExisting &&
                   "Product Already exist, kindly change the title"
@@ -251,6 +252,7 @@ const AdminNewProductPage = () => {
                 inputType="text"
                 valueReturner={setSubTitle}
                 requiredInput={false}
+                inputValue={subTitle}
               />
 
               <InputField
@@ -258,6 +260,8 @@ const AdminNewProductPage = () => {
                 inputType="number"
                 valueReturner={setPrice}
                 requiredInput={true}
+                inputValue={price}
+
               />
 
               <InputField
@@ -265,6 +269,7 @@ const AdminNewProductPage = () => {
                 inputType="number"
                 valueReturner={setComparePrice}
                 requiredInput={false}
+                inputValue={comparePrice}
               />
 
               <div className="max-w-full">

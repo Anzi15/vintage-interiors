@@ -6,15 +6,14 @@ import TaskItem from '@tiptap/extension-task-item';
 import CharacterCount from '@tiptap/extension-character-count';
 import Image from '@tiptap/extension-image';
 import Iframe from '../IframeExtensionTipTap';
-import Heading from '@tiptap/extension-heading'
+import Heading from '@tiptap/extension-heading';
 
 import MenuBar from "../MenuBar";
-import "./tiptapStylings.scss"
+import "./tiptapStylings.scss";
 import { useEffect, useRef } from 'react';
 
-export default function TiptapEditor({updateHtml}) {
+export default function TiptapEditor({ updateHtml, initialHtml = '<p>Your description goes here...</p>' }) {
   const editorRef = useRef(null);
-  let tiptapEditorElement = null;
 
   const editor = useEditor({
     extensions: [
@@ -32,7 +31,7 @@ export default function TiptapEditor({updateHtml}) {
         blockquote: true,
         horizontalRule: true,
         hardBreak: true,
-        Iframe: true
+        Iframe: true,
       }),
       Highlight,
       TaskList,
@@ -57,7 +56,7 @@ export default function TiptapEditor({updateHtml}) {
         },
       }),
     ],
-    content: '<p>Your description goes here...</p>',  // Optional: Set initial content
+    content: initialHtml,
     onUpdate: ({ editor }) => {
       const htmlContent = editor.getHTML();
       if (updateHtml) {
@@ -67,20 +66,33 @@ export default function TiptapEditor({updateHtml}) {
   });
 
   useEffect(() => {
+    if (editor && initialHtml) {
+      editor.commands.setContent(initialHtml);
+      console.log('Editor Content:', editor.getHTML());
+    }
+  }, [editor, initialHtml]);
+
+  useEffect(() => {
     if (editorRef.current) {
-      tiptapEditorElement = editorRef.current.querySelector('.ProseMirror');
-      
+      const tiptapEditorElement = editorRef.current.querySelector('.ProseMirror');
       if (tiptapEditorElement) {
-        tiptapEditorElement.addEventListener('click', () => {
-          handleClick()
-        });
+        tiptapEditorElement.addEventListener('click', handleClick);
       }
     }
+
+    return () => {
+      if (editorRef.current) {
+        const tiptapEditorElement = editorRef.current.querySelector('.ProseMirror');
+        if (tiptapEditorElement) {
+          tiptapEditorElement.removeEventListener('click', handleClick);
+        }
+      }
+    };
   }, [editor]);
 
   const handleClick = () => {
     if (editor) {
-      editor.commands.focus();  // Use Tiptap's focus command to refocus the editor
+      editor.commands.focus();
     }
   };
 

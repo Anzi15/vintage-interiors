@@ -13,7 +13,6 @@ const ImageDropZone = ({storeFileToUpload, displayImg}) => {
       })));
     },
   });
-  console.log(uploadedFiles.length)
 
   const handleDragOver = (e) => {
     e.preventDefault(); // Ensure the dropzone works

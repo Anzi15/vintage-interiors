@@ -11,10 +11,12 @@ const ProductCard = ({ link, title, image1, price, comparedPrice = null, loading
         alt={title} 
       />
 <span
-  className={`absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white ${comparedPrice == null || isNaN(comparedPrice) || comparedPrice <= price ? "hidden" : "block"}`}
+  className={`absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white ${comparedPrice && comparedPrice > price ? "block" : "hidden"}`}
 >
-  {comparedPrice > 0 && Math.round(((comparedPrice - price) / comparedPrice) * 100)}% OFF
+  {comparedPrice && comparedPrice > price && `${Math.round(((comparedPrice - price) / comparedPrice) * 100)}% OFF`}
 </span>
+
+
 
 
     </div>

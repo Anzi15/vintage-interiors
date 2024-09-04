@@ -18,6 +18,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout.jsx';
 import "./styles/utility.scss";
+import ContactPage from './pages/ContactPage.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -31,6 +32,7 @@ function App() {
           <Route path="product/:id" element={<ProductPage />} />
           <Route path="collection/:collectionName" element={<CollectionPage />} />
           <Route path="products" element={<AllProductsPage />} />
+          <Route path="contact" element={<ContactPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />

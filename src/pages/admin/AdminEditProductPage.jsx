@@ -19,12 +19,17 @@ import { GoGoal } from "react-icons/go";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getDocument } from "../../modules/firebase-modules/firestore";
+import { GrUpdate } from "react-icons/gr";
 
 const AdminEditProductPage = () => {
   const navigate = useNavigate();
   const [isTitleAlreadyExisting, setIsTitleAlreadyExisting] = useState(false);
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [primaryImg, setPrimaryImg] = useState(null);
+  const [primaryImgBlob, setPrimaryImgBlob] = useState(null);
+  const [initialPrimaryImg, setInitialPrimaryImg] = useState(null);
+  const [initialSecondary1Img, setInitialSecondary1Img] = useState(null);
+  const [initialSecondary2Img, setInitialSecondary2Img] = useState(null);
   const [secondary1Img, setSecondary1Img] = useState(null);
   const [secondary2Img, setSecondary2Img] = useState(null);
   const [title, setTitle] = useState("");
@@ -32,6 +37,7 @@ const AdminEditProductPage = () => {
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(0);
   const [descriptionHtml, setDescriptionHtml] = useState("");
+  const [initialHtml, setInitialHtml] = useState("");
   const [tags, setTags] = useState([]);
   const [productSavingType, setProductSavingType] = useState("publish");
   const [selectedTags, setSelectedTags] = useState([]);
@@ -74,21 +80,20 @@ const AdminEditProductPage = () => {
   }, [productId]);
 
   const [variants, setVariants] = useState([
-    { name: "Default Variant", price, comparePrice },
+    { name: "Default Variant", price: "", comparePrice: "" },
   ]);
 
-  const handleVariantsUpdate = (variants) => {
-    if (!Array.isArray(variants)) {
-      console.error("Expected variants to be an array but got:", variants);
-      return;
+  useEffect(() => {
+    if (data && data.variants && data.variants.length > 1) {
+      setVariants(data.variants);
     }
+    if (data && data.tags && data.tags.length > 0) {
+      console.log(data.tags)
 
-    variants.forEach((variant, i) => {
-      for (const key in variant) {
-        updateVariant(i, key, variant[key]);
-      }
-    });
-  };
+      setSelectedTags(data.tags);
+    }
+  }, [data]);
+
 
   useEffect(() => {
     if (data) {
@@ -96,18 +101,51 @@ const AdminEditProductPage = () => {
       setSubTitle(data.subTitle || "");
       setComparePrice(data.comparePrice || 0);
       setDescriptionHtml(data.descriptionHtml || "");
+      setInitialHtml(data.descriptionHtml || "");
       setPrice(data.price || 0);
-      handleVariantsUpdate(data.variants || []);
-      console.log(data.tags)
-      setSelectedTags(data.tags || []);
+      // setSelectedTags(data.tags || []);
     }
+    (async ()=>{
+      console.log
+      if(data.primaryImg){
+        const primaryImgFile = await fileFromUrl(data.primaryImg, "primaryImg"); 
+        setPrimaryImg(primaryImgFile) 
+        setInitialPrimaryImg(primaryImgFile)
+      } 
+      if(data.secondary1Img){
+        const secondary1ImgFile = await fileFromUrl(data.secondary1Img, "secondary1Img"); 
+        setSecondary1Img(secondary1ImgFile) 
+        setInitialSecondary1Img(secondary1ImgFile)
+
+      }
+      if(data.secondary2Img){
+        const secondary2ImgFile = await fileFromUrl(data.secondary2Img, "secondary1Img"); 
+        setSecondary2Img(secondary2ImgFile) 
+        setInitialSecondary2Img(secondary2ImgFile)
+        
+      }
+    })()
   }, [data]);
+  
+  async function fileFromUrl(url, fileName) {
+    // Fetch the file data from the URL
+    const response = await fetch(url);
+  
+    // Convert the response to a Blob
+    const blob = await response.blob();
+  
+    // Create a File object from the Blob
+    const file = new File([blob], fileName, { type: blob.type });
+  
+    return file;
+  }
 
   useEffect(() => {
     setDocId(title.toLowerCase().replace(/ /g, "-"));
     const checkForExistence = async () => {
       if (title.length) {
         try {
+          if(title.toLowerCase().replace(/ /g, "-") == productId) return;
           const docRef = doc(
             db,
             "Products",
@@ -193,29 +231,13 @@ const AdminEditProductPage = () => {
 
   const handleFormSubmission = async (e) => {
     e.preventDefault();
-    if (!primaryImg || !secondary1Img || !secondary2Img) {
-      toast.error("Upload All Images!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      setPublishing(true);
-      const primaryImgUrl = await uploadImage(primaryImg);
-      setPublishingMsg("Uploading Img 1/3..");
-      const secondary1ImgUrl = await uploadImage(secondary1Img);
-      setPublishingMsg("Uploading Img 2/3..");
-      const secondary2ImgUrl = await uploadImage(secondary2Img);
-      setPublishingMsg("Uploading Img 3/3..");
-      const productData = {
-        primaryImg: primaryImgUrl,
-        secondary1Img: secondary1ImgUrl,
-        secondary2Img: secondary2ImgUrl,
+    setPublishing(true);
+    setPublishingMsg("Getting Updated Data..");
+    console.log("primary img updated", initialPrimaryImg !== primaryImg)
+    console.log("secondary 1 img updated", initialSecondary1Img !== secondary1Img)
+    console.log("secondary 2 img updated", initialSecondary2Img !== secondary2Img)
+    const docId = updatedData.title == data.title ? productId : title.toLowerCase().replace(/ /g, "-");
+    const updatedData = {
         title,
         subTitle,
         descriptionHtml,
@@ -223,21 +245,25 @@ const AdminEditProductPage = () => {
         comparePrice,
         tags: selectedTags,
         variants,
-      };
+        primaryImg: initialPrimaryImg == primaryImg ? data.primaryImg : uploadImage(primaryImg),
+        secondary1Img: initialSecondary1Img == secondary1Img ? data.secondary1Img : uploadImage(secondary1Img),
+        secondary2Img: initialSecondary2Img == secondary2Img ? data.secondary2Img : uploadImage(secondary2Img),
+        
+    }
+    console.log(updatedData)
+
       try {
         setPublishingMsg("Connecting to database..");
-        const collectionName =
-          productSavingType == "publish" ? "Products" : "archives";
-        // const documentId =
-        const docRef = doc(db, collectionName, docId); // Specify the custom ID here
-        await setDoc(docRef, productData); // Upload document with custom ID
+        const collectionName = "Products";
+        const docRef = doc(db, collectionName, docId);
+        await setDoc(docRef, updatedData); 
         setPublishingMsg("All Set !!");
         Swal.fire({
-          text: "Product Added",
+          text: "Product Updated",
           icon: "success",
           showCancelButton: true,
           confirmButtonText: "View Products",
-          cancelButtonText: "Add another Product",
+          cancelButtonText: "Add a new Product",
         }).then((result) => {
           if (result.isConfirmed) {
             navigate("/admin/products");
@@ -247,15 +273,18 @@ const AdminEditProductPage = () => {
         });
       } catch (e) {
         console.error("Error adding document: ", e);
+        setPublishing(false)
+        toast.error("something went wrong!!")
       }
-    }
+
+    
   };
 
   return (
     <>
       {publishing && (
         <div className="w-full h-screen fixed z-30 inset-0 bg-white flex items-center justify-center flex-col">
-          <h1 className="text-black z-50 text-2xl">Publishing Product</h1>
+          <h1 className="text-black z-50 text-2xl">Updating Product</h1>
           <img
             src="https://cdnb.artstation.com/p/assets/images/images/028/712/381/original/tim-gilardi-bunny-loading-animation3.gif?1595286299"
             className="w-1/2 md:w-[15rem] mx-auto my-5"
@@ -269,10 +298,10 @@ const AdminEditProductPage = () => {
         <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
           <div className="w-full flex flex-col justify-center items-center mb-16">
             <h1 className="text-4xl text-left text-gray-800 ">
-              Add a product{" "}
+              Edit Details of the product 
             </h1>
             <h3 className="text-xl text-left  text-gray-800 ">
-              Let's create a masterpiece, together{" "}
+              Edit any details you like and hit update
             </h3>
           </div>
 
@@ -282,12 +311,11 @@ const AdminEditProductPage = () => {
               onSubmit={handleFormSubmission}
               ref={FormRef}
             >
-              <h4 className="py-8 text-left">Add few details to get started</h4>
 
               <div className="flex flex-col gap-4 ">
                 <ImageDropZone
                   storeFileToUpload={setPrimaryImg}
-                  displayImg={data.primaryImg && data.primaryImg}
+                  displayImg={data.primaryImg}
                 />
                 <div className="w-full grid grid-cols-2 gap-4">
                   <ImageDropZone
@@ -334,7 +362,7 @@ const AdminEditProductPage = () => {
                 />
 
                 <div className="max-w-full">
-                  <TiptapEditor updateHtml={setDescriptionHtml} />
+                  <TiptapEditor updateHtml={setDescriptionHtml} initialHtml={initialHtml} />
                 </div>
 
                 {/* Variants Management */}
@@ -444,7 +472,10 @@ const AdminEditProductPage = () => {
                   value={data.tags}
                   onChange={(tags) => {
                     if (tags) {
-                      data.tags.push(tags?.map((tag) => tag.toLowerCase()))
+                      const processedTags = tags
+                        .filter(tag => typeof tag === 'string') // Ensure only strings are processed
+                        .map(tag => tag.toLowerCase());
+                      data.tags = (processedTags);
                     }
                   }}
                   name="tags"
@@ -464,19 +495,10 @@ const AdminEditProductPage = () => {
                     setProductSavingType("publish");
                   }}
                 >
-                  <GoGoal className="text-2xl" />
-                  Publish
+                  <GrUpdate  className="text-2xl" />
+                  Update Changes  
                 </button>
-                <button
-                  className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg border border-gray-900 text-gray-900 hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] flex items-center gap-3"
-                  type="submit"
-                  onClick={() => {
-                    setProductSavingType("archive");
-                  }}
-                >
-                  Archive
-                  <MdOutlineArchive className="text-2xl" />
-                </button>
+                
               </div>
             </form>
 
@@ -513,16 +535,18 @@ const AdminEditProductPage = () => {
 
                     {openTab === 1 && (
                       <div className="w-full">
+              
                         <ProductCard
                           className={"min-w-[20rem]"}
                           title={title ? title : "Product Name"}
                           price={price ? price : 100}
                           image1={
-                            primaryImg
-                              ? URL.createObjectURL(primaryImg)
-                              : placeholderImg
+                            !isLoading &&
+                            primaryImg == initialPrimaryImg
+                              ? data.primaryImg
+                              : URL.createObjectURL(primaryImg)
                           }
-                          comparedPrice={comparePrice ? comparePrice : 200}
+                          comparedPrice={comparePrice}
                         />
                       </div>
                     )}
@@ -532,20 +556,23 @@ const AdminEditProductPage = () => {
                         title={title ? title : "Product Name"}
                         price={price ? price : 100}
                         primaryImg={
-                          primaryImg
-                            ? URL.createObjectURL(primaryImg)
-                            : placeholderImg
+                          !isLoading &&
+                            primaryImg == initialPrimaryImg
+                              ? data.primaryImg
+                              : URL.createObjectURL(primaryImg)
                         }
                         comparedPrice={comparePrice ? comparePrice : 200}
                         secondary1Img={
-                          secondary1Img
-                            ? URL.createObjectURL(secondary1Img)
-                            : placeholderImg
+                          !isLoading &&
+                          secondary1Img == initialSecondary1Img
+                            ? data.secondary1Img
+                            : URL.createObjectURL(secondary1Img)
                         }
                         secondary2Img={
-                          secondary2Img
-                            ? URL.createObjectURL(secondary2Img)
-                            : placeholderImg
+                          !isLoading &&
+                          secondary2Img == initialSecondary2Img
+                            ? data.secondary2Img
+                            : URL.createObjectURL(secondary2Img)
                         }
                         descriptionHtml={descriptionHtml}
                         variants={variants}

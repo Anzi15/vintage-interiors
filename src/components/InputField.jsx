@@ -9,6 +9,7 @@ const InputField = ({
   errorMsg,
   readOnlyInput = false,
   inputValue = "",
+  inputAutoComplete,
 }) => {
   return (
     <div className={`relative w-full min-w-[200px] h-11 ${errorMsg && "mb-4"}`}>
@@ -20,6 +21,7 @@ const InputField = ({
         value={inputValue}
         onChange={(e) => valueReturner(e.target.value)}
         {...(requiredInput && { required: true })}
+        {...(inputAutoComplete && { autocomplete: inputAutoComplete })}
         name={inputName}
       />
       {errorMsg && (

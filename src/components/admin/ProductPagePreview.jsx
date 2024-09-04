@@ -30,7 +30,6 @@ const ProductPagePreview = ({
   const { id: productId } = useParams();
   const location = useLocation();
   const [routeChanged, setRouteChanged] = useState(false);
-  console.log(selectedVariant);
   const handleVariantChange = (variant) => {
     setSelectedVariant(variant);
   };
