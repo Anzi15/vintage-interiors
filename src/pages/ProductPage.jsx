@@ -11,6 +11,7 @@ import flowersWithPerfume from "../assets/olena-bohovyk-KPkR3e6BZG0-unsplash.web
 import lavenderBottleImg from "../assets/lavender-bottle.webp";
 import roseScentImg from "../assets/scent-of-roses.webp";
 import Testimonials from "../components/Testimonials.jsx";
+import { toast } from "react-toastify";
 const reviews = [
   {
     stars: 5,
@@ -75,6 +76,21 @@ const ProductPage = () => {
   useEffect(() => {
     setIsLoading(true);
   }, [location]);
+
+  const addToCart = () => {
+    const prevCartItems = JSON.parse(localStorage.getItem("cart-items")) || [];
+    const productIndex = prevCartItems.findIndex(item => item.productId === productId);
+    const productData = { productId, quantity };
+    if (productIndex == -1) {
+      localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
+      prevCartItems.push(productData);
+      toast.success("Item Added to Cart");
+    } else {
+      prevCartItems[productIndex].quantity += quantity;
+      localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
+      toast.success("Item Quantity Updated");
+    }
+  };
 
   const handleVariantChange = (variant) => {
     setSelectedVariant(variant);
@@ -351,6 +367,7 @@ const ProductPage = () => {
               <button
                 className="align-middle select-none w-full text-xm min-h-6 font-sans font-semibold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none py-3 px-6 rounded-lg border-2 border-gray-700 text-black shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
                 type="button"
+                onClick={addToCart}
               >
                 Add To Cart
               </button>

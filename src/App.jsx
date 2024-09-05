@@ -19,6 +19,7 @@ import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout.jsx';
 import "./styles/utility.scss";
 import ContactPage from './pages/ContactPage.jsx';
+import CartPage from './pages/CartPage.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -33,6 +34,7 @@ function App() {
           <Route path="collection/:collectionName" element={<CollectionPage />} />
           <Route path="products" element={<AllProductsPage />} />
           <Route path="contact" element={<ContactPage />} />
+          <Route path="cart" element={<CartPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />
