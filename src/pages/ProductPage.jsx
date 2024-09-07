@@ -12,6 +12,7 @@ import lavenderBottleImg from "../assets/lavender-bottle.webp";
 import roseScentImg from "../assets/scent-of-roses.webp";
 import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
+
 const reviews = [
   {
     stars: 5,
@@ -79,18 +80,26 @@ const ProductPage = () => {
 
   const addToCart = () => {
     const prevCartItems = JSON.parse(localStorage.getItem("cart-items")) || [];
-    const productIndex = prevCartItems.findIndex(item => item.productId === productId);
-    const productData = { productId, quantity };
-    if (productIndex == -1) {
-      localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
+    const productIndex = prevCartItems.findIndex(
+      (item) => item.productId === productId
+    );
+    console.log(selectedVariant)
+    const productData = { productId, quantity, selectedVariant, data };
+   
+    if (productIndex === -1) {
+      // Product is not in the cart, add a new item
       prevCartItems.push(productData);
+      localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
       toast.success("Item Added to Cart");
     } else {
+      // Product is already in the cart, update its quantity
       prevCartItems[productIndex].quantity += quantity;
       localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
       toast.success("Item Quantity Updated");
     }
   };
+  
+  
 
   const handleVariantChange = (variant) => {
     setSelectedVariant(variant);
@@ -106,7 +115,7 @@ const ProductPage = () => {
         return Math.max(qnty, 1); // Ensure qnty is at least 1
       }
     });
-  };
+  };setSelectedVariant
 
   useEffect(() => {
     const fetchDocument = async () => {

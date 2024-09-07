@@ -1,6 +1,6 @@
 import { orderBy, startAfter, getFirestore, doc, getDoc, collection, query, limit, getDocs, where,  } from 'firebase/firestore';
 import app from "./firebase"
-const db = getFirestore();
+const db = getFirestore(app);
 
 //* Firestore functions
 const getDocument = async(collectionName, docId) => {
