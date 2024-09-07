@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Allow read access to all documents
+     match /{document=**} {
+      allow read, write: if true;
+    }
+
+    // Allow write access to adminPageData collection for multiple admin emails
+    match /adminPageData/{document} {
+      allow read: if true; // Allow read access to everyone
+      allow write: if request.auth != null && (request.auth.token.email == "djam4343@gmail.com" || request.auth.token.email == "mail.gft.store@gmail.com");
+    }
+    
+    // Default rule - expire after 30 days
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2024, 3, 29);
+    }
+  }
+}
