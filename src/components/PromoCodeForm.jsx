@@ -4,7 +4,7 @@ import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 
 
-const PromoCodeForm = ({productTags}) => {
+const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner}) => {
     const [isLoading, setIsLoading] = useState(false)
     const [promoCode, setPromoCode] = useState("");
     const [error, setError] = useState(null)
@@ -16,11 +16,9 @@ const PromoCodeForm = ({productTags}) => {
 
     useEffect(
         ()=>{
-
-                setError(false)
-                setIsFormSubmitted(false)
-                setIsPromoCodeValid(false)
-            
+        setError(false)
+        setIsFormSubmitted(false)
+        setIsPromoCodeValid(false)
         },
         [promoCode]
     )
@@ -64,6 +62,7 @@ const PromoCodeForm = ({productTags}) => {
         setIsLoading(true);
         setIsFormSubmitted(true);
         setError(null)
+        discountValueReturner(0, null)
         try {
             // Fetch coupon data
             const coupons = await getCouponDoc(promoCode);
@@ -116,6 +115,8 @@ const PromoCodeForm = ({productTags}) => {
             setIsPromoCodeValid(true);
             setDiscountType(couponData.discountType)
             setDiscountValue(couponData.discountValue)
+            discountTypeReturner(couponData.discountType)
+            discountValueReturner(couponData.discountValue, couponData.discountType)
         } catch (error) {
             console.error("Error processing coupon:", error);
             setError("Unexpected error, please try again");

@@ -12,10 +12,13 @@ const CartPage = () => {
     return JSON.parse(localStorage.getItem('cart-items')) || [];
   });
   const [subTotal, setSubTotal] = useState(null)
+  const [total, setTotal] = useState(null)
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
   const [allProductTags, setAllProductTags] = useState([])
+  const [discountValue, setDiscountValue] = useState(0)
+  const [discountType, setDiscountType] = useState(null)
 
   useEffect(() => {
     if (cartItems?.length) {
@@ -61,6 +64,17 @@ const CartPage = () => {
       setProductsLoading(false);
     } //empty
   }, [cartItems]);
+
+  const getDiscountValue = (value, type)=>{
+    if(type){
+      console.log(value)
+      if(type == "amount") setDiscountValue(value)
+        else if(type == "percentage") {
+      const discountedPrice = subTotal * (1 - (value / 100));
+      setDiscountValue(discountedPrice)
+    }
+    }
+  }
 
 
   return (
@@ -150,7 +164,7 @@ const CartPage = () => {
                       {cartItems.length} Items
                     </p>
                     <p className="font-medium text-lg leading-8 text-black">
-                      $480.00
+                      Rs. {subTotal}
                     </p>
                   </div>
                   <div>
@@ -168,9 +182,10 @@ const CartPage = () => {
                       </div>
                     </div>
 
-                    <PromoCodeForm productTags={allProductTags ?allProductTags : [] }/>
+                    <PromoCodeForm productTags={allProductTags ?allProductTags : []} discountTypeReturner={setDiscountType} discountValueReturner={getDiscountValue}/>
                    
-                    <div className="flex items-center justify-between py-8">
+                   <div className="py-8 flex flex-col gap-4">
+                    <div className="flex items-center justify-between ">
                       <p className="font-medium text-xl leading-8 text-black">
                         Sub Total
                       </p>
@@ -178,6 +193,19 @@ const CartPage = () => {
                           Rs. {subTotal}
                       </p>
                     </div>
+
+                   {discountValue > 0 && <div className="flex items-center justify-between ">
+                      <p className="font-medium text-xl leading-8 text-black">
+                        Coupon Discount:
+                      </p>
+                      <p className="font-semibold text-xl leading-8 text-red-800">
+                          - Rs. {discountValue}
+                      </p>
+                    </div>}
+
+
+                   </div>
+
                     <button className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
                       Checkout
                     </button>
