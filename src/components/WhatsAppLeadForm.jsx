@@ -68,21 +68,21 @@ function WhatsAppLeadForm() {
 
   return (
     <form
-    className="flex flex-col items-start justify-center gap-4 h-full w-fit"
+    className="flex flex-col items-start justify-center gap-4 h-full w-fit max-w-[100%] py-6"
     onSubmit={handleLeadForm}
   >
     <h1 className="max-w-lg text-xl text-left font-semibold tracking-tight xl:text-2xl text-white">
       Avail Future Discount by Signing up to our WhatsApp newsletter
     </h1>
 
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-[100%]">
       <input
         id="whatsapp"
         type="text"
         value={phoneNumber}
         onChange={handleChange}
         required
-        className={`px-4 py-2 border rounded-md bg-gray-900 text-gray-300 border-gray-600 focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300 ${
+        className={`px-4 py-2 border rounded-md bg-gray-900 text-gray-300 w-[95%] border-gray-600 focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300 ${
           error ? "border-red-500" : ""
         }`}
         placeholder="WhatsApp Number"

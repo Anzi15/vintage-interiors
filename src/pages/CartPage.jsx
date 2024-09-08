@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 import CartItem from "../components/CartItem";
+import PromoCodeForm from "../components/PromoCodeForm";
 const CartPage = () => {
   const [cartItems, setCartItems] = useState(() => {
     // Get initial cart items from localStorage
@@ -14,6 +15,7 @@ const CartPage = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [allProductTags, setAllProductTags] = useState([])
 
   useEffect(() => {
     if (cartItems?.length) {
@@ -44,18 +46,22 @@ const CartPage = () => {
 
       getCartProducts(cartItems).then((products) => {
         let subtotal = 0;
+        const allProductsTags = []
        products.map((product)=>{
         subtotal +=  product.selectedVariant.price * product.quantity;
-        console.log( product.selectedVariant.price * product.quantity)
+        allProductsTags.push(...product.tags)                
        })
+       console.log(allProductsTags)
+       setAllProductTags(allProductsTags)
        setSubTotal(subtotal)
         setProducts(products); // Filter out null values
         setProductsLoading(false);
       });
     } else {
       setProductsLoading(false);
-    }
+    } //empty
   }, [cartItems]);
+
 
   return (
     <main className="overflow-x-hidden py-8">
@@ -74,7 +80,7 @@ const CartPage = () => {
                 </div>
                 <div className="md:grid grid-cols-12 mt-8 max-md:hidden pb-6 border-b border-gray-200 hidden">
                   <div className="col-span-12 md:col-span-7">
-                    <p className="font-normal text-lg leading-8 text-gray-400">
+                    <p className="font-normal text-left text-lg leading-8 text-gray-400">
                       Product Details
                     </p>
                   </div>
@@ -86,7 +92,7 @@ const CartPage = () => {
                         </p>
                       </div>
                       <div className="col-span-2">
-                        <p className="font-normal text-lg leading-8 text-gray-400 text-center">
+                      <p className="font-normal text-lg leading-8 text-gray-400 text-right pr-4">
                           Total
                         </p>
                       </div>
@@ -141,13 +147,13 @@ const CartPage = () => {
                 <div className={`mt-8 md:flex flex-col  ${isSummaryExpanded ? "flex" : "hidden"}`}>
                   <div className="flex items-center justify-between pb-6">
                     <p className="font-normal text-lg leading-8 text-black">
-                      3 Items
+                      {cartItems.length} Items
                     </p>
                     <p className="font-medium text-lg leading-8 text-black">
                       $480.00
                     </p>
                   </div>
-                  <form>
+                  <div>
 
                     <div className="flex pb-6">
                       <div className="relative w-full">
@@ -161,76 +167,9 @@ const CartPage = () => {
                         </div>
                       </div>
                     </div>
-                    <label className="flex items-center mb-1.5 text-gray-400 text-sm font-medium">
-                      Promo Code
-                    </label>
-                    <div className="flex pb-4 w-full">
-                      <div className="relative w-full flex">
-                        <div className=" absolute left-0 top-0 py-2.5 px-4 text-gray-300"></div>
-                        <input
-                          type="text"
-                          className="block w-full h-11 pr-11 pl-5 py-2.5 text-base font-normal shadow-xs text-gray-900 bg-white border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-gray-400 "
-                          placeholder="xxxx xxxx xxxx"
-                        />
-                        <Button
-                        
-                          id="dropdown-button"
-                          data-target="dropdown"
-                          className="dropdown-toggle flex-shrink-0 z-10 inline-flex items-center py-4 px-4 text-base font-medium text-center text-gray-900 bg-transparent  absolute right-0 top-0 pl-2 "
-                          type="button"
-                          loading={true}
-                        >
-                          ✅
-                        </Button>
-                        <div
-                          id="dropdown"
-                          className="absolute top-10 right-0 z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-                        >
-                          <ul
-                            className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdown-button"
-                          >
-                            <li>
-                              <a
-                                href="#"
-                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                Shopping
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="#"
-                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                Images
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="#"
-                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                News
-                              </a>
-                            </li>
-                            <li>
-                              <a
-                                href="#"
-                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                Finance
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center border-b border-gray-200">
-                      <button className="rounded-lg w-full bg-black py-2.5 px-4 text-white text-sm font-semibold text-center mb-8 transition-all duration-500 hover:bg-black/80">
-                        Apply
-                      </button>
-                    </div>
+
+                    <PromoCodeForm productTags={allProductTags ?allProductTags : [] }/>
+                   
                     <div className="flex items-center justify-between py-8">
                       <p className="font-medium text-xl leading-8 text-black">
                         Sub Total
@@ -242,7 +181,7 @@ const CartPage = () => {
                     <button className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
                       Checkout
                     </button>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
