@@ -19,6 +19,7 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
         setError(false)
         setIsFormSubmitted(false)
         setIsPromoCodeValid(false)
+        
         },
         [promoCode]
     )
@@ -124,9 +125,19 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
             setIsLoading(false);
         }
     };
+
+    const resetDiscount = ()=>{
+      setPromoCode("");
+      setIsPromoCodeValid(false);
+      setIsFormSubmitted(false);
+      discountValueReturner(0, "amount")
+    }
     
   return (
-    <form onSubmit={(e)=>{e.preventDefault(); handleSubmission(e)}}>
+    <form onSubmit={(e)=>{e.preventDefault(); handleSubmission(e)}} className={`${isPromoCodeValid && "opacity-90"}`}>
+      <fieldset {...(isPromoCodeValid ? {disabled: 'disabled'} : {})}>
+        
+
       <label className="flex items-center mb-1.5 text-gray-400 text-sm font-medium ">
         Promo Code
       </label>
@@ -160,11 +171,20 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
       {
         error && <p className="text-red-700 pb-6">{error}</p>
       }
+      
       <div className="flex items-center border-b border-gray-200">
         <button className="rounded-lg w-full bg-black py-2.5 px-4 text-white text-sm font-semibold text-center mb-8 transition-all duration-500 hover:bg-black/80" >
           Apply
         </button>
       </div>
+      
+      </fieldset>
+      { isPromoCodeValid && 
+        <div className="flex w-full justify-between mb-4">
+          <p>Code Applied</p>
+          <button className="text-red-900 underline" onClick={resetDiscount}>Remove code</button>
+        </div>
+      }
     </form>
   );
 };

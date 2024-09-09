@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import emptyCartImg from "../assets/empty-cart.webp";
 import { Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 import CartItem from "../components/CartItem";
 import PromoCodeForm from "../components/PromoCodeForm";
@@ -19,6 +19,7 @@ const CartPage = () => {
   const [allProductTags, setAllProductTags] = useState([])
   const [discountValue, setDiscountValue] = useState(0)
   const [discountType, setDiscountType] = useState(null)
+  const [shippingFees, setShippingFees] = useState(null)
 
   useEffect(() => {
     if (cartItems?.length) {
@@ -47,23 +48,30 @@ const CartPage = () => {
         return productsArr;
       };
 
-      getCartProducts(cartItems).then((products) => {
+      getCartProducts(cartItems).then(async (products) => {
         let subtotal = 0;
         const allProductsTags = []
        products.map((product)=>{
         subtotal +=  product.selectedVariant.price * product.quantity;
         allProductsTags.push(...product.tags)                
        })
-       console.log(allProductsTags)
+       
        setAllProductTags(allProductsTags)
        setSubTotal(subtotal)
         setProducts(products); // Filter out null values
         setProductsLoading(false);
+       const docRef = doc(db, "storeManagement", "shippingFees");
+        const shippingFees = await getDoc(docRef);
+        setShippingFees(shippingFees.data().value)
       });
     } else {
       setProductsLoading(false);
     } //empty
   }, [cartItems]);
+
+  useEffect(()=>{
+    setTotal(subTotal + shippingFees - discountValue)
+  },[subTotal, discountValue, shippingFees])
 
   const getDiscountValue = (value, type)=>{
     if(type){
@@ -101,7 +109,7 @@ const CartPage = () => {
                   <div className="col-span-12 md:col-span-5">
                     <div className="grid grid-cols-5">
                       <div className="col-span-3">
-                        <p className="font-normal text-lg leading-8 text-gray-400 text-center">
+                        <p className="font-normal text-lg leading-8 text-gray-400 text-left">
                           Quantity
                         </p>
                       </div>
@@ -126,11 +134,58 @@ const CartPage = () => {
                       />
                     );
                   })}
+
+                  <div className="flex flex-col md:hidden">
+                  <div className="py-8 flex flex-col gap-4">
+                    <div>
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-md leading-8 text-gray-800">
+                        Sub Total
+                      </p>
+                      <p className="font-semibold text-md leading-8 text-red-800">
+                          Rs. {subTotal}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-md leading-8 text-gray-800">
+                        Shipping Fees
+                      </p>
+                      <p className={`font-semibold text-md leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
+                          Rs. {shippingFees ? shippingFees : "300"}
+                      </p>
+                    </div>
+
+                   {discountValue > 0 && <div className="flex items-center justify-between ">
+                      <p className="font-medium text-md leading-8 text-gray-800">
+                        Coupon Discount:
+                      </p>
+                      <p className="font-semibold text-md leading-8 text-red-800">
+                          - Rs. {discountValue}
+                      </p>
+                    </div>}
+                    </div>
+
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-xl leading-8 text-black">
+                       Total
+                      </p>
+                      <p className={`font-semibold text-xl leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
+                          Rs. {total}
+                      </p>
+                    </div>
+
+                   </div>
+
+                    <button className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
+                      Checkout
+                    </button>
+                  </div>
               </div>
 
-              <div className=" col-span-12 xl:col-span-4 md:bg-gray-50 w-full max-xl:px-6 max-w-3xl xl:max-w-lg mx-auto lg:pl-8 md:py-24  md:order-2 order">
+              <div className={`col-span-12 xl:col-span-4 md:bg-gray-50 w-full max-xl:px-6 max-w-3xl xl:max-w-lg mx-auto lg:pl-8 md:py-24  md:order-2 order ${isSummaryExpanded  && "bg-gray-50"}`}>
                 <h2
-                  className="font-manrope font-bold md:text-3xl text-2xl leading-10 text-black pb-8 border-b border-gray-300 md:text-center text-left pl-4 flex gap-4 p-3 items-center "
+                  className="font-manrope font-bold md:text-3xl text-lg leading-10 text-black pb-8 border-b border-gray-300 md:text-center text-left pl-4 flex gap-2 p-3 items-center "
                   onClick={() => {
                     setIsSummaryExpanded(!isSummaryExpanded);
                   }}
@@ -158,13 +213,13 @@ const CartPage = () => {
                     </svg>
                   </div>
                 </h2>
-                <div className={`mt-8 md:flex flex-col  ${isSummaryExpanded ? "flex" : "hidden"}`}>
+                <div className={`mt-8 md:flex flex-col bg-none md:p-0 p-4  ${isSummaryExpanded ? "flex " : "hidden"}`}>
                   <div className="flex items-center justify-between pb-6">
                     <p className="font-normal text-lg leading-8 text-black">
                       {cartItems.length} Items
                     </p>
                     <p className="font-medium text-lg leading-8 text-black">
-                      Rs. {subTotal}
+                      Rs. {total}
                     </p>
                   </div>
                   <div>
@@ -185,24 +240,43 @@ const CartPage = () => {
                     <PromoCodeForm productTags={allProductTags ?allProductTags : []} discountTypeReturner={setDiscountType} discountValueReturner={getDiscountValue}/>
                    
                    <div className="py-8 flex flex-col gap-4">
+                    <div>
                     <div className="flex items-center justify-between ">
-                      <p className="font-medium text-xl leading-8 text-black">
+                      <p className="font-medium text-md leading-8 text-gray-800">
                         Sub Total
                       </p>
-                      <p className="font-semibold text-xl leading-8 text-red-800">
+                      <p className="font-semibold text-md leading-8 text-red-800">
                           Rs. {subTotal}
                       </p>
                     </div>
 
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-md leading-8 text-gray-800">
+                        Shipping Fees
+                      </p>
+                      <p className={`font-semibold text-md leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
+                          Rs. {shippingFees ? shippingFees : "300"}
+                      </p>
+                    </div>
+
                    {discountValue > 0 && <div className="flex items-center justify-between ">
-                      <p className="font-medium text-xl leading-8 text-black">
+                      <p className="font-medium text-md leading-8 text-gray-800">
                         Coupon Discount:
                       </p>
-                      <p className="font-semibold text-xl leading-8 text-red-800">
+                      <p className="font-semibold text-md leading-8 text-red-800">
                           - Rs. {discountValue}
                       </p>
                     </div>}
+                    </div>
 
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-xl leading-8 text-black">
+                       Total
+                      </p>
+                      <p className={`font-semibold text-xl leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
+                          Rs. {total}
+                      </p>
+                    </div>
 
                    </div>
 
