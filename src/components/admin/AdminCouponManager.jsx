@@ -56,7 +56,7 @@ const AdminCouponManager = () => {
             !couponsLoading ? (
                 coupons.map((coupon, i)=>{
                     return(
-                <div className='grid md:grid-cols-4 grid-cols-3 w-full border-b py-4 hover:scale-105 transition-all cursor-pointer items-center' key={i}>
+                <Link to={`/admin/management/coupons/${coupon.couponCode}/edit`} className='grid md:grid-cols-4 grid-cols-3 w-full border-b py-4 hover:scale-105 transition-all cursor-pointer items-center' key={i}>
                 <h3>{coupon.couponCode}</h3>
                 <h3>
                     {coupon.discountType == "amount" ? `Rs. ${coupon.discountValue}`: coupon.discountType == "percentage" ? `${coupon.discountValue} %` : coupon.discountValue}
@@ -68,7 +68,7 @@ const AdminCouponManager = () => {
                     </p>
                 </div>
                 <h3 className="md:flex hidden">{coupon.usedCount} Times</h3>
-              </div>
+              </Link>
                     )
                 })
             ) : 
