@@ -21,6 +21,7 @@ import "./styles/utility.scss";
 import ContactPage from './pages/ContactPage.jsx';
 import CartPage from './pages/CartPage.jsx';
 import AdminManagementPage from './pages/admin/AdminManagementPage.jsx';
+import AdminNewCoupon from './pages/admin/AdminNewCoupon.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -43,6 +44,7 @@ function App() {
           <Route path='/admin/products/new' element={<AdminNewProductPage />} />
           <Route path='/admin/products/:id/edit' element={<AdminEditProductPage />} />
           <Route path='/admin/management' element={<AdminManagementPage />} />
+          <Route path='/admin/management/coupons/new' element={<AdminNewCoupon />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />

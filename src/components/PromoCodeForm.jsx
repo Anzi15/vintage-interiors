@@ -3,6 +3,38 @@ import { useEffect, useState } from "react";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
 import { db } from "../modules/firebase-modules/firestore";
 
+export const getCouponDoc = async (couponCode, errorSetter) => {
+    const coupons = [];
+    const collectionName = "coupons";
+    const couponsCollection = collection(db, collectionName);
+    
+    console.log(`Searching for coupon code: ${couponCode}`);
+    
+    // Query for documents where couponCode matches
+    const q = query(couponsCollection, where("couponCode", "==", couponCode));
+  
+    try {
+      const querySnapshot = await getDocs(q);
+      console.log("Query built");
+  
+      if (querySnapshot.empty) {
+        errorSetter("Kindly enter a valid coupon code");
+        return coupons;
+      }
+  
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log("Document Data: ", data);
+        coupons.push(data);
+      });
+      
+      return coupons;
+    } catch (error) {
+      console.error("Error fetching coupon documents: ", error);
+      errorSetter("An error occurred while fetching the coupon code");
+      return coupons;
+    }
+  };
 
 const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner}) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -23,39 +55,6 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
         },
         [promoCode]
     )
-    const getCouponDoc = async (couponCode) => {
-        const coupons = [];
-        const collectionName = "coupons";
-        const couponsCollection = collection(db, collectionName);
-        
-        console.log(`Searching for coupon code: ${couponCode}`);
-        
-        // Query for documents where couponCode matches
-        const q = query(couponsCollection, where("couponCode", "==", couponCode));
-      
-        try {
-          const querySnapshot = await getDocs(q);
-          console.log("Query built");
-      
-          if (querySnapshot.empty) {
-            console.log("No matching documents found");
-            setError("Kindly enter a valid coupon code");
-            return coupons;
-          }
-      
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            console.log("Document Data: ", data);
-            coupons.push(data);
-          });
-          
-          return coupons;
-        } catch (error) {
-          console.error("Error fetching coupon documents: ", error);
-          setError("An error occurred while fetching the coupon code");
-          return coupons;
-        }
-      };
       
 
       const handleSubmission = async (e) => {
@@ -66,9 +65,9 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
         discountValueReturner(0, null)
         try {
             // Fetch coupon data
-            const coupons = await getCouponDoc(promoCode);
+            const coupons = await getCouponDoc(promoCode, setError);
             if (coupons.length === 0) {
-                setError("Coupon not found");
+                setError("Kindly input a valid coupon");
                 return;
             }
     

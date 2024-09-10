@@ -4,6 +4,7 @@ import { db } from "../../modules/firebase-modules/firestore";
 import { PiHeadlightsDuotone } from "react-icons/pi";
 import { toast } from "react-toastify";
 import { FaPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const AdminCouponManager = () => {
     const [coupons, setCoupons] = useState([]);
@@ -37,9 +38,9 @@ const AdminCouponManager = () => {
       <div className="flex">
     <div className="flex w-full justify-between items-center pb-10">
       <h3 className="text-left font-semibold">Manage Coupons</h3>
-        <button className="flex items-center bg-gray-900 rounded-md p-3 text-white aspect-square">
+        <Link to={"/admin/management/coupons/new"} className="flex items-center bg-gray-900 rounded-md p-3 text-white aspect-square">
         <FaPlus />
-        </button>
+        </Link>
     </div>
       </div>
 

@@ -23,6 +23,7 @@ const CartItem = ({product, productsLoading, quantity, cartItemsUpdater}) => {
         cancelBtnText={"Cancel"}
         initialOpen={true}
         actionReturner={(action) => handleDialogResult(action, itemId)}
+        icon='warn'
       />
     );
   }

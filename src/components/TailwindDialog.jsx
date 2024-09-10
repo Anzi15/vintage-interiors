@@ -1,7 +1,8 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { IoWarningOutline } from "react-icons/io5";
+import { MdErrorOutline, MdOutlineDone } from 'react-icons/md';
 
-const TailwindDialog = ({ title, text, actionBtnText, cancelBtnText, actionReturner, initialOpen }) => {
+const TailwindDialog = ({ title, text, actionBtnText, cancelBtnText, actionReturner, initialOpen, icon="error" }) => {
   return (
     <Dialog open={initialOpen} onClose={() => actionReturner("denied")} className="relative z-10 flex items-center justify-center">
       <DialogBackdrop
@@ -16,8 +17,12 @@ const TailwindDialog = ({ title, text, actionBtnText, cancelBtnText, actionRetur
           >
             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <IoWarningOutline aria-hidden="true" className="h-6 w-6 text-red-600" />
+                <div className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${icon == "error" ?
+                  "bg-red-100": icon == "warn" ? "bg-yellow-100": icon == "success" && "bg-green-100" } sm:mx-0 sm:h-10 sm:w-10`}>
+                {
+                  icon == "error" ?
+                  <MdErrorOutline  aria-hidden="true" className="h-6 w-6 text-red-600" /> : icon == "warn" ? <IoWarningOutline aria-hidden="true" className="h-6 w-6 text-yellow-400" /> : icon == "success" && <MdOutlineDone  aria-hidden="true" className="h-6 w-6 text-green-600" /> 
+                }
                 </div>
                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <DialogTitle as="h3" className="text-base font-semibold leading-6 text-gray-900">
@@ -35,7 +40,8 @@ const TailwindDialog = ({ title, text, actionBtnText, cancelBtnText, actionRetur
               <button
                 type="button"
                 onClick={() => actionReturner("confirmed")}
-                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                className={`inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto ${icon == "error" ?
+                  "bg-red-600 hover:bg-red-500": icon == "warn" ? "bg-yellow-400 hover:bg-yellow-200": icon == "success" && "bg-green-600 hover:bg-green-500" } `}
               >
                 {actionBtnText}
               </button>
