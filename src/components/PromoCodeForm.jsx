@@ -23,7 +23,7 @@ export const getCouponDoc = async (couponCode, errorSetter) => {
       }
   
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
+        const data = {...doc.data(), id: doc.id};
         console.log("Document Data: ", data);
         coupons.push(data);
       });
@@ -56,6 +56,7 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
         [promoCode]
     )
       
+
 
       const handleSubmission = async (e) => {
         e.preventDefault();
