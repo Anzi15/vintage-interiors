@@ -23,6 +23,7 @@ import CartPage from './pages/CartPage.jsx';
 import AdminManagementPage from './pages/admin/AdminManagementPage.jsx';
 import AdminNewCoupon from './pages/admin/AdminNewCoupon.jsx';
 import AdminCouponEdit from './pages/admin/AdminCouponEdit.jsx';
+import AboutPage from './pages/AboutPage.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -38,6 +39,7 @@ function App() {
           <Route path="products" element={<AllProductsPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="cart" element={<CartPage />} />
+          <Route path="about" element={<AboutPage />} />
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />

@@ -53,7 +53,7 @@ const AdminNewCoupon = () => {
             expirationDate,
             isActive,
             minimumOrderValue,
-            usageLimit,
+            usageLimit: usageLimit == undefined ? 10000000 : usageLimit,
             usedCount,
             validForProducts,
         }

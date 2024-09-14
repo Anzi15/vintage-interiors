@@ -75,11 +75,10 @@ const CartPage = () => {
 
   const getDiscountValue = (value, type)=>{
     if(type){
-      console.log(value)
       if(type == "amount") setDiscountValue(value)
         else if(type == "percentage") {
       const discountedPrice = subTotal * (1 - (value / 100));
-      setDiscountValue(discountedPrice)
+      setDiscountValue(Math.round(subTotal - discountedPrice))
     }
     }
   }
