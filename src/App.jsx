@@ -24,6 +24,8 @@ import AdminManagementPage from './pages/admin/AdminManagementPage.jsx';
 import AdminNewCoupon from './pages/admin/AdminNewCoupon.jsx';
 import AdminCouponEdit from './pages/admin/AdminCouponEdit.jsx';
 import AboutPage from './pages/AboutPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
+import EmptyLayout from './layouts/EmptyLayout.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -40,6 +42,9 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="about" element={<AboutPage />} />
+        </Route>
+        <Route path="/checkout" element={<EmptyLayout />}>
+          <Route index element={<CheckoutPage />}/>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />
