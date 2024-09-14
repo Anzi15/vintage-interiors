@@ -105,7 +105,7 @@ const CheckoutPage = () => {
       <section className="w-1/2 px-8">
       <h3 className="text-xl text-left my-9">Order summary</h3>
 
-      <div className="products flex flex-wrap px-4">
+      <div className="products flex flex-wrap px-4 justify-start ">
             <div className="flex text-left  gap-4 w-1/2 p-4">
               <div>
                 <img src="https://tailwindui.com/img/ecommerce-images/checkout-page-04-product-01.jpg" className="w-[7rem]" alt="" />
