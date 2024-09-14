@@ -28,6 +28,14 @@ const paymentMethods = [
 ]
 
 const CheckoutPage = () => {
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [address, setAddress] = useState("");
+  const [extraAddress, setExtraAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("COD")
 
 
@@ -41,27 +49,25 @@ const CheckoutPage = () => {
         <h3 className="text-xl text-left my-9">Contact information</h3>
         <form action="">
           <div className="border-b pb-8">
-            <InputField />
+            <InputField inputAutoComplete={"email"} inputName={"Email"} valueReturner={setEmail} inputValue={email} />
           </div>
 
           <div className="flex flex-col gap-4 border-b pb-8">
             <h3 className="text-xl text-left my-5 Shipping information">
-              Contact information
+              Shipping Information
             </h3>
 
             <div className="flex gap-4">
-              <InputField />
-              <InputField />
+              <InputField inputAutoComplete={"given-name"} inputValue={firstName} valueReturner={setFirstName} inputName="First Name"/>
+              <InputField inputAutoComplete={"family-name"} inputValue={lastName} valueReturner={setLastName} inputName="Last Name"/>
             </div>
-            <InputField />
-            <InputField />
-            <InputField />
+            <InputField inputAutoComplete={"street-address"} inputValue={address} valueReturner={setAddress} />
+            <InputField inputAutoComplete={"address-line2"} inputValue={extraAddress} valueReturner={setExtraAddress}  />
             <div className="flex gap-4">
-              <InputField />
-              <InputField />
+              <InputField  inputAutoComplete={"address-level2"} inputValue={city} valueReturner={setCity}/>
+              <InputField inputAutoComplete={"address-level1"} inputName="State" inputValue={state} valueReturner={setState}/>
             </div>
-            <InputField />
-            <InputField />
+            <InputField inputAutoComplete={"tel"} inputValue={phoneNumber} valueReturner={setPhoneNumber}/>
           </div>
           <div className="flex flex-col gap-4 border-b pb-8">
             <h3 className="text-xl text-left my-5 Shipping information">
