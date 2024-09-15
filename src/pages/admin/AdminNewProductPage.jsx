@@ -10,7 +10,7 @@ import { Typography } from "@material-tailwind/react";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
 import { TagInput } from "rsuite";
@@ -21,6 +21,7 @@ import storage from "../../modules/firebase-modules/firestorage.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import BouncingBallLoader from "../../components/BouncingBallLoader.jsx";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "../../components/DatePicker.jsx";
 
 const AdminNewProductPage = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const AdminNewProductPage = () => {
   const [subTitle, setSubTitle] = useState("");
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(null);
+  const [discountExpiryDate, setDiscountExpiryDate] = useState(null);
+  const [shippingFees, setShippingFees] = useState(300);
   const [descriptionHtml, setDescriptionHtml] = useState(null);
   const [productSavingType, setProductSavingType] = useState("publish");
   const [selectedTags, setSelectedTags] = useState([]);
@@ -154,6 +157,7 @@ const AdminNewProductPage = () => {
       setPublishingMsg("Uploading Img 2/3..");
       const secondary2ImgUrl = await uploadImage(secondary2Img);
       setPublishingMsg("Uploading Img 3/3..");
+
       const productData = {
         primaryImg: primaryImgUrl,
         secondary1Img: secondary1ImgUrl,
@@ -163,8 +167,11 @@ const AdminNewProductPage = () => {
         descriptionHtml,
         price,
         comparePrice,
+        discountExpiryDate,
+        createdAt: Timestamp.now(),
         tags: selectedTags,
         variants,
+        shippingFees
       };
       try {
         setPublishingMsg("Connecting to database..");
@@ -270,6 +277,15 @@ const AdminNewProductPage = () => {
                 valueReturner={setComparePrice}
                 requiredInput={false}
                 inputValue={comparePrice}
+              />
+              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" />
+
+              <InputField
+                inputName={"Shipping Fees"}
+                inputType="number"
+                valueReturner={setShippingFees}
+                requiredInput={true}
+                inputValue={shippingFees}
               />
 
               <div className="max-w-full">

@@ -20,6 +20,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getDocument } from "../../modules/firebase-modules/firestore";
 import { GrUpdate } from "react-icons/gr";
+import DatePicker from "../../components/DatePicker.jsx";
 
 const AdminEditProductPage = () => {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ const AdminEditProductPage = () => {
   const [subTitle, setSubTitle] = useState("");
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(0);
+  const [shippingFees, setShippingFees] = useState(300);
+  const [discountExpiryDate, setDiscountExpiryDate] = useState(null);
   const [descriptionHtml, setDescriptionHtml] = useState("");
   const [initialHtml, setInitialHtml] = useState("");
   const [tags, setTags] = useState([]);
@@ -88,12 +91,11 @@ const AdminEditProductPage = () => {
       setVariants(data.variants);
     }
     if (data && data.tags && data.tags.length > 0) {
-      console.log(data.tags)
+      console.log(data.tags);
 
       setSelectedTags(data.tags);
     }
   }, [data]);
-
 
   useEffect(() => {
     if (data) {
@@ -103,40 +105,45 @@ const AdminEditProductPage = () => {
       setDescriptionHtml(data.descriptionHtml || "");
       setInitialHtml(data.descriptionHtml || "");
       setPrice(data.price || 0);
+      setShippingFees(data.shippingFees)
       // setSelectedTags(data.tags || []);
     }
-    (async ()=>{
-      console.log
-      if(data.primaryImg){
-        const primaryImgFile = await fileFromUrl(data.primaryImg, "primaryImg"); 
-        setPrimaryImg(primaryImgFile) 
-        setInitialPrimaryImg(primaryImgFile)
-      } 
-      if(data.secondary1Img){
-        const secondary1ImgFile = await fileFromUrl(data.secondary1Img, "secondary1Img"); 
-        setSecondary1Img(secondary1ImgFile) 
-        setInitialSecondary1Img(secondary1ImgFile)
-
+    (async () => {
+      console.log;
+      if (data.primaryImg) {
+        const primaryImgFile = await fileFromUrl(data.primaryImg, "primaryImg");
+        setPrimaryImg(primaryImgFile);
+        setInitialPrimaryImg(primaryImgFile);
       }
-      if(data.secondary2Img){
-        const secondary2ImgFile = await fileFromUrl(data.secondary2Img, "secondary1Img"); 
-        setSecondary2Img(secondary2ImgFile) 
-        setInitialSecondary2Img(secondary2ImgFile)
-        
+      if (data.secondary1Img) {
+        const secondary1ImgFile = await fileFromUrl(
+          data.secondary1Img,
+          "secondary1Img"
+        );
+        setSecondary1Img(secondary1ImgFile);
+        setInitialSecondary1Img(secondary1ImgFile);
       }
-    })()
+      if (data.secondary2Img) {
+        const secondary2ImgFile = await fileFromUrl(
+          data.secondary2Img,
+          "secondary1Img"
+        );
+        setSecondary2Img(secondary2ImgFile);
+        setInitialSecondary2Img(secondary2ImgFile);
+      }
+    })();
   }, [data]);
-  
+
   async function fileFromUrl(url, fileName) {
     // Fetch the file data from the URL
     const response = await fetch(url);
-  
+
     // Convert the response to a Blob
     const blob = await response.blob();
-  
+
     // Create a File object from the Blob
     const file = new File([blob], fileName, { type: blob.type });
-  
+
     return file;
   }
 
@@ -145,7 +152,7 @@ const AdminEditProductPage = () => {
     const checkForExistence = async () => {
       if (title.length) {
         try {
-          if(title.toLowerCase().replace(/ /g, "-") == productId) return;
+          if (title.toLowerCase().replace(/ /g, "-") == productId) return;
           const docRef = doc(
             db,
             "Products",
@@ -233,55 +240,73 @@ const AdminEditProductPage = () => {
     e.preventDefault();
     setPublishing(true);
     setPublishingMsg("Getting Updated Data..");
-    console.log("primary img updated", initialPrimaryImg !== primaryImg)
-    console.log("secondary 1 img updated", initialSecondary1Img !== secondary1Img)
-    console.log("secondary 2 img updated", initialSecondary2Img !== secondary2Img)
+    console.log("primary img updated", initialPrimaryImg !== primaryImg);
+    console.log(
+      "secondary 1 img updated",
+      initialSecondary1Img !== secondary1Img
+    );
+    console.log(
+      "secondary 2 img updated",
+      initialSecondary2Img !== secondary2Img
+    );
     const updatedData = {
-        title,
-        subTitle,
-        descriptionHtml,
-        price,
-        comparePrice,
-        tags: selectedTags,
-        variants,
-        primaryImg: initialPrimaryImg == primaryImg ? data.primaryImg : uploadImage(primaryImg),
-        secondary1Img: initialSecondary1Img == secondary1Img ? data.secondary1Img : uploadImage(secondary1Img),
-        secondary2Img: initialSecondary2Img == secondary2Img ? data.secondary2Img : uploadImage(secondary2Img),
-        
+      title,
+      subTitle,
+      descriptionHtml,
+      price,
+      comparePrice,
+      discountExpiryDate,
+      createdAt: data.createdAt,
+      shippingFees,
+      tags: selectedTags,
+      variants,
+      primaryImg:
+        initialPrimaryImg == primaryImg
+          ? data.primaryImg
+          : uploadImage(primaryImg),
+      secondary1Img:
+        initialSecondary1Img == secondary1Img
+          ? data.secondary1Img
+          : uploadImage(secondary1Img),
+      secondary2Img:
+        initialSecondary2Img == secondary2Img
+          ? data.secondary2Img
+          : uploadImage(secondary2Img),
+    };
+    const docId =
+      updatedData.title == data.title
+        ? productId
+        : title.toLowerCase().replace(/ /g, "-");
+    console.log(updatedData);
+
+    try {
+      setPublishingMsg("Connecting to database..");
+      const collectionName = "Products";
+      const docRef = doc(db, collectionName, docId);
+      await setDoc(docRef, updatedData);
+      setPublishingMsg("All Set !!");
+      Swal.fire({
+        text: "Product Updated",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "View Products",
+        cancelButtonText: "Add a new Product",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/admin/products");
+        } else {
+          window.location.reload();
+        }
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      setPublishing(false);
+      toast.error("something went wrong!!");
     }
-    const docId = updatedData.title == data.title ? productId : title.toLowerCase().replace(/ /g, "-");
-    console.log(updatedData)
-
-      try {
-        setPublishingMsg("Connecting to database..");
-        const collectionName = "Products";
-        const docRef = doc(db, collectionName, docId);
-        await setDoc(docRef, updatedData); 
-        setPublishingMsg("All Set !!");
-        Swal.fire({
-          text: "Product Updated",
-          icon: "success",
-          showCancelButton: true,
-          confirmButtonText: "View Products",
-          cancelButtonText: "Add a new Product",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/admin/products");
-          } else {
-            window.location.reload();
-          }
-        });
-      } catch (e) {
-        console.error("Error adding document: ", e);
-        setPublishing(false)
-        toast.error("something went wrong!!")
-      }
-
-    
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       // Prevent form submission when Enter is pressed
       event.preventDefault();
     }
@@ -305,7 +330,7 @@ const AdminEditProductPage = () => {
         <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
           <div className="w-full flex flex-col justify-center items-center mb-16">
             <h1 className="text-4xl text-left text-gray-800 ">
-              Edit Details of the product 
+              Edit Details of the product
             </h1>
             <h3 className="text-xl text-left  text-gray-800 ">
               Edit any details you like and hit update
@@ -319,7 +344,6 @@ const AdminEditProductPage = () => {
               ref={FormRef}
               onKeyDown={handleKeyDown}
             >
-
               <div className="flex flex-col gap-4 ">
                 <ImageDropZone
                   storeFileToUpload={setPrimaryImg}
@@ -368,9 +392,21 @@ const AdminEditProductPage = () => {
                   requiredInput={false}
                   inputValue={comparePrice}
                 />
+              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
+
+                <InputField
+                  inputName={"Shipping Fees"}
+                  inputType="number"
+                  valueReturner={setShippingFees}
+                  requiredInput={true}
+                  inputValue={shippingFees}
+                />
 
                 <div className="max-w-full">
-                  <TiptapEditor updateHtml={setDescriptionHtml} initialHtml={initialHtml} />
+                  <TiptapEditor
+                    updateHtml={setDescriptionHtml}
+                    initialHtml={initialHtml}
+                  />
                 </div>
 
                 {/* Variants Management */}
@@ -481,9 +517,9 @@ const AdminEditProductPage = () => {
                   onChange={(tags) => {
                     if (tags) {
                       const processedTags = tags
-                        .filter(tag => typeof tag === 'string') // Ensure only strings are processed
-                        .map(tag => tag.toLowerCase());
-                      data.tags = (processedTags);
+                        .filter((tag) => typeof tag === "string") // Ensure only strings are processed
+                        .map((tag) => tag.toLowerCase());
+                      data.tags = processedTags;
                     }
                   }}
                   name="tags"
@@ -503,10 +539,9 @@ const AdminEditProductPage = () => {
                     setProductSavingType("publish");
                   }}
                 >
-                  <GrUpdate  className="text-2xl" />
-                  Update Changes  
+                  <GrUpdate className="text-2xl" />
+                  Update Changes
                 </button>
-                
               </div>
             </form>
 
@@ -543,14 +578,12 @@ const AdminEditProductPage = () => {
 
                     {openTab === 1 && (
                       <div className="w-full">
-              
                         <ProductCard
                           className={"min-w-[20rem]"}
                           title={title ? title : "Product Name"}
                           price={price ? price : 100}
                           image1={
-                            !isLoading &&
-                            primaryImg == initialPrimaryImg
+                            !isLoading && primaryImg == initialPrimaryImg
                               ? data.primaryImg
                               : URL.createObjectURL(primaryImg)
                           }
@@ -564,21 +597,18 @@ const AdminEditProductPage = () => {
                         title={title ? title : "Product Name"}
                         price={price ? price : 100}
                         primaryImg={
-                          !isLoading &&
-                            primaryImg == initialPrimaryImg
-                              ? data.primaryImg
-                              : URL.createObjectURL(primaryImg)
+                          !isLoading && primaryImg == initialPrimaryImg
+                            ? data.primaryImg
+                            : URL.createObjectURL(primaryImg)
                         }
                         comparedPrice={comparePrice ? comparePrice : 200}
                         secondary1Img={
-                          !isLoading &&
-                          secondary1Img == initialSecondary1Img
+                          !isLoading && secondary1Img == initialSecondary1Img
                             ? data.secondary1Img
                             : URL.createObjectURL(secondary1Img)
                         }
                         secondary2Img={
-                          !isLoading &&
-                          secondary2Img == initialSecondary2Img
+                          !isLoading && secondary2Img == initialSecondary2Img
                             ? data.secondary2Img
                             : URL.createObjectURL(secondary2Img)
                         }

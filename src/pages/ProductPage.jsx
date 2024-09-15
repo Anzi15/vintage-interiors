@@ -12,6 +12,8 @@ import lavenderBottleImg from "../assets/lavender-bottle.webp";
 import roseScentImg from "../assets/scent-of-roses.webp";
 import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
+import DesktopGallery from "../components/DesktopGallery.jsx";
+// import MobileCarousel from "../components/MobileCarousel.jsx";
 
 const reviews = [
   {
@@ -155,7 +157,7 @@ const ProductPage = () => {
         </h2>
       </header>
       <main className="flex justify-evenly w-full md:flex-row flex-col relative h-full">
-        <div className="imgs-section px-8 w-full md:w-1/2 flex flex-col md:sticky top-4">
+        {/* <div className="imgs-section px-8 w-full md:w-1/2 flex flex-col md:sticky top-4">
           <div
             className={`primary-img-con mb-4 ${
               isLoading ? "skeleton-loading" : ""
@@ -189,7 +191,11 @@ const ProductPage = () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
+
+<DesktopGallery className="hidden md:grid md:max-h-[565px] md:max-w-[445px] md:gap-8" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]}/>
+
+{/* <MobileCarousel className="relative grid h-[18.75rem] w-svw md:hidden" /> */}
 
         <div className="details-section flex flex-col pt-6 text-left gap-3 w-full md:w-1/2 px-6">
           <div className="product-data flex flex-col md:gap-6 gap-3 md:pb-8 py-4">
