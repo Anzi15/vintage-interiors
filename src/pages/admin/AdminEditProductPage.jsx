@@ -12,7 +12,7 @@ import { TagsInput } from "react-tag-input-component";
 import InputField from "../../components/InputField.jsx";
 import Swal from "sweetalert2";
 import storage from "../../modules/firebase-modules/firestorage.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { GoGoal } from "react-icons/go";
 
@@ -106,6 +106,7 @@ const AdminEditProductPage = () => {
       setInitialHtml(data.descriptionHtml || "");
       setPrice(data.price || 0);
       setShippingFees(data.shippingFees)
+      setDiscountExpiryDate(data.discountExpiryDate || null)
       // setSelectedTags(data.tags || []);
     }
     (async () => {
@@ -187,24 +188,82 @@ const AdminEditProductPage = () => {
 
   const [openTab, setOpenTab] = useState(1);
 
-  const uploadImage = async (file) => {
+
+
+  const uploadImage = async (file, oldFileUrl) => {
     try {
       // Create a reference to the file in Firebase Storage
       const storageRef = ref(storage, `images/${file.name}`);
-
-      // Upload the file
-      await uploadBytes(storageRef, file);
-
-      // Get the download URL
-      const url = await getDownloadURL(storageRef);
-
-      // Return the URL
-      return url;
+      
+      // If there's an old file URL, delete the old file
+      if (oldFileUrl) {
+        const oldFileRef = ref(storage, oldFileUrl);
+        try {
+          await deleteObject(oldFileRef);
+          console.log(`Old file deleted: ${oldFileUrl}`);
+        } catch (error) {
+          console.error("Error deleting old file:", error);
+        }
+      }
+  
+      // Create an image element and canvas for resizing
+      const img = document.createElement('img');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+  
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          // Upload the original image
+          await uploadBytes(storageRef, file);
+          const originalUrl = await getDownloadURL(storageRef);
+  
+          // Resize and upload thumbnails
+          const sizes = [200, 400, 800];
+          const thumbnailUrls = [];
+  
+          for (const size of sizes) {
+            canvas.width = size;
+            canvas.height = size;
+            ctx.drawImage(img, 0, 0, size, size);
+  
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+              try {
+                const thumbnailRef = ref(storage, `thumbnails/${size}_${file.name}`);
+                await uploadBytes(thumbnailRef, blob);
+                const thumbnailUrl = await getDownloadURL(thumbnailRef);
+                thumbnailUrls.push({ size, url: thumbnailUrl });
+  
+                // Resolve when all thumbnails are processed
+                if (thumbnailUrls.length === sizes.length) {
+                  resolve({ originalUrl, thumbnails: thumbnailUrls });
+                }
+              } catch (error) {
+                console.error('Error uploading thumbnail:', error);
+                reject(error);
+              }
+            }, 'image/jpeg');
+          }
+  
+          // Handle case where no thumbnails are generated
+          if (sizes.length === 0) {
+            resolve({ originalUrl, thumbnails: [] });
+          }
+        };
+  
+        img.onerror = (error) => {
+          console.error('Error loading image:', error);
+          reject(error);
+        };
+  
+        img.src = URL.createObjectURL(file);
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
       throw error;
     }
   };
+  
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -249,36 +308,62 @@ const AdminEditProductPage = () => {
       "secondary 2 img updated",
       initialSecondary2Img !== secondary2Img
     );
+    const primaryImgUpdated = initialPrimaryImg === primaryImg
+    ? data.primaryImg
+    : await uploadImage(primaryImg, data.primaryImg);
+  
+  const secondary1ImgUpdated = initialSecondary1Img === secondary1Img
+    ? data.secondary1Img
+    : await uploadImage(secondary1Img, data.secondary1Img);
+  
+  const secondary2ImgUpdated = initialSecondary2Img === secondary2Img
+    ? data.secondary2Img
+    : await uploadImage(secondary2Img, data.secondary2Img);
+    console.log(discountExpiryDate)
     const updatedData = {
       title,
       subTitle,
       descriptionHtml,
       price,
       comparePrice,
-      discountExpiryDate,
+      discountExpiryDate: data.setDiscountExpiryDate == data.setDiscountExpiryDate ? setDiscountExpiryDate : setDiscountExpiryDate,
       createdAt: data.createdAt,
       shippingFees,
       tags: selectedTags,
       variants,
       primaryImg:
-        initialPrimaryImg == primaryImg
+        primaryImg === initialPrimaryImg
           ? data.primaryImg
-          : uploadImage(primaryImg),
+          : primaryImgUpdated.originalUrl,
+      primaryImgThumbnails:
+        primaryImg === initialPrimaryImg
+          ? data.primaryImgThumbnails
+          : primaryImgUpdated.thumbnails,
       secondary1Img:
-        initialSecondary1Img == secondary1Img
+        secondary1Img === initialSecondary1Img
           ? data.secondary1Img
-          : uploadImage(secondary1Img),
+          : secondary1ImgUpdated.originalUrl,
+      secondary1ImgThumbnails:
+        secondary1Img === initialSecondary1Img
+          ? data.secondary1ImgThumbnails
+          : secondary1ImgUpdated.thumbnails,
       secondary2Img:
-        initialSecondary2Img == secondary2Img
+        secondary2Img === initialSecondary2Img
           ? data.secondary2Img
-          : uploadImage(secondary2Img),
+          : secondary2ImgUpdated.originalUrl,
+      secondary2ImgThumbnails:
+        secondary2Img === initialSecondary2Img
+          ? data.secondary2ImgThumbnails
+          : secondary2ImgUpdated.thumbnails,
     };
     const docId =
       updatedData.title == data.title
         ? productId
         : title.toLowerCase().replace(/ /g, "-");
     console.log(updatedData);
-
+    console.log('Primary Image Updated:', primaryImgUpdated);
+    console.log('Updated Data:', updatedData);
+    
     try {
       setPublishingMsg("Connecting to database..");
       const collectionName = "Products";
@@ -392,7 +477,9 @@ const AdminEditProductPage = () => {
                   requiredInput={false}
                   inputValue={comparePrice}
                 />
-              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
+              <DatePicker dateReturner={()=>{setDiscountExpiryDate
+                console.log
+              }} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
 
                 <InputField
                   inputName={"Shipping Fees"}

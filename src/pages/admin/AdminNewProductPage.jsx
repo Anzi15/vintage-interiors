@@ -104,7 +104,7 @@ const AdminNewProductPage = () => {
           const originalUrl = await getDownloadURL(storageRef);
   
           // Resize and upload thumbnails
-          const sizes = [400, 800];
+          const sizes = [200, 400, 800];
           const thumbnailUrls = [];
   
           for (const size of sizes) {

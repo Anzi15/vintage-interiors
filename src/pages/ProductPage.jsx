@@ -61,12 +61,22 @@ const ProductPage = () => {
     title: "Loading...",
     primaryImg:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-    secondary_img_1:
+      primaryImgThumbnails: [
+        "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+      ],
+    secondary2Img:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-    secondary_img_2:
+      secondary2ImgThumbnails:[
+        "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+      ],
+    secondary1Img:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
     description: "Loading description...",
+    secondary1ImgThumbnails:[
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+    ],
     price: "0.00",
+
   });
 
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -193,7 +203,7 @@ const ProductPage = () => {
           </div>
         </div> */}
 
-<DesktopGallery className="hidden md:grid md:max-h-[565px] md:max-w-[445px] md:gap-8" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]}/>
+<DesktopGallery className="hidden md:grid md:max-h-[565px] md:max-w-[445px] md:gap-8" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]} thumbnails={[data.primaryImgThumbnails[0].url, data.secondary1ImgThumbnails[0].url,data.secondary2ImgThumbnails[0].url]}/>
 
 {/* <MobileCarousel className="relative grid h-[18.75rem] w-svw md:hidden" /> */}
 
@@ -234,11 +244,13 @@ const ProductPage = () => {
                 </h3>
               </div>
 
-              <div>
+              <div className="flex flex-col">
                 {(selectedVariant?.comparePrice || data.comparePrice) &&
                   ((selectedVariant.comparePrice !== 0 &&
                     selectedVariant.comparePrice !== "0") ||
                     (data.comparePrice !== 0 && data.comparePrice !== "0")) && (
+                    <div>
+                      
                     <div>
                       Rs.
                       <s className="line-through">
@@ -247,10 +259,18 @@ const ProductPage = () => {
                           : data.comparePrice * quantity}
                       </s>
                     </div>
+
+                    </div>
                   )}
               </div>
             </div>
+                  {
+                    data.comparePrice && data.discountExpiryDate &&(
+                    <div className="w-full bg-[#FF8500] h-10">
 
+                    </div>
+                    )
+                  }
             {data.variants && data.variants.length > 1 && (
               <div>
                 <p className="font-bold">Variants</p>
