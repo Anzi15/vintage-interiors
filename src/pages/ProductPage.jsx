@@ -15,6 +15,8 @@ import { toast } from "react-toastify";
 import DesktopGallery from "../components/DesktopGallery.jsx";
 // import MobileCarousel from "../components/MobileCarousel.jsx";
 import CountdownTimer from "../components/CountDownTimer.jsx";
+import { Button } from "@material-tailwind/react";
+import { IoMdCart } from "react-icons/io";
 const reviews = [
   {
     stars: 5,
@@ -396,20 +398,20 @@ const ProductPage = () => {
             </div>
           </form>
           <div className="cta-con pt-8">
-            <div className="two_btn_con flex gap-4 items-center mb-4 md:flex-col flex-row-reverse">
-              <button
-                className="align-middle select-none w-full text-xm min-h-6 font-sans font-semibold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none py-3 px-6 rounded-lg border-2 border-gray-700 text-black shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
-                type="button"
+            <div className="two_btn_con flex gap-4 items-center mb-4 md:flex-row flex-row-reverse md:w-[80%] ">
+              <Button
+                className="text-nowrap flex items-center gap-3 py-4 px-6"
                 onClick={addToCart}
+                variant="outlined"
               >
+                <IoMdCart className="text-xl"/>
                 Add To Cart
-              </button>
-              <button
-                className="align-middle select-none w-full text-xm min-h-6 font-sans font-semibold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
-                type="button"
-              >
-                Buy Now
-              </button>
+              </Button>
+              <Link to={`/product/${productId}/checkout`} className="w-full">
+              <Button className="w-full py-3.5 text-lg" >
+                Buy now
+              </Button>
+              </Link>
             </div>
           </div>
 

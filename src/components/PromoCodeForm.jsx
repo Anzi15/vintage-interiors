@@ -63,7 +63,7 @@ const PromoCodeForm = ({productTags, discountValueReturner, discountTypeReturner
         setIsLoading(true);
         setIsFormSubmitted(true);
         setError(null)
-        discountValueReturner(0, null)
+        discountValueReturner(0, null, promoCode)
         try {
             // Fetch coupon data
             const coupons = await getCouponDoc(promoCode, setError);

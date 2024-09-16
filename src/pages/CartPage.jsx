@@ -20,6 +20,7 @@ const CartPage = () => {
   const [discountValue, setDiscountValue] = useState(0)
   const [discountType, setDiscountType] = useState(null)
   const [shippingFees, setShippingFees] = useState(null)
+  const [couponCodeApplied, setCouponCodeApplied] = useState(null)
 
   useEffect(() => {
     if (cartItems?.length) {
@@ -73,12 +74,13 @@ const CartPage = () => {
     setTotal(subTotal + shippingFees - discountValue)
   },[subTotal, discountValue, shippingFees])
 
-  const getDiscountValue = (value, type)=>{
+  const getDiscountValue = (value, type, couponCodeApplied)=>{
     if(type){
       if(type == "amount") setDiscountValue(value)
         else if(type == "percentage") {
       const discountedPrice = subTotal * (1 - (value / 100));
       setDiscountValue(Math.round(subTotal - discountedPrice))
+      setCouponCodeApplied(couponCodeApplied)
     }
     }
   }
@@ -176,9 +178,9 @@ const CartPage = () => {
 
                    </div>
 
-                    <button className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
+                    <Link className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900" to={`/cart/checkout/`}>
                       Checkout
-                    </button>
+                    </Link>
                   </div>
               </div>
 
@@ -278,10 +280,10 @@ const CartPage = () => {
                     </div>
 
                    </div>
-
-                    <button className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
+                    {console.log(couponCodeApplied)}
+                    <Link to={`/cart/checkout/${couponCodeApplied !== null ? couponCodeApplied : ""}`} className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
                       Checkout
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
