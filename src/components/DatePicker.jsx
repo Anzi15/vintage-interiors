@@ -1,55 +1,49 @@
 import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button, // Import Button component
-} from "@material-tailwind/react";
+import { Input, Popover, PopoverHandler, PopoverContent, Button } from "@material-tailwind/react";
 import { format, addDays, isValid } from 'date-fns';
 import { DayPicker } from "react-day-picker";
 
 export const convertTimestampToDate = (timestamp) => {
   if (timestamp && timestamp.seconds) {
-    return new Date(timestamp.seconds * 1000); // Firestore stores seconds, multiply by 1000 to convert to milliseconds
+    return new Date(timestamp.seconds * 1000);
   }
   return null;
 };
 
 export default function DatePicker({ initialDate = null, dateReturner, mode = "date", label="Select a date" }) {
-  const [date, setDate] = useState(initialDate || null); 
-  const [time, setTime] = useState("12:00"); // Default time (you can adjust this)
-  const tomorrow = addDays(new Date(), 1);  
-
-  useEffect(()=>{
-  console.log(date, time)
-
-  },[date, time])
+  const [date, setDate] = useState(initialDate ? convertTimestampToDate(initialDate) : null); 
+  const [time, setTime] = useState("12:00"); // Default time
+  const tomorrow = addDays(new Date(), 1);
 
   useEffect(() => {
-    const convertedDate = convertTimestampToDate(initialDate); // Convert Firestore timestamp
+    const convertedDate = convertTimestampToDate(initialDate);
+    console.log("Converted Date:", convertedDate);
     if (convertedDate && isValid(convertedDate)) {
       setDate(convertedDate);
+    } else {
+      console.error("Invalid date:", convertedDate);
     }
   }, [initialDate]);
 
   useEffect(() => {
-    // Combine date and time if mode is "datetime"
     if (mode === "datetime" && date) {
       const [hours, minutes] = time.split(":");
       const updatedDate = new Date(date);
       updatedDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
-      setDate(updatedDate);
+      
+      if (updatedDate.getTime() !== date.getTime()) {
+        setDate(updatedDate);
+      }
       dateReturner(updatedDate);
     } else {
       dateReturner(date);
     }
-  }, [time, mode, dateReturner]);
+  }, [time, mode, date]);
 
   const clearDate = () => {
     setDate(null);
-    setTime("12:00"); // Reset time to default
-    dateReturner(null); // Notify parent component that date is cleared
+    setTime("12:00");
+    dateReturner(null);
   };
 
   return (
@@ -67,7 +61,7 @@ export default function DatePicker({ initialDate = null, dateReturner, mode = "d
           <DayPicker
             mode="single"
             selected={date}
-            onSelect={setDate}
+            onSelect={(selectedDate) => setDate(selectedDate)}
             disabled={{ before: tomorrow }}
             hidden={{ before: tomorrow }}
             showOutsideDays
@@ -101,7 +95,6 @@ export default function DatePicker({ initialDate = null, dateReturner, mode = "d
               ),
             }}
           />
-          {/* Conditionally render time input if mode is "datetime" */}
           {mode === "datetime" && (
             <div className="mt-2">
               <Input
@@ -113,7 +106,6 @@ export default function DatePicker({ initialDate = null, dateReturner, mode = "d
               />
             </div>
           )}
-          {/* Add clear button */}
           <div className="mt-2">
             <Button onClick={clearDate} color="red" className="w-full">
               Clear Date

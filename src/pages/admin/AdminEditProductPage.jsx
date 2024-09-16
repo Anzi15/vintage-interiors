@@ -326,7 +326,7 @@ const AdminEditProductPage = () => {
       descriptionHtml,
       price,
       comparePrice,
-      discountExpiryDate: data.setDiscountExpiryDate == data.setDiscountExpiryDate ? setDiscountExpiryDate : setDiscountExpiryDate,
+      discountExpiryDate,
       createdAt: data.createdAt,
       shippingFees,
       tags: selectedTags,
@@ -363,7 +363,7 @@ const AdminEditProductPage = () => {
     console.log(updatedData);
     console.log('Primary Image Updated:', primaryImgUpdated);
     console.log('Updated Data:', updatedData);
-    
+
     try {
       setPublishingMsg("Connecting to database..");
       const collectionName = "Products";
@@ -477,9 +477,10 @@ const AdminEditProductPage = () => {
                   requiredInput={false}
                   inputValue={comparePrice}
                 />
-              <DatePicker dateReturner={()=>{setDiscountExpiryDate
-                console.log
-              }} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
+
+                console.log(initialDate)
+                
+              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
 
                 <InputField
                   inputName={"Shipping Fees"}

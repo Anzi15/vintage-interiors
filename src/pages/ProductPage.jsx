@@ -14,7 +14,7 @@ import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
 import DesktopGallery from "../components/DesktopGallery.jsx";
 // import MobileCarousel from "../components/MobileCarousel.jsx";
-
+import CountdownTimer from "../components/CountDownTimer.jsx";
 const reviews = [
   {
     stars: 5,
@@ -266,9 +266,7 @@ const ProductPage = () => {
             </div>
                   {
                     data.comparePrice && data.discountExpiryDate &&(
-                    <div className="w-full bg-[#FF8500] h-10">
-
-                    </div>
+                    <CountdownTimer expiryTimestamp={data.discountExpiryDate}/>
                     )
                   }
             {data.variants && data.variants.length > 1 && (
