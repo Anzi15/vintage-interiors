@@ -90,7 +90,7 @@ const Footer = () => {
         © 2023 Al Zehra By GM. All rights reserved.
       </p>
   
-        <div className="flex gap-4 hover:cursor-pointer items-center">
+        <div className="flex gap-4 hover:cursor-pointer items-center md:justify-normal justify-center">
           <Link to={"https://wa.link/kljcq1"} target="_blank">
           <FaWhatsappSquare className="text-4xl transition-all hover:scale-105" />
           </Link>

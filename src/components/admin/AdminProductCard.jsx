@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { useDocument } from "react-firebase-hooks/firestore";
 import { db } from "../../modules/firebase-modules/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import storage from "../../modules/firebase-modules/firestorage";
 
 const AdminProductCard = ({
   link,
@@ -16,6 +18,7 @@ const AdminProductCard = ({
   loading,
   onDeleteProduct,
 }) => {
+  
   const deleteProduct = async (docId) => {
     Swal.fire({
       icon: "warning",
@@ -39,14 +42,42 @@ const AdminProductCard = ({
           });
           const productRef = doc(db, "Products", docId);
           const docSnapshot = await getDoc(productRef);
-
+  
           if (docSnapshot.exists()) {
             const productData = docSnapshot.data();
-
+  
+            // Move product data to the trash collection
             await setDoc(doc(db, "trashProducts", docId), productData);
-
+  
+            // Delete images
+            const deleteImage = async (imgUrl) => {
+              if (imgUrl) {
+                const imgRef = ref(storage, imgUrl);
+                try {
+                  await deleteObject(imgRef);
+                } catch (error) {
+                  console.error("Error deleting image:", error);
+                }
+              }
+            };
+  
+            // Destructure image and thumbnail URLs from product data
+            const { primaryImg, secondary1Img, secondary2Img, primaryImgThumbnails = [], secondary1ImgThumbnails = [], secondary2ImgThumbnails = [] } = productData;
+  
+            // Delete primary images
+            await Promise.all([
+              deleteImage(primaryImg),
+              deleteImage(secondary1Img),
+              deleteImage(secondary2Img),
+              ...primaryImgThumbnails.map(thumbnail => deleteImage(thumbnail.url)),
+              ...secondary1ImgThumbnails.map(thumbnail => deleteImage(thumbnail.url)),
+              ...secondary2ImgThumbnails.map(thumbnail => deleteImage(thumbnail.url))
+            ]);
+  
+            // Delete the product document
             await deleteDoc(productRef);
             onDeleteProduct(docId);
+  
             Swal.fire({
               icon: "success",
               text: "Product has been deleted and moved to trash.",
@@ -70,6 +101,7 @@ const AdminProductCard = ({
       }
     });
   };
+  
 
   return (
     <>

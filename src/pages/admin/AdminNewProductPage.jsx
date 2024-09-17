@@ -10,7 +10,7 @@ import { Typography } from "@material-tailwind/react";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { Toast } from "flowbite-react";
 import { toast } from "react-toastify";
 import { TagInput } from "rsuite";
@@ -21,6 +21,7 @@ import storage from "../../modules/firebase-modules/firestorage.js";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import BouncingBallLoader from "../../components/BouncingBallLoader.jsx";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "../../components/DatePicker.jsx";
 
 const AdminNewProductPage = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const AdminNewProductPage = () => {
   const [subTitle, setSubTitle] = useState("");
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(null);
+  const [discountExpiryDate, setDiscountExpiryDate] = useState(null);
+  const [shippingFees, setShippingFees] = useState(300);
   const [descriptionHtml, setDescriptionHtml] = useState(null);
   const [productSavingType, setProductSavingType] = useState("publish");
   const [selectedTags, setSelectedTags] = useState([]);
@@ -88,20 +91,65 @@ const AdminNewProductPage = () => {
     try {
       // Create a reference to the file in Firebase Storage
       const storageRef = ref(storage, `images/${file.name}`);
-
-      // Upload the file
-      await uploadBytes(storageRef, file);
-
-      // Get the download URL
-      const url = await getDownloadURL(storageRef);
-
-      // Return the URL
-      return url;
+      
+      // Create an image element and canvas for resizing
+      const img = document.createElement('img');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+  
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          // Upload the original image
+          await uploadBytes(storageRef, file);
+          const originalUrl = await getDownloadURL(storageRef);
+  
+          // Resize and upload thumbnails
+          const sizes = [200, 400, 800];
+          const thumbnailUrls = [];
+  
+          for (const size of sizes) {
+            canvas.width = size;
+            canvas.height = size;
+            ctx.drawImage(img, 0, 0, size, size);
+            
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+              try {
+                const thumbnailRef = ref(storage, `thumbnails/${size}_${file.name}`);
+                await uploadBytes(thumbnailRef, blob);
+                const thumbnailUrl = await getDownloadURL(thumbnailRef);
+                thumbnailUrls.push({ size, url: thumbnailUrl });
+  
+                // Resolve when all thumbnails are processed
+                if (thumbnailUrls.length === sizes.length) {
+                  resolve({ originalUrl, thumbnails: thumbnailUrls });
+                }
+              } catch (error) {
+                console.error('Error uploading thumbnail:', error);
+                reject(error);
+              }
+            }, 'image/jpeg');
+          }
+  
+          // Handle case where no thumbnails are generated
+          if (sizes.length === 0) {
+            resolve({ originalUrl, thumbnails: [] });
+          }
+        };
+  
+        img.onerror = (error) => {
+          console.error('Error loading image:', error);
+          reject(error);
+        };
+  
+        img.src = URL.createObjectURL(file);
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
       throw error;
     }
   };
+  
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -154,18 +202,26 @@ const AdminNewProductPage = () => {
       setPublishingMsg("Uploading Img 2/3..");
       const secondary2ImgUrl = await uploadImage(secondary2Img);
       setPublishingMsg("Uploading Img 3/3..");
+
       const productData = {
-        primaryImg: primaryImgUrl,
-        secondary1Img: secondary1ImgUrl,
-        secondary2Img: secondary2ImgUrl,
+        primaryImg: primaryImgUrl.originalUrl,
+        primaryImgThumbnails: primaryImgUrl.thumbnails,
+        secondary1Img: secondary1ImgUrl.originalUrl,
+        secondary1ImgThumbnails: secondary1ImgUrl.thumbnails,
+        secondary2Img: secondary2ImgUrl.originalUrl,
+        secondary2ImgThumbnails: secondary2ImgUrl.thumbnails,
         title,
         subTitle,
         descriptionHtml,
         price,
         comparePrice,
+        discountExpiryDate,
+        createdAt: Timestamp.now(),
         tags: selectedTags,
         variants,
+        shippingFees
       };
+
       try {
         setPublishingMsg("Connecting to database..");
         const collectionName =
@@ -206,6 +262,7 @@ const AdminNewProductPage = () => {
           <p>{publishingMsg}</p>
         </div>
       )}
+
 
       <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
         <div className="w-full flex flex-col justify-center items-center mb-16">
@@ -270,6 +327,15 @@ const AdminNewProductPage = () => {
                 valueReturner={setComparePrice}
                 requiredInput={false}
                 inputValue={comparePrice}
+              />
+              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" />
+
+              <InputField
+                inputName={"Shipping Fees"}
+                inputType="number"
+                valueReturner={setShippingFees}
+                requiredInput={true}
+                inputValue={shippingFees}
               />
 
               <div className="max-w-full">
@@ -507,6 +573,8 @@ const AdminNewProductPage = () => {
           </div>
         </section>
       </main>
+
+      
     </>
   );
 };

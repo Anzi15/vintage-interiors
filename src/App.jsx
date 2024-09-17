@@ -20,6 +20,12 @@ import AdminLayout from './layouts/AdminLayout.jsx';
 import "./styles/utility.scss";
 import ContactPage from './pages/ContactPage.jsx';
 import CartPage from './pages/CartPage.jsx';
+import AdminManagementPage from './pages/admin/AdminManagementPage.jsx';
+import AdminNewCoupon from './pages/admin/AdminNewCoupon.jsx';
+import AdminCouponEdit from './pages/admin/AdminCouponEdit.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
+import EmptyLayout from './layouts/EmptyLayout.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -35,12 +41,22 @@ function App() {
           <Route path="products" element={<AllProductsPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="cart" element={<CartPage />} />
+          <Route path="about" element={<AboutPage />} />
+        </Route>
+        <Route path="product/:source/checkout" element={<EmptyLayout />}>
+          <Route index element={<CheckoutPage />}/>
+        </Route>
+        <Route path="cart/checkout:coupon" element={<EmptyLayout />}>
+          <Route index element={<CheckoutPage />}/>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminPage />} />
           <Route path='/admin/products' element={<AdminProductsPage />} />
           <Route path='/admin/products/new' element={<AdminNewProductPage />} />
           <Route path='/admin/products/:id/edit' element={<AdminEditProductPage />} />
+          <Route path='/admin/management' element={<AdminManagementPage />} />
+          <Route path='/admin/management/coupons/new' element={<AdminNewCoupon />} />
+          <Route path='/admin/management/coupons/:couponCode/edit' element={<AdminCouponEdit />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />

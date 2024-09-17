@@ -12,7 +12,7 @@ import { TagsInput } from "react-tag-input-component";
 import InputField from "../../components/InputField.jsx";
 import Swal from "sweetalert2";
 import storage from "../../modules/firebase-modules/firestorage.js";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { GoGoal } from "react-icons/go";
 
@@ -20,6 +20,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getDocument } from "../../modules/firebase-modules/firestore";
 import { GrUpdate } from "react-icons/gr";
+import DatePicker from "../../components/DatePicker.jsx";
 
 const AdminEditProductPage = () => {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ const AdminEditProductPage = () => {
   const [subTitle, setSubTitle] = useState("");
   const [price, setPrice] = useState(0);
   const [comparePrice, setComparePrice] = useState(0);
+  const [shippingFees, setShippingFees] = useState(300);
+  const [discountExpiryDate, setDiscountExpiryDate] = useState(null);
   const [descriptionHtml, setDescriptionHtml] = useState("");
   const [initialHtml, setInitialHtml] = useState("");
   const [tags, setTags] = useState([]);
@@ -88,12 +91,11 @@ const AdminEditProductPage = () => {
       setVariants(data.variants);
     }
     if (data && data.tags && data.tags.length > 0) {
-      console.log(data.tags)
+      console.log(data.tags);
 
       setSelectedTags(data.tags);
     }
   }, [data]);
-
 
   useEffect(() => {
     if (data) {
@@ -103,40 +105,46 @@ const AdminEditProductPage = () => {
       setDescriptionHtml(data.descriptionHtml || "");
       setInitialHtml(data.descriptionHtml || "");
       setPrice(data.price || 0);
+      setShippingFees(data.shippingFees)
+      setDiscountExpiryDate(data.discountExpiryDate || null)
       // setSelectedTags(data.tags || []);
     }
-    (async ()=>{
-      console.log
-      if(data.primaryImg){
-        const primaryImgFile = await fileFromUrl(data.primaryImg, "primaryImg"); 
-        setPrimaryImg(primaryImgFile) 
-        setInitialPrimaryImg(primaryImgFile)
-      } 
-      if(data.secondary1Img){
-        const secondary1ImgFile = await fileFromUrl(data.secondary1Img, "secondary1Img"); 
-        setSecondary1Img(secondary1ImgFile) 
-        setInitialSecondary1Img(secondary1ImgFile)
-
+    (async () => {
+      console.log;
+      if (data.primaryImg) {
+        const primaryImgFile = await fileFromUrl(data.primaryImg, "primaryImg");
+        setPrimaryImg(primaryImgFile);
+        setInitialPrimaryImg(primaryImgFile);
       }
-      if(data.secondary2Img){
-        const secondary2ImgFile = await fileFromUrl(data.secondary2Img, "secondary1Img"); 
-        setSecondary2Img(secondary2ImgFile) 
-        setInitialSecondary2Img(secondary2ImgFile)
-        
+      if (data.secondary1Img) {
+        const secondary1ImgFile = await fileFromUrl(
+          data.secondary1Img,
+          "secondary1Img"
+        );
+        setSecondary1Img(secondary1ImgFile);
+        setInitialSecondary1Img(secondary1ImgFile);
       }
-    })()
+      if (data.secondary2Img) {
+        const secondary2ImgFile = await fileFromUrl(
+          data.secondary2Img,
+          "secondary1Img"
+        );
+        setSecondary2Img(secondary2ImgFile);
+        setInitialSecondary2Img(secondary2ImgFile);
+      }
+    })();
   }, [data]);
-  
+
   async function fileFromUrl(url, fileName) {
     // Fetch the file data from the URL
     const response = await fetch(url);
-  
+
     // Convert the response to a Blob
     const blob = await response.blob();
-  
+
     // Create a File object from the Blob
     const file = new File([blob], fileName, { type: blob.type });
-  
+
     return file;
   }
 
@@ -145,7 +153,7 @@ const AdminEditProductPage = () => {
     const checkForExistence = async () => {
       if (title.length) {
         try {
-          if(title.toLowerCase().replace(/ /g, "-") == productId) return;
+          if (title.toLowerCase().replace(/ /g, "-") == productId) return;
           const docRef = doc(
             db,
             "Products",
@@ -180,24 +188,82 @@ const AdminEditProductPage = () => {
 
   const [openTab, setOpenTab] = useState(1);
 
-  const uploadImage = async (file) => {
+
+
+  const uploadImage = async (file, oldFileUrl) => {
     try {
       // Create a reference to the file in Firebase Storage
       const storageRef = ref(storage, `images/${file.name}`);
-
-      // Upload the file
-      await uploadBytes(storageRef, file);
-
-      // Get the download URL
-      const url = await getDownloadURL(storageRef);
-
-      // Return the URL
-      return url;
+      
+      // If there's an old file URL, delete the old file
+      if (oldFileUrl) {
+        const oldFileRef = ref(storage, oldFileUrl);
+        try {
+          await deleteObject(oldFileRef);
+          console.log(`Old file deleted: ${oldFileUrl}`);
+        } catch (error) {
+          console.error("Error deleting old file:", error);
+        }
+      }
+  
+      // Create an image element and canvas for resizing
+      const img = document.createElement('img');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+  
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          // Upload the original image
+          await uploadBytes(storageRef, file);
+          const originalUrl = await getDownloadURL(storageRef);
+  
+          // Resize and upload thumbnails
+          const sizes = [200, 400, 800];
+          const thumbnailUrls = [];
+  
+          for (const size of sizes) {
+            canvas.width = size;
+            canvas.height = size;
+            ctx.drawImage(img, 0, 0, size, size);
+  
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+              try {
+                const thumbnailRef = ref(storage, `thumbnails/${size}_${file.name}`);
+                await uploadBytes(thumbnailRef, blob);
+                const thumbnailUrl = await getDownloadURL(thumbnailRef);
+                thumbnailUrls.push({ size, url: thumbnailUrl });
+  
+                // Resolve when all thumbnails are processed
+                if (thumbnailUrls.length === sizes.length) {
+                  resolve({ originalUrl, thumbnails: thumbnailUrls });
+                }
+              } catch (error) {
+                console.error('Error uploading thumbnail:', error);
+                reject(error);
+              }
+            }, 'image/jpeg');
+          }
+  
+          // Handle case where no thumbnails are generated
+          if (sizes.length === 0) {
+            resolve({ originalUrl, thumbnails: [] });
+          }
+        };
+  
+        img.onerror = (error) => {
+          console.error('Error loading image:', error);
+          reject(error);
+        };
+  
+        img.src = URL.createObjectURL(file);
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
       throw error;
     }
   };
+  
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -233,55 +299,99 @@ const AdminEditProductPage = () => {
     e.preventDefault();
     setPublishing(true);
     setPublishingMsg("Getting Updated Data..");
-    console.log("primary img updated", initialPrimaryImg !== primaryImg)
-    console.log("secondary 1 img updated", initialSecondary1Img !== secondary1Img)
-    console.log("secondary 2 img updated", initialSecondary2Img !== secondary2Img)
+    console.log("primary img updated", initialPrimaryImg !== primaryImg);
+    console.log(
+      "secondary 1 img updated",
+      initialSecondary1Img !== secondary1Img
+    );
+    console.log(
+      "secondary 2 img updated",
+      initialSecondary2Img !== secondary2Img
+    );
+    const primaryImgUpdated = initialPrimaryImg === primaryImg
+    ? data.primaryImg
+    : await uploadImage(primaryImg, data.primaryImg);
+  
+  const secondary1ImgUpdated = initialSecondary1Img === secondary1Img
+    ? data.secondary1Img
+    : await uploadImage(secondary1Img, data.secondary1Img);
+  
+  const secondary2ImgUpdated = initialSecondary2Img === secondary2Img
+    ? data.secondary2Img
+    : await uploadImage(secondary2Img, data.secondary2Img);
+    console.log(discountExpiryDate)
     const updatedData = {
-        title,
-        subTitle,
-        descriptionHtml,
-        price,
-        comparePrice,
-        tags: selectedTags,
-        variants,
-        primaryImg: initialPrimaryImg == primaryImg ? data.primaryImg : uploadImage(primaryImg),
-        secondary1Img: initialSecondary1Img == secondary1Img ? data.secondary1Img : uploadImage(secondary1Img),
-        secondary2Img: initialSecondary2Img == secondary2Img ? data.secondary2Img : uploadImage(secondary2Img),
-        
+      title,
+      subTitle,
+      descriptionHtml,
+      price,
+      comparePrice,
+      discountExpiryDate,
+      createdAt: data.createdAt,
+      shippingFees,
+      tags: selectedTags,
+      variants,
+      primaryImg:
+        primaryImg === initialPrimaryImg
+          ? data.primaryImg
+          : primaryImgUpdated.originalUrl,
+      primaryImgThumbnails:
+        primaryImg === initialPrimaryImg
+          ? data.primaryImgThumbnails
+          : primaryImgUpdated.thumbnails,
+      secondary1Img:
+        secondary1Img === initialSecondary1Img
+          ? data.secondary1Img
+          : secondary1ImgUpdated.originalUrl,
+      secondary1ImgThumbnails:
+        secondary1Img === initialSecondary1Img
+          ? data.secondary1ImgThumbnails
+          : secondary1ImgUpdated.thumbnails,
+      secondary2Img:
+        secondary2Img === initialSecondary2Img
+          ? data.secondary2Img
+          : secondary2ImgUpdated.originalUrl,
+      secondary2ImgThumbnails:
+        secondary2Img === initialSecondary2Img
+          ? data.secondary2ImgThumbnails
+          : secondary2ImgUpdated.thumbnails,
+    };
+    const docId =
+      updatedData.title == data.title
+        ? productId
+        : title.toLowerCase().replace(/ /g, "-");
+    console.log(updatedData);
+    console.log('Primary Image Updated:', primaryImgUpdated);
+    console.log('Updated Data:', updatedData);
+
+    try {
+      setPublishingMsg("Connecting to database..");
+      const collectionName = "Products";
+      const docRef = doc(db, collectionName, docId);
+      await setDoc(docRef, updatedData);
+      setPublishingMsg("All Set !!");
+      Swal.fire({
+        text: "Product Updated",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "View Products",
+        cancelButtonText: "Add a new Product",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/admin/products");
+        } else {
+          window.location.reload();
+        }
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      setPublishing(false);
+      toast.error("something went wrong!!");
     }
-    const docId = updatedData.title == data.title ? productId : title.toLowerCase().replace(/ /g, "-");
-    console.log(updatedData)
-
-      try {
-        setPublishingMsg("Connecting to database..");
-        const collectionName = "Products";
-        const docRef = doc(db, collectionName, docId);
-        await setDoc(docRef, updatedData); 
-        setPublishingMsg("All Set !!");
-        Swal.fire({
-          text: "Product Updated",
-          icon: "success",
-          showCancelButton: true,
-          confirmButtonText: "View Products",
-          cancelButtonText: "Add a new Product",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/admin/products");
-          } else {
-            window.location.reload();
-          }
-        });
-      } catch (e) {
-        console.error("Error adding document: ", e);
-        setPublishing(false)
-        toast.error("something went wrong!!")
-      }
-
-    
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       // Prevent form submission when Enter is pressed
       event.preventDefault();
     }
@@ -305,7 +415,7 @@ const AdminEditProductPage = () => {
         <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
           <div className="w-full flex flex-col justify-center items-center mb-16">
             <h1 className="text-4xl text-left text-gray-800 ">
-              Edit Details of the product 
+              Edit Details of the product
             </h1>
             <h3 className="text-xl text-left  text-gray-800 ">
               Edit any details you like and hit update
@@ -319,7 +429,6 @@ const AdminEditProductPage = () => {
               ref={FormRef}
               onKeyDown={handleKeyDown}
             >
-
               <div className="flex flex-col gap-4 ">
                 <ImageDropZone
                   storeFileToUpload={setPrimaryImg}
@@ -369,8 +478,23 @@ const AdminEditProductPage = () => {
                   inputValue={comparePrice}
                 />
 
+                console.log(initialDate)
+                
+              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
+
+                <InputField
+                  inputName={"Shipping Fees"}
+                  inputType="number"
+                  valueReturner={setShippingFees}
+                  requiredInput={true}
+                  inputValue={shippingFees}
+                />
+
                 <div className="max-w-full">
-                  <TiptapEditor updateHtml={setDescriptionHtml} initialHtml={initialHtml} />
+                  <TiptapEditor
+                    updateHtml={setDescriptionHtml}
+                    initialHtml={initialHtml}
+                  />
                 </div>
 
                 {/* Variants Management */}
@@ -481,9 +605,9 @@ const AdminEditProductPage = () => {
                   onChange={(tags) => {
                     if (tags) {
                       const processedTags = tags
-                        .filter(tag => typeof tag === 'string') // Ensure only strings are processed
-                        .map(tag => tag.toLowerCase());
-                      data.tags = (processedTags);
+                        .filter((tag) => typeof tag === "string") // Ensure only strings are processed
+                        .map((tag) => tag.toLowerCase());
+                      data.tags = processedTags;
                     }
                   }}
                   name="tags"
@@ -503,10 +627,9 @@ const AdminEditProductPage = () => {
                     setProductSavingType("publish");
                   }}
                 >
-                  <GrUpdate  className="text-2xl" />
-                  Update Changes  
+                  <GrUpdate className="text-2xl" />
+                  Update Changes
                 </button>
-                
               </div>
             </form>
 
@@ -543,14 +666,12 @@ const AdminEditProductPage = () => {
 
                     {openTab === 1 && (
                       <div className="w-full">
-              
                         <ProductCard
                           className={"min-w-[20rem]"}
                           title={title ? title : "Product Name"}
                           price={price ? price : 100}
                           image1={
-                            !isLoading &&
-                            primaryImg == initialPrimaryImg
+                            !isLoading && primaryImg == initialPrimaryImg
                               ? data.primaryImg
                               : URL.createObjectURL(primaryImg)
                           }
@@ -564,21 +685,18 @@ const AdminEditProductPage = () => {
                         title={title ? title : "Product Name"}
                         price={price ? price : 100}
                         primaryImg={
-                          !isLoading &&
-                            primaryImg == initialPrimaryImg
-                              ? data.primaryImg
-                              : URL.createObjectURL(primaryImg)
+                          !isLoading && primaryImg == initialPrimaryImg
+                            ? data.primaryImg
+                            : URL.createObjectURL(primaryImg)
                         }
                         comparedPrice={comparePrice ? comparePrice : 200}
                         secondary1Img={
-                          !isLoading &&
-                          secondary1Img == initialSecondary1Img
+                          !isLoading && secondary1Img == initialSecondary1Img
                             ? data.secondary1Img
                             : URL.createObjectURL(secondary1Img)
                         }
                         secondary2Img={
-                          !isLoading &&
-                          secondary2Img == initialSecondary2Img
+                          !isLoading && secondary2Img == initialSecondary2Img
                             ? data.secondary2Img
                             : URL.createObjectURL(secondary2Img)
                         }
