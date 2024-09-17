@@ -12,7 +12,7 @@ const ProductCard = ({
   return (
     <Link
       to={link}
-      className="group my-4 md:my-10 flex m-[1%] w-[48%] md:max-w-[17rem] flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-small hover:shadow-md "
+      className="group my-4 md:my-10 flex m-[1%] w-full flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-small hover:shadow-md "
     >
       <div className="flex rounded-xl relative">
         <img
