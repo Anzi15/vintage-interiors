@@ -12,8 +12,8 @@ import lavenderBottleImg from "../assets/lavender-bottle.webp";
 import roseScentImg from "../assets/scent-of-roses.webp";
 import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
-import DesktopGallery from "../components/DesktopGallery.jsx";
-// import MobileCarousel from "../components/MobileCarousel.jsx";
+import ProductImgsCarousel from "../components/ProductImgsCarousel";
+import MobileCarousel from "../components/MobileCarousel.jsx";
 import CountdownTimer from "../components/CountDownTimer.jsx";
 import { Button } from "@material-tailwind/react";
 import { IoMdCart } from "react-icons/io";
@@ -63,25 +63,29 @@ const ProductPage = () => {
     title: "Loading...",
     primaryImg:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-      primaryImgThumbnails: [
-        "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-      ],
+    primaryImgThumbnails: [
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+    ],
     secondary2Img:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-      secondary2ImgThumbnails:[
-        "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
-      ],
+    secondary2ImgThumbnails: [
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+    ],
     secondary1Img:
       "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
     description: "Loading description...",
-    secondary1ImgThumbnails:[
-      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984","https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+    secondary1ImgThumbnails: [
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
+      "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984",
     ],
     price: "0.00",
-
+    comparePrice: "2000",
+    discountExpiryDate: null
   });
 
-  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState({price: 20, comparePrice: 30, name:"meow"});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const { id: productId } = useParams();
@@ -92,14 +96,16 @@ const ProductPage = () => {
     setIsLoading(true);
   }, [location]);
 
+  console.log(selectedVariant.comparePrice)
+
   const addToCart = () => {
     const prevCartItems = JSON.parse(localStorage.getItem("cart-items")) || [];
     const productIndex = prevCartItems.findIndex(
       (item) => item.productId === productId
     );
-    console.log(selectedVariant)
+    console.log(selectedVariant);
     const productData = { productId, quantity, selectedVariant, data };
-   
+
     if (productIndex === -1) {
       // Product is not in the cart, add a new item
       prevCartItems.push(productData);
@@ -112,8 +118,6 @@ const ProductPage = () => {
       toast.success("Item Quantity Updated");
     }
   };
-  
-  
 
   const handleVariantChange = (variant) => {
     setSelectedVariant(variant);
@@ -129,7 +133,8 @@ const ProductPage = () => {
         return Math.max(qnty, 1); // Ensure qnty is at least 1
       }
     });
-  };setSelectedVariant
+  };
+  setSelectedVariant;
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -153,21 +158,27 @@ const ProductPage = () => {
     return <Navigate to="/" />;
   }
 
+  console.log(data.discountExpiryDate);
+
+  const now = new Date();
+  console.log(typeof data.discountExpiryDate);
+  // const timestamp = data.discountExpiryDate; // Assuming this is an object with seconds and nanoseconds
+// const expiryDatee = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
+
+  const expiryDate = new Date(data.discountExpiryDate * 10000);
+  const isExpiryDateValid = expiryDate > now;
+  const parsePrice = (price) => {
+    const parsed = parseFloat(price);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  console.log(parseInt(selectedVariant.comparePrice))
+  const shouldShowComparePrice = (parsePrice(selectedVariant?.comparePrice) || parsePrice(data.comparePrice)) &&
+    ((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)) &&
+    isExpiryDateValid;
+
   return (
     <>
-      <header className="flex px-8 items-end product-tree gap-2 text-lg py-6">
-        <Link to="/" className="text-lg">
-          Products /
-        </Link>{" "}
-        <h2
-          className={`text-gray-700   this-product ${
-            isLoading ? "skeleton-loading" : ""
-          }`}
-          id="product-tree-this-product-name"
-        >
-          {data.title}
-        </h2>
-      </header>
       <main className="flex justify-evenly w-full md:flex-row flex-col relative h-full">
         {/* <div className="imgs-section px-8 w-full md:w-1/2 flex flex-col md:sticky top-4">
           <div
@@ -205,9 +216,21 @@ const ProductPage = () => {
           </div>
         </div> */}
 
-<DesktopGallery className="hidden md:grid md:max-h-[565px] md:max-w-[445px] md:gap-8" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]} thumbnails={[data.primaryImgThumbnails[0].url, data.secondary1ImgThumbnails[0].url,data.secondary2ImgThumbnails[0].url]}/>
+        <ProductImgsCarousel
+          className=" md:max-h-[565px] md:max-w-[445px] md:gap-8"
+          productImages={[
+            data.primaryImg,
+            data.secondary1Img,
+            data.secondary2Img,
+          ]}
+          thumbnails={[
+            data.primaryImgThumbnails[0].url,
+            data.secondary1ImgThumbnails[0].url,
+            data.secondary2ImgThumbnails[0].url,
+          ]}
+        />
 
-{/* <MobileCarousel className="relative grid h-[18.75rem] w-svw md:hidden" /> */}
+        {/* <MobileCarousel className="relative grid h-[18.75rem] w-svw md:hidden aspect-square" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]}/> */}
 
         <div className="details-section flex flex-col pt-6 text-left gap-3 w-full md:w-1/2 px-6">
           <div className="product-data flex flex-col md:gap-6 gap-3 md:pb-8 py-4">
@@ -246,31 +269,20 @@ const ProductPage = () => {
                 </h3>
               </div>
 
-              <div className="flex flex-col">
-                {(selectedVariant?.comparePrice || data.comparePrice) &&
-                  ((selectedVariant.comparePrice !== 0 &&
-                    selectedVariant.comparePrice !== "0") ||
-                    (data.comparePrice !== 0 && data.comparePrice !== "0")) && (
-                    <div>
-                      
-                    <div>
-                      Rs.
-                      <s className="line-through">
-                        {selectedVariant.comparePrice
-                          ? selectedVariant.comparePrice * quantity
-                          : data.comparePrice * quantity}
-                      </s>
-                    </div>
-
-                    </div>
-                  )}
-              </div>
+              {shouldShowComparePrice && (
+        <div>
+          <div>
+            Rs.
+            <s className="line-through">
+              {selectedVariant.comparePrice}
+            </s>
+          </div>
+        </div>
+      )}
             </div>
-                  {
-                    data.comparePrice && data.discountExpiryDate &&(
-                    <CountdownTimer expiryTimestamp={data.discountExpiryDate}/>
-                    )
-                  }
+            {shouldShowComparePrice && isExpiryDateValid && (
+              <CountdownTimer expiryTimestamp={data.discountExpiryDate} />
+            )}
             {data.variants && data.variants.length > 1 && (
               <div>
                 <p className="font-bold">Variants</p>
@@ -404,14 +416,39 @@ const ProductPage = () => {
                 onClick={addToCart}
                 variant="outlined"
               >
-                <IoMdCart className="text-xl"/>
-                Add To Cart
+                <IoMdCart className="text-xl" />
+                <p className="hidden md:flex">Add To Cart</p>
               </Button>
               <Link to={`/product/${productId}/checkout`} className="w-full">
-              <Button className="w-full py-3.5 text-lg" >
-                Buy now
-              </Button>
+                <Button className="w-full py-3.5 text-lg">Buy now</Button>
               </Link>
+
+              <div className="md:hidden w-full px-2 py-2  text-white fixed bottom-0 left-0 right-0 z-50 m-auto">
+                <button className="bg-brandRed w-full py-3 rounded-xl flex">
+                  <div className="font-bold text-lg">Rs. {data.price}</div>
+                  {isExpiryDateValid && (
+                    <div className="flex flex-col">
+                      {(parseInt(selectedVariant?.comparePrice) ||
+                        data.comparePrice) &&
+                        ((selectedVariant.comparePrice !== 0 &&
+                          selectedVariant.comparePrice !== "0") ||
+                          (data.comparePrice !== 0 &&
+                            data.comparePrice !== "0")) && (
+                          <div>
+                            <div>
+                              Rs.
+                              <s className="line-through">
+                                {selectedVariant.comparePrice
+                                  ? selectedVariant.comparePrice * quantity
+                                  : data.comparePrice * quantity}
+                              </s>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

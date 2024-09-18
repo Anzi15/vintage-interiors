@@ -5,7 +5,7 @@ import CartButton from "./CartButton.jsx";
 import HamburgerButton from "./HamburgerButton";
 import Logo from "./Logo";
 import MobileNavbar from "./MobileNavbar";
-import Navbar from "./Navbar.jsx";
+import Navbar from "../components/NavBar.jsx";
 import {db} from "../modules/firebase-modules/firestore.js"
 import { doc, getDoc } from "firebase/firestore";
 
@@ -58,7 +58,7 @@ function Header() {
 
   return (
     <>
-    <div className="w-full bg-black py-2 text-white">{headerText}</div>
+    <div className="w-full bg-black py-2 text-white md:text-lg sm:text-sm text-[0.85rem]">{headerText}</div>
     <header className="max-w-[1440px] mx-auto pt-7 pb-3 flex items-center gap-[103px] h-[84px] min-[1440px]:h-fit px-4 md:px-8 min-[1440px]:px-28">
       <Logo />
       <Navbar links={links} />

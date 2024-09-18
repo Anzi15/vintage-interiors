@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Logo from "./Logo";
 import NavLink from "./NavLink.jsx";
+import { Link } from "react-router-dom";
 
 function MobileNavbar({ links, isMobileOpen, onClick }) {
   return (
@@ -26,12 +27,12 @@ function MobileNavbar({ links, isMobileOpen, onClick }) {
           </svg>
         </button>
       </header>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4 py-6 justify-start">
         {links.map((link) => {
           return (
-            <NavLink key={link.id} href={link.href} mobile={true}>
+            <Link key={link.id} className="flex justify-start text-lg" to={link.href} mobile={true} onClick={onClick}>
               {link.name}
-            </NavLink>
+            </Link>
           );
         })}
       </div>

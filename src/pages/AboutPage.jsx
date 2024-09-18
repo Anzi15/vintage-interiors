@@ -11,13 +11,10 @@ const AboutPage = () => {
       <section className="bg-white dark:bg-gray-900">
         <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6 text-left">
           <div className="font-light text-gray-500 sm:text-lg dark:text-gray-400">
-            <ScrollAnimation animateIn="fadeIn" duration={1.4}>
               <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
                 Crafting Elegance with Every Scent
               </h2>
-            </ScrollAnimation>
 
-            <ScrollAnimation animateIn="fadeIn" duration={1.4}>
               <p>
                 Our passion for fragrance drives us to innovate and excel,
                 ensuring that each scent not only meets but exceeds your
@@ -25,10 +22,8 @@ const AboutPage = () => {
                 luxury and tradition come together to create unforgettable
                 impressions.
               </p>
-            </ScrollAnimation>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-8 select-none">
-            <ScrollAnimation animateIn="fadeIn" duration={1.4}>
               <img
                 className="w-full skeleton-loading rounded-lg min-h-[17rem]"
                 src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/images%2Faman-chaturvedi-DoXaiQ__JEI-unsplash.jpg?alt=media&token=5a9cba1e-1c40-4f16-9089-e766307b3b0f"
@@ -38,9 +33,7 @@ const AboutPage = () => {
                   e.preventDefault();
                 }}
               />
-            </ScrollAnimation>
 
-            <ScrollAnimation animateIn="fadeIn" duration={1.4}>
               <img
                 className="mt-4 w-full min-h-[17rem] skeleton-loading lg:mt-10 rounded-lg"
                 src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/images%2Fevelina-photography-U60Es553C6o-unsplash.jpg?alt=media&token=b2a2e229-da2a-4365-a0b6-f340cd496cf7"
@@ -50,7 +43,6 @@ const AboutPage = () => {
                   e.preventDefault();
                 }}
               />
-            </ScrollAnimation>
           </div>
         </div>
       </section>

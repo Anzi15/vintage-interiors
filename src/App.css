@@ -60,3 +60,9 @@ input:focus {
   outline: none;
   box-shadow: none;
 }
+
+.react-multi-carousel-item{
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1/1 !important;
+} 

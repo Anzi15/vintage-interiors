@@ -86,6 +86,12 @@ const AdminEditProductPage = () => {
     { name: "Default Variant", price: "", comparePrice: "" },
   ]);
 
+  useEffect(()=>{
+    const updatedVariants = [...variants]
+    updatedVariants[0].price = price
+    updatedVariants[0].comparePrice = comparePrice;
+    console.log(updatedVariants)
+  },[price, comparePrice])
   useEffect(() => {
     if (data && data.variants && data.variants.length > 1) {
       setVariants(data.variants);
@@ -478,7 +484,6 @@ const AdminEditProductPage = () => {
                   inputValue={comparePrice}
                 />
 
-                console.log(initialDate)
                 
               <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" initialDate={data.discountExpiryDate}/>
 

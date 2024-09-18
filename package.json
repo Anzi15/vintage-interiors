@@ -45,6 +45,7 @@
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
     "next": "^14.2.11",
+    "nuka-carousel": "^8.0.1",
     "prosemirror-commands": "^1.6.0",
     "prosemirror-model": "^1.22.3",
     "prosemirror-schema-list": "^1.4.1",
@@ -68,7 +69,7 @@
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.12.4",
     "sweetalert2-react-content": "^5.0.7",
-    "swiper": "^11.1.11"
+    "swiper": "^11.1.14"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

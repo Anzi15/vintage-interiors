@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import { ButtonNext, ButtonPrevious } from "@components/ui/buttons";
 
-const MobileCarousel = ({ className }) => {
+const MobileCarousel = ({ className, productImages }) => {
   const containerRef = useRef(null);
   const [isFirstImage, setIsFirstImage] = useState(true);
   const [isLastImage, setIsLastImage] = useState(false);
@@ -47,15 +45,15 @@ const MobileCarousel = ({ className }) => {
   return (
     <section className={className} aria-label="Product Images Carousel">
       <div
-        className="scrollbar-hidden relative grid snap-x snap-mandatory auto-cols-max grid-flow-col grid-rows-1 gap-2 overflow-hidden overflow-x-auto overscroll-x-contain"
+        className="scrollbar-hidden relative grid snap-x snap-mandatory auto-cols-max grid-flow-col grid-rows-1 gap-2 overflow-hidden overflow-x-auto overscroll-x-contain aspect-square"
         ref={containerRef}
         onScroll={handleScroll}
       >
         {productImages.map((image, index) => (
-          <div key={image.url} className="w-svw snap-center overflow-hidden ">
-            <Image
-              key={image.url}
-              src={image.url}
+          <div key={index} className="w-svw snap-center overflow-hidden ">
+            <img
+              key={index}
+              src={image}
               width={375}
               height={300}
               alt={`Product image ${index + 1}`}
@@ -64,16 +62,23 @@ const MobileCarousel = ({ className }) => {
           </div>
         ))}
       </div>
-      <ButtonPrevious
+      <button
         className={`absolute left-4 flex size-10 cursor-pointer items-center justify-center place-self-center rounded-full bg-white ${isFirstImage ? "opacity-75" : ""}`}
         onClick={scrollToPrevImage}
         disabled={isFirstImage}
       />
-      <ButtonNext
+      <button
         className={`absolute right-4 flex size-10 cursor-pointer items-center justify-center place-self-center rounded-full bg-white ${isLastImage ? "opacity-75" : ""}`}
         onClick={scrollToNextImage}
         disabled={isLastImage}
       />
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white px-2  rounded">
+  {productImages.map((img)=>{
+    return(
+      <div key={img} className="w-2 rounded-full bg-black"></div>
+    )
+  })}
+</div>
     </section>
   );
 };
