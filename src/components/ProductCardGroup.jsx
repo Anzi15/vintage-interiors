@@ -59,7 +59,7 @@ const ProductCardGroup = ({
           </Link>
         )}
       </div>
-      <div className="flex w-full justify-center md:justify-between md:gap-3 items-center flex-wrap">
+      <div className="w-full grid lg:grid-cols-4 gap-3 grid-cols-2">
         {productArray.map((product) => (
           <ProductCard
             onClick={() => {

@@ -10,6 +10,8 @@ import coverImgBlur from "../assets/website cover blur 100.png";
 import { Link } from "react-router-dom";
 import CustomerBenefits from "../components/CustomerBenefits";
 import Testimonials from "../components/Testimonials";
+import CollectionCard from "../components/CollectionCard";
+import CollectionCardGroup from "../components/CollectionCardGroup";
 const reviews = [
   {
     stars: 5,
@@ -89,63 +91,28 @@ const HomePage = () => {
         link={"/products"}
       />
 
-      <section className="flex w-full justify-around md:gap-4 flex-wrap my-10 font-futura">
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Men_Banner.webp?v=1724307797&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 font-futura">
-            Men
-          </h2>
-          <h3 className="text-brandRed font-semibold  font-futura group-hover:hidden">
-            Men
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Women_Banner.jpg?v=1724307854&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Women
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Women
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Eastern_banner.jpg?v=1724307767&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Eastern
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Eastern
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/western_Banner.jpg?v=1724307819&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Western
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Western
-          </h3>
-        </div>
-      </section>
+      <CollectionCardGroup collectionsArray={[
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2FMen.png?alt=media&token=90b2211e-911e-4380-86b8-f385ea8d83e6",
+          name: "men",
+          slug:"men"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fwomen.png?alt=media&token=81a8552b-e4c4-4dc2-ab74-025dc5dd79a3",
+          name: "women",
+          slug:"women"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Feastern.png?alt=media&token=5d04aef8-eec9-47c9-a1dc-1b6a5b207f29",
+          name: "eastern",
+          slug:"eastern"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fwestern.png?alt=media&token=a32f510e-56be-492a-9eb1-096307b3ac29",
+          name: "western",
+          slug:"western"
+        },
+      ]}/>
 
       <ProductCardGroup
         products={topProducts}
@@ -154,63 +121,28 @@ const HomePage = () => {
         link={"/products"}
       />
 
-      <section className="flex w-full justify-around md:gap-4 flex-wrap my-10 font-futura">
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Men_Banner.webp?v=1724307797&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 font-futura">
-            Men
-          </h2>
-          <h3 className="text-brandRed font-semibold  font-futura group-hover:hidden">
-            Men
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Women_Banner.jpg?v=1724307854&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Women
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Women
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/Eastern_banner.jpg?v=1724307767&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Eastern
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Eastern
-          </h3>
-        </div>
-
-        <div className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative">
-          <img
-            src="https://scentsnstories.pk/cdn/shop/collections/western_Banner.jpg?v=1724307819&width=720"
-            className="rounded-full group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-300"
-            alt=""
-          />
-          <h2 className="hidden group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-            Western
-          </h2>
-          <h3 className="text-brandRed font-semibold group-hover:hidden">
-            Western
-          </h3>
-        </div>
-      </section>
+<CollectionCardGroup collectionsArray={[
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Foffice.png?alt=media&token=d6ea9605-9640-4cd6-a0cc-3e215ed8e42e",
+          name: "Office",
+          slug:"office"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fschool.png?alt=media&token=e73dc7d5-96a7-4d4f-8b7a-358e2e87ab4a",
+          name: "school",
+          slug:"school"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fparty.png?alt=media&token=ce3790b6-175b-4704-abb0-89ae0c5ecd5e",
+          name: "party",
+          slug:"party"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fwedding.png?alt=media&token=d5e1b66f-35d9-4113-a38f-0a2bb8c0485f",
+          name: "wedding",
+          slug:"wedding"
+        },
+      ]}/>
 
       <ProductCardGroup
         products={topProducts}
@@ -218,33 +150,42 @@ const HomePage = () => {
         loading={loading}
         link={"/products"}
       />
+
+<CollectionCardGroup collectionsArray={[
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fsoft.png?alt=media&token=b4041503-af4b-4d6f-a125-fada610e3f46",
+          name: "Soft",
+          slug:"soft"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fhard.png?alt=media&token=aa6dbf49-7626-4176-8497-b8d47c49c6ce",
+          name: "hard",
+          slug:"hard"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fsummer.png?alt=media&token=a45fddf6-5b9c-464d-aff7-517704588904",
+          name: "summer",
+          slug:"summer"
+        },
+        {
+          image: "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fwinter.png?alt=media&token=34335f97-68ab-4ae4-9f25-7c9a11d381f9",
+          name: "winter",
+          slug:"winter"
+        },
+      ]}/>
 
       <section className="grid md:grid-cols-2 grid-cols-1 gap-4 p-8">
-        <Link>
+        <Link className="hover:scale-105 transition-all">
           <img
-            src="https://scentsnstories.pk/cdn/shop/files/Wax_1.webp?v=1724305050&width=900"
-            alt=""
+            src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2F1.png?alt=media&token=da140821-3e2d-44fe-bf28-bb973014e2c1"
+            alt="Al Zehra By  | Perfume Testers | Pakistan"
             className="rounded-lg"
           />
         </Link>
-        <Link>
+        <Link className="hover:scale-105 transition-all">
           <img
-            src="https://scentsnstories.pk/cdn/shop/files/sample_set_2_op.webp?v=1724305387&width=900"
-            alt="https://scentsnstories.pk/cdn/shop/files/sample_set_2_op.webp?v=1724305387&width=900"
-            className="rounded-lg"
-          />
-        </Link>
-        <Link>
-          <img
-            src="https://scentsnstories.pk/cdn/shop/files/check_4_final_1_op.webp?v=1724305832&width=900"
-            alt=""
-            className="rounded-lg"
-          />
-        </Link>
-        <Link>
-          <img
-            src="https://scentsnstories.pk/cdn/shop/files/check_4_final_1_op.webp?v=1724305832&width=900"
-            alt=""
+            src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2F2.png?alt=media&token=d2b7ca20-05b0-4bdb-953d-d4611e19f30e"
+            alt="Al Zehra By GM  | Attar | Pakistan"
             className="rounded-lg"
           />
         </Link>
@@ -260,17 +201,17 @@ const HomePage = () => {
       <section className="w-screen md:p-8 p-4 ">
         <div className="bg-black text-white rounded-3xl flex md:flex-row flex-col items-center justify-between gap-5">
           <img
-            src="https://scentsnstories.pk/cdn/shop/files/Scent_Quiz_Web_Banner_2_1.png?v=1721319533&width=1200"
+            src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2Fpexels-yuli-sv-58861876-7941434%20(1).jpg?alt=media&token=2afc4a1a-090e-4c30-9747-530edd90e4ce"
             className="md:w-1/2 w-full aspect-square object-cover md:rounded-l-3xl rounded-t-2xl"
-            alt=""
+            alt="FREE Perfume tester | Image | Al Zehra Perfumes | Pakitan"
           />
 
-          <div className="md:w-1/2 flex flex-col  items-center justify-center ">
-            <h1 className="uppercase font-black text-white md:text-[60px] text-3xl md:text-left text-center leading-snug  w-fit md:w-1/2">
+          <div className="md:w-1/2 flex flex-col justify-center ">
+            <h1 className="uppercase font-black text-white md:text-[60px] text-3xl md:text-left text-center leading-snug   ">
               Can't figure out where to begin?
             </h1>
-            <div className="md:w-1/2 pl-4 flex justify-start my-6">
-              <Link className="bg-brandRed text-white px-4 py-3 rounded-full hover:bg-red-800 transition-all duration-100">
+            <div className="md:w-1/2 pl-4 flex md:justify-start justify-center my-6">
+              <Link className="bg-brandRed text-white px-6 py-3 rounded-full hover:bg-red-800 transition-all duration-100" to="/collection/tester">
                 Try Our Samples
               </Link>
             </div>
