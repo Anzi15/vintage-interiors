@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import PromoCodeForm from "../components/PromoCodeForm";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { useParams } from "react-router-dom";
+import { quality } from "@cloudinary/url-gen/actions/delivery";
 
 const paymentMethods = [
   {
@@ -28,6 +30,8 @@ const paymentMethods = [
 ];
 
 const CheckoutPage = () => {
+  const {source, quantity, coupon} = useParams();
+  console.log(source, quantity, coupon)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,6 +41,20 @@ const CheckoutPage = () => {
   const [state, setState] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("COD");
+
+  const [products, setProducts] = useState([])
+  const [subTotal, setSubTotal] = useState(null)
+  const [total, setTotal] = useState(null)
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [allProductTags, setAllProductTags] = useState([])
+  const [discountValue, setDiscountValue] = useState(0)
+  const [discountType, setDiscountType] = useState(null)
+  const [shippingFees, setShippingFees] = useState(null)
+  const [couponCodeApplied, setCouponCodeApplied] = useState(null)
+
+  useEffect(()=>{
+    
+  },[source, quantity])
 
   return (
     <>

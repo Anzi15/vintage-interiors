@@ -38,6 +38,7 @@ const CartItem = ({product, productsLoading, quantity, cartItemsUpdater}) => {
     cartItemsUpdater(updatedProducts)
     localStorage.setItem("cart-items", JSON.stringify(updatedProducts));
       console.log("Item removed:", itemId);
+      window.location.reload()
       // Proceed with actual removal logic from the cart (e.g., updating state)
     }
     // Close the dialog after result handling
@@ -64,19 +65,19 @@ const CartItem = ({product, productsLoading, quantity, cartItemsUpdater}) => {
       <img
         src={productsLoading ? "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984" : product.primaryImg}
         alt="perfume bottle image"
-        className={`mx-auto rounded-xl ${productsLoading && "skeleton-loading"}`}
+        className={`mx-auto skeleton-loading rounded-xl ${productsLoading && "skeleton-loading"}`}
       />
     </div>
     <div className="grid grid-cols-1 md:grid-cols-4 ">
       <div className="md:col-span-2">
         <div className="flex flex-col  w-full md:items-start md:pl-4 md:gap-3 md:mb-0 mb-2 md:justify-left justify-center ">
-          <h6 className={`font-semibold text-base leading-7 text-black ${productsLoading && "skeleton-loading"}`}>
+          <h6 className={`font-semibold text-base md:text-center text-left leading-7 text-black ${productsLoading && "skeleton-loading"}`}>
            {product.title}
           </h6>
-           <h6 className={`font-normal text-base leading-7 text-gray-500 ${productsLoading && "skeleton-loading"}`}>
+           <h6 className={`font-normal md:text-center text-left text-base leading-7 text-gray-500 ${productsLoading && "skeleton-loading"}`}>
             {product.selectedVariant.name} 
           </h6>
-          <h6 className={`font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-red-800 ${productsLoading && "skeleton-loading"}`}>
+          <h6 className={`font-medium text-base leading-7 text-gray-600 transition-all md:text-center text-left duration-300 group-hover:text-red-800 ${productsLoading && "skeleton-loading"}`}>
             Rs. {product.selectedVariant.price}
           </h6>
         </div>

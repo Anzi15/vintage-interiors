@@ -1,39 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { IoIosFlash } from "react-icons/io";
 
+export const formatRemainingTime = (expiryTimestamp) => {
+  const expiryDate = new Date(expiryTimestamp.seconds * 1000);
+  const now = new Date();
+  const remainingTime = expiryDate - now;
+
+  if (remainingTime <= 0) {
+    return "00:00:00"; // Time is up or in the past
+  }
+
+  const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+  const minutes = Math.floor(
+    (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
+  );
+  const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+  return [
+    hours.toString().padStart(2, "0") + "h",
+    " ",
+    minutes.toString().padStart(2, "0") +"m",
+    " ",
+    seconds.toString().padStart(2, "0")+"s",
+  ];
+};
 const CountdownTimer = ({ expiryTimestamp }) => {
   const [remainingTime, setRemainingTime] = useState("");
 
   useEffect(() => {
     // Function to format remaining time
-    const formatRemainingTime = (expiryDate) => {
-      const now = new Date();
-      const remainingTime = expiryDate - now;
-
-      if (remainingTime <= 0) {
-        return "00:00:00"; // Time is up or in the past
-      }
-
-      const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-      const minutes = Math.floor(
-        (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
-      );
-      const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-      return [
-        hours.toString().padStart(2, "0") + "h",
-        " ",
-        minutes.toString().padStart(2, "0") +"m",
-        " ",
-        seconds.toString().padStart(2, "0")+"s",
-      ];
-    };
 
     // Convert the expiry timestamp to a Date object
     const expiryDate = new Date(expiryTimestamp.seconds * 1000);
 
     // Update the countdown immediately
-    setRemainingTime(formatRemainingTime(expiryDate));
+    setRemainingTime(formatRemainingTime(expiryTimestamp));
 
     // Set up interval to update every second
     const intervalId = setInterval(() => {

@@ -20,6 +20,7 @@ const CartPage = () => {
   const [discountValue, setDiscountValue] = useState(0)
   const [discountType, setDiscountType] = useState(null)
   const [shippingFees, setShippingFees] = useState(null)
+  // const [ finalShippingFees, setFinalShippingFees] = useState(null)
   const [couponCodeApplied, setCouponCodeApplied] = useState(null)
 
   useEffect(() => {
@@ -51,19 +52,28 @@ const CartPage = () => {
 
       getCartProducts(cartItems).then(async (products) => {
         let subtotal = 0;
-        const allProductsTags = []
-       products.map((product)=>{
-        subtotal +=  product.selectedVariant.price * product.quantity;
-        allProductsTags.push(...product.tags)                
-       })
+        const allProductsTags = [];
+        
+        products.forEach((product) => {
+            subtotal += product.selectedVariant.price * product.quantity;
+            allProductsTags.push(...product.tags);
+        });
+        
        
        setAllProductTags(allProductsTags)
        setSubTotal(subtotal)
-        setProducts(products); // Filter out null values
+        setProducts(products); 
         setProductsLoading(false);
-       const docRef = doc(db, "storeManagement", "shippingFees");
-        const shippingFees = await getDoc(docRef);
-        setShippingFees(shippingFees.data().value)
+        if (subtotal > 1500){
+          console.log(subtotal > 1500)
+          setShippingFees(0)
+          console.log(shippingFees)
+          console.log(`set the shippin fee 0`)
+        }else{
+          console.log(`sdfasfasfsfasf`)
+          setShippingFees(300)
+
+        }
       });
     } else {
       setProductsLoading(false);
@@ -136,7 +146,7 @@ const CartPage = () => {
                     );
                   })}
 
-                  <div className="flex flex-col md:hidden">
+                  {/* <div className="flex flex-col md:hidden">
                   <div className="py-8 flex flex-col gap-4">
                     <div>
                     <div className="flex items-center justify-between ">
@@ -153,7 +163,7 @@ const CartPage = () => {
                         Shipping Fees
                       </p>
                       <p className={`font-semibold text-md leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
-                          Rs. {shippingFees ? shippingFees : "300"}
+                          Rs. {shippingFees}
                       </p>
                     </div>
 
@@ -181,7 +191,7 @@ const CartPage = () => {
                     <Link className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900" to={`/cart/checkout/`}>
                       Checkout
                     </Link>
-                  </div>
+                  </div> */}
               </div>
 
               <div className={`col-span-12 xl:col-span-4 md:bg-gray-50 w-full max-xl:px-6 max-w-3xl xl:max-w-lg mx-auto lg:pl-8 md:py-24  md:order-2 order ${isSummaryExpanded  && "bg-gray-50"}`}>
@@ -240,8 +250,8 @@ const CartPage = () => {
 
                     <PromoCodeForm productTags={allProductTags ?allProductTags : []} discountTypeReturner={setDiscountType} discountValueReturner={getDiscountValue}/>
                    
-                   <div className="py-8 flex flex-col gap-4">
-                    <div>
+                   <div className="py-8 flex flex-col gap-4 w-full">
+                    <div className="w-full">
                     <div className="flex items-center justify-between ">
                       <p className="font-medium text-md leading-8 text-gray-800">
                         Sub Total
@@ -256,7 +266,7 @@ const CartPage = () => {
                         Shipping Fees
                       </p>
                       <p className={`font-semibold text-md leading-8 text-red-800 ${shippingFees == null && "skeleton-loading"}`}>
-                          Rs. {shippingFees ? shippingFees : "300"}
+                          Rs. {shippingFees}
                       </p>
                     </div>
 
@@ -280,10 +290,13 @@ const CartPage = () => {
                     </div>
 
                    </div>
-                    {console.log(couponCodeApplied)}
-                    <Link to={`/cart/checkout/${couponCodeApplied !== null ? couponCodeApplied : ""}`} className="w-full text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900">
+                   <div className="w-full">
+
+                    <Link to={`/checkout/cart/0/${couponCodeApplied !== null ? couponCodeApplied : ""}`} className=" text-center bg-red-800 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-red-900 mb-8 block">
                       Checkout
                     </Link>
+
+                   </div>
                   </div>
                 </div>
               </div>

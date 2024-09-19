@@ -14,7 +14,7 @@ import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
 import ProductImgsCarousel from "../components/ProductImgsCarousel";
 import MobileCarousel from "../components/MobileCarousel.jsx";
-import CountdownTimer from "../components/CountDownTimer.jsx";
+import CountdownTimer, { formatRemainingTime } from "../components/CountDownTimer.jsx";
 import { Button } from "@material-tailwind/react";
 import { IoMdCart } from "react-icons/io";
 const reviews = [
@@ -91,6 +91,8 @@ const ProductPage = () => {
   const { id: productId } = useParams();
   const location = useLocation();
   const [routeChanged, setRouteChanged] = useState(false);
+  const [isExpiryDateValid, setIsExpiryDateValid] = useState(false);
+  const [shouldShowComparePrice, setShouldShowComparePrice] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -103,7 +105,6 @@ const ProductPage = () => {
     const productIndex = prevCartItems.findIndex(
       (item) => item.productId === productId
     );
-    console.log(selectedVariant);
     const productData = { productId, quantity, selectedVariant, data };
 
     if (productIndex === -1) {
@@ -158,64 +159,42 @@ const ProductPage = () => {
     return <Navigate to="/" />;
   }
 
-  console.log(data.discountExpiryDate);
-
   const now = new Date();
-  console.log(typeof data.discountExpiryDate);
   // const timestamp = data.discountExpiryDate; // Assuming this is an object with seconds and nanoseconds
 // const expiryDatee = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
 
-  const expiryDate = new Date(data.discountExpiryDate * 10000);
-  const isExpiryDateValid = expiryDate > now;
+  useEffect(()=>{
+    if(isLoading) return;
+    if(data.discountExpiryDate == null){
+      setIsExpiryDateValid(true);
+      return;
+    }else{
+      const remainingTime = formatRemainingTime(data.discountExpiryDate);
+      console.log(remainingTime)
+    }
+  },[data.discountExpiryDate])
   const parsePrice = (price) => {
     const parsed = parseFloat(price);
     return isNaN(parsed) ? 0 : parsed;
   };
 
-  console.log(parseInt(selectedVariant.comparePrice))
-  const shouldShowComparePrice = (parsePrice(selectedVariant?.comparePrice) || parsePrice(data.comparePrice)) &&
-    ((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)) &&
-    isExpiryDateValid;
+  useEffect(()=>{
+    if(isLoading) return;
+    if(parsePrice(selectedVariant?.comparePrice || parsePrice(data?.comparePrice))){
+      if((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)){
+        if(isExpiryDateValid){
+          setShouldShowComparePrice(true)
+        }
+      }
+    }
+  },[data.comparePrice, selectedVariant.comparePrice])
+  // (parsePrice(selectedVariant?.comparePrice) || parsePrice(data.comparePrice)) &&
+  //   ((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)) &&
+  //   isExpiryDateValid;
 
   return (
     <>
       <main className="flex justify-evenly w-full md:flex-row flex-col relative h-full">
-        {/* <div className="imgs-section px-8 w-full md:w-1/2 flex flex-col md:sticky top-4">
-          <div
-            className={`primary-img-con mb-4 ${
-              isLoading ? "skeleton-loading" : ""
-            }`}
-          >
-            <img
-              src={isLoading ? placeholderImg : data.primaryImg}
-              alt={data.title}
-              className="primary-img w-full aspect-square skeleton-loading object-cover"
-              id="product-primaryImg-elem"
-              loading="lazy"
-            />
-          </div>
-          <div className="sec-img-con flex justify-between gap-2">
-            <div className={`w-1/2 ${isLoading ? "skeleton-loading" : ""}`}>
-              <img
-                src={isLoading ? placeholderImg : data.secondary1Img}
-                alt={data.title}
-                className="sec-img w-full aspect-square skeleton-loading object-cover"
-                id="product-secImg1-elem"
-                loading="lazy"
-              />
-            </div>
-            <div className={`w-1/2 ${isLoading ? "skeleton-loading" : ""}`}>
-              <img
-                src={isLoading ? placeholderImg : data.secondary2Img}
-                alt={data.title}
-                className="sec-img w-full aspect-square skeleton-loading object-cover"
-                id="product-secImg2-elem"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </div> */}
-
         <ProductImgsCarousel
           className=" md:max-h-[565px] md:max-w-[445px] md:gap-8"
           productImages={[
@@ -229,9 +208,6 @@ const ProductPage = () => {
             data.secondary2ImgThumbnails[0].url,
           ]}
         />
-
-        {/* <MobileCarousel className="relative grid h-[18.75rem] w-svw md:hidden aspect-square" productImages={[data.primaryImg, data.secondary1Img, data.secondary2Img]}/> */}
-
         <div className="details-section flex flex-col pt-6 text-left gap-3 w-full md:w-1/2 px-6">
           <div className="product-data flex flex-col md:gap-6 gap-3 md:pb-8 py-4">
             <div className="flex flex-col gap-4">
@@ -270,15 +246,17 @@ const ProductPage = () => {
               </div>
 
               {shouldShowComparePrice && (
-        <div>
-          <div>
-            Rs.
-            <s className="line-through">
-              {selectedVariant.comparePrice}
-            </s>
-          </div>
-        </div>
-      )}
+                <div>
+                  <div className={`${isLoading && "skeleton-loading"}`}>
+                    Rs.
+                    <s className="line-through">
+                      {selectedVariant.comparePrice
+                        ? selectedVariant.comparePrice * quantity
+                        : data.comparePrice * quantity}
+                    </s>
+                  </div>
+                </div>
+              )}
             </div>
             {shouldShowComparePrice && isExpiryDateValid && (
               <CountdownTimer expiryTimestamp={data.discountExpiryDate} />
@@ -419,36 +397,48 @@ const ProductPage = () => {
                 <IoMdCart className="text-xl" />
                 <p className="hidden md:flex">Add To Cart</p>
               </Button>
-              <Link to={`/product/${productId}/checkout`} className="w-full">
+              <Link to={`/checkout/${productId}/${quantity}`} className="w-full">
                 <Button className="w-full py-3.5 text-lg">Buy now</Button>
               </Link>
 
-              <div className="md:hidden w-full px-2 py-2  text-white fixed bottom-0 left-0 right-0 z-50 m-auto">
-                <button className="bg-brandRed w-full py-3 rounded-xl flex">
-                  <div className="font-bold text-lg">Rs. {data.price}</div>
-                  {isExpiryDateValid && (
-                    <div className="flex flex-col">
-                      {(parseInt(selectedVariant?.comparePrice) ||
-                        data.comparePrice) &&
-                        ((selectedVariant.comparePrice !== 0 &&
-                          selectedVariant.comparePrice !== "0") ||
-                          (data.comparePrice !== 0 &&
-                            data.comparePrice !== "0")) && (
-                          <div>
-                            <div>
-                              Rs.
-                              <s className="line-through">
-                                {selectedVariant.comparePrice
-                                  ? selectedVariant.comparePrice * quantity
-                                  : data.comparePrice * quantity}
-                              </s>
-                            </div>
-                          </div>
-                        )}
+              {!isLoading && (
+                <div className="md:hidden w-full px-2 py-2  text-white fixed bottom-0 left-0 right-0 z-50 m-auto">
+                  <button
+                    className="bg-[#FE0000] w-full py-5 rounded-2xl flex px-4 items-center gap-2 justify-between"
+                    onClick={addToCart}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-lg">Rs. {data.price}</div>
+                      {isExpiryDateValid && (
+                        <div className="flex flex-col">
+                          {(parseInt(selectedVariant?.comparePrice) ||
+                            data.comparePrice) &&
+                            ((selectedVariant.comparePrice !== 0 &&
+                              selectedVariant.comparePrice !== "0") ||
+                              (data.comparePrice !== 0 &&
+                                data.comparePrice !== "0")) && (
+                              <div>
+                                <div>
+                                  Rs.
+                                  <s className="line-through">
+                                    {selectedVariant.comparePrice
+                                      ? selectedVariant.comparePrice * quantity
+                                      : data.comparePrice * quantity}
+                                  </s>
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </button>
-              </div>
+
+                    <div className="flex gap-3 text-xl uppercase font-bold  items-center">
+                      <IoMdCart className="text-xl" />
+                      Add To Cart
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -546,6 +536,7 @@ const ProductPage = () => {
           </ul>
         </div>
       </main>
+
       <div className="description px-8 md:py-[8rem] py-[5rem]">
         <h3 className="text-left">
           <b>Description</b>
@@ -609,6 +600,7 @@ const ProductPage = () => {
           </p>
         </div>
       </div>
+
       <div className="flex w-[98%] justify-center py-9 flex-wrap">
         <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center md:px-4">
           <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%] w-full">
