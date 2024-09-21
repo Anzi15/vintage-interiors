@@ -3,8 +3,10 @@ import InputField from "../components/InputField";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import PromoCodeForm from "../components/PromoCodeForm";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { quality } from "@cloudinary/url-gen/actions/delivery";
+import { collection, getDoc } from "firebase/firestore";
+import { db } from "../modules/firebase-modules/firestore";
 
 const paymentMethods = [
   {
@@ -30,8 +32,8 @@ const paymentMethods = [
 ];
 
 const CheckoutPage = () => {
-  const {source, quantity, coupon} = useParams();
-  console.log(source, quantity, coupon)
+  const { source, quantity, coupon } = useParams();
+  console.log(source, quantity, coupon);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,19 +44,65 @@ const CheckoutPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("COD");
 
-  const [products, setProducts] = useState([])
-  const [subTotal, setSubTotal] = useState(null)
-  const [total, setTotal] = useState(null)
+  const [products, setProducts] = useState([]);
+  const [subTotal, setSubTotal] = useState(null);
+  const [total, setTotal] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
-  const [allProductTags, setAllProductTags] = useState([])
-  const [discountValue, setDiscountValue] = useState(0)
-  const [discountType, setDiscountType] = useState(null)
-  const [shippingFees, setShippingFees] = useState(null)
-  const [couponCodeApplied, setCouponCodeApplied] = useState(null)
+  const [allProductTags, setAllProductTags] = useState([]);
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountType, setDiscountType] = useState(null);
+  const [shippingFees, setShippingFees] = useState(null);
+  const [couponCodeApplied, setCouponCodeApplied] = useState(
+    sessionStorage.getItem("couponApplied")
+  );
+  const [cartItems, setCartItems] = useState(() => {
+    // Get initial cart items from localStorage
+    return JSON.parse(localStorage.getItem("cart-items")) || [];
+  });
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    
-  },[source, quantity])
+  const getDiscountValue = (value, type, coupon_code_applied) => {
+    setCouponCodeApplied(coupon_code_applied);
+    if (type) {
+      if (type == "amount") {
+        setDiscountValue(value);
+      } else if (type == "percentage") {
+        const discountedPrice = subTotal * (1 - value / 100);
+        setDiscountValue(Math.round(subTotal - discountedPrice));
+      }
+    }
+  };
+
+  useEffect(async () => {
+    if (source == "cart") {
+      if (cartItems?.length) {
+        let subtotal = 0;
+        const productTags = [];
+        cartItems.forEach((item) => {
+          subtotal +=
+            parseInt(item.selectedVariant.price) * parseInt(item.quantity);
+          productTags.push(item.data.tags);
+        });
+        setProducts([...cartItems]);
+        setSubTotal(subtotal);
+        const shipping_fees = subtotal > 1500 ? 0 : 300;
+        setShippingFees(shipping_fees);
+        console.log(couponCodeApplied);
+        setAllProductTags(productTags);
+      } else {
+        navigate("/cart");
+      }
+    }else{
+      const productData = await getDoc(collection(db,"Products"), source)
+      console.log(productData)
+    }
+    if (coupon) {
+      setCouponCodeApplied(coupon);
+    }
+  }, [source, quantity]);
+  useEffect(() => {
+    setTotal(subTotal + shippingFees - discountValue);
+  }, [products, subTotal, shippingFees, discountValue]);
 
   return (
     <>
@@ -109,7 +157,7 @@ const CheckoutPage = () => {
                 inputValue={extraAddress}
                 valueReturner={setExtraAddress}
               />
-              <div className="flex gap-4 flex-wrap" >
+              <div className="flex gap-4 flex-wrap">
                 <InputField
                   requiredInput={true}
                   inputAutoComplete={"address-level2"}
@@ -174,96 +222,76 @@ const CheckoutPage = () => {
           </form>
         </section>
         <section className="md:w-1/2 w-full px-8 md:sticky top-4">
-        <div className="flex w-full justify-between">
-
-          <h3 className="text-xl text-left my-9">Order summary</h3>
-          <h3 className="text-xl text-left my-9">3 Items</h3>
-        </div>
+          <div className="flex w-full justify-between">
+            <h3 className="text-xl text-left my-9">Order summary</h3>
+            <h3 className="text-xl text-left my-9">{products.length} Items</h3>
+          </div>
 
           <div className="products flex flex-wrap px-4 md:flex-row flex-col gap-y-4">
-
-            <div className="flex text-left  gap-4 md:w-1/2 w-full">
-              <div>
-                <img
-                  src="https://tailwindui.com/img/ecommerce-images/checkout-page-04-product-01.jpg"
-                  className="w-[7rem]"
-                  alt=""
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <h3>Micro Backpack</h3>
-                <h4 className="text-gray-600">$70.00</h4>
-                <h5 className="text-gray-400">5L</h5>
-              </div>
-            </div>
-            <div className="flex text-left  gap-4 md:w-1/2 w-full">
-              <div>
-                <img
-                  src="https://tailwindui.com/img/ecommerce-images/checkout-page-04-product-01.jpg"
-                  className="w-[7rem]"
-                  alt=""
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <h3>Micro Backpack</h3>
-                <h4 className="text-gray-600">$70.00</h4>
-                <h5 className="text-gray-400">5L</h5>
-              </div>
-            </div>
-            <div className="flex text-left  gap-4 md:w-1/2 w-full">
-              <div>
-                <img
-                  src="https://tailwindui.com/img/ecommerce-images/checkout-page-04-product-01.jpg"
-                  className="w-[7rem]"
-                  alt=""
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <h3>Micro Backpack</h3>
-                <h4 className="text-gray-600">$70.00</h4>
-                <h5 className="text-gray-400">5L</h5>
-              </div>
-            </div>
+            {products.map((product, i) => {
+              return (
+                <div key={i} className="flex text-left  gap-4 md:w-1/2 w-full">
+                  <div>
+                    <img
+                      src={product.data.primaryImg}
+                      className="w-[7rem] skeleton-loading aspect-square rounded"
+                      alt={product.data.title}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3>{product.data.title}</h3>
+                    <h4 className="text-gray-600">
+                      Rs. {product.selectedVariant.price}
+                    </h4>
+                    <h5 className="text-gray-400">x {product.quantity}</h5>
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div className="py-8 flex flex-col gap-4 ">
-            <div>
-              <div className="flex items-center justify-between ">
-                <p className="font-medium text-md leading-8 text-gray-800">
-                  Sub Total
-                </p>
-                <p className="font-semibold text-md leading-8 text-red-800">
-                  Rs.200
-                </p>
-              </div>
+              <div>
 
-              {/* 
-                   {discountValue > 0 && <div className="flex items-center justify-between ">
-                      <p className="font-medium text-md leading-8 text-gray-800">
-                        Coupon Discount:
-                      </p>
-                      <p className="font-semibold text-md leading-8 text-red-800">
-                          - Rs. discountValue
-                      </p>
-                    </div>} */}
-            </div>
-            <div>
-              <div className="flex items-center justify-between ">
-                <p className="font-medium text-md leading-8 text-gray-800">
-                  Shipping
-                </p>
-                <p className="font-semibold text-md leading-8 text-red-800">
-                  Rs.200
-                </p>
+              <div>
+                <div className="flex items-center justify-between ">
+                  <p className="font-medium text-md leading-8 text-gray-800">
+                    Sub Total
+                  </p>
+                  <p className="font-semibold text-md leading-8 text-red-800">
+                    Rs. {subTotal}
+                  </p>
+                </div>
               </div>
-
-            </div>
+              <div>
+                <div className="flex items-center justify-between ">
+                  <p className="font-medium text-md leading-8 text-gray-800">
+                    Shipping
+                  </p>
+                  <p className="font-semibold text-md leading-8 text-red-800">
+                    {shippingFees == 0 ? "FREE" : `Rs. ${shippingFees}`}
+                  </p>
+                </div>
+              </div>
+              {discountValue ? (
+                <div>
+                  <div className="flex items-center justify-between ">
+                    <p className="font-medium text-md leading-8 text-gray-800">
+                      Coupon Discount
+                    </p>
+                    <p className="font-semibold text-md leading-8 text-red-800">
+                      - Rs. {discountValue}
+                    </p>
+                  </div>
+                </div>
+              ) : ""}
+              </div>
             <div>
               <div className="flex items-center justify-between ">
                 <p className="font-medium text-xl leading-8 text-gray-800">
                   Total
                 </p>
                 <p className="font-semibold text-2xl leading-8 text-red-800">
-                  Rs.200
+                  Rs.{total}
                 </p>
               </div>
 
@@ -279,7 +307,12 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className="py-8">
-            <PromoCodeForm />
+            <PromoCodeForm
+              productTags={allProductTags}
+              discountValueReturner={getDiscountValue}
+              discountTypeReturner={setDiscountType}
+              coupon={coupon}
+            />
           </div>
         </section>
       </main>

@@ -20,8 +20,14 @@ const CartPage = () => {
   const [discountValue, setDiscountValue] = useState(0)
   const [discountType, setDiscountType] = useState(null)
   const [shippingFees, setShippingFees] = useState(null)
+  const [checkoutLink, setCheckoutLink] = useState(`/checkout/cart/0/`)
   // const [ finalShippingFees, setFinalShippingFees] = useState(null)
   const [couponCodeApplied, setCouponCodeApplied] = useState(null)
+
+
+  useEffect(()=>{
+    console.log(couponCodeApplied)
+  },[couponCodeApplied])
 
   useEffect(() => {
     if (cartItems?.length) {
@@ -84,14 +90,18 @@ const CartPage = () => {
     setTotal(subTotal + shippingFees - discountValue)
   },[subTotal, discountValue, shippingFees])
 
-  const getDiscountValue = (value, type, couponCodeApplied)=>{
+  const getDiscountValue = (value, type, coupon_code_applied)=>{
+    setCouponCodeApplied(coupon_code_applied)
+    sessionStorage.setItem("couponApplied", coupon_code_applied)
     if(type){
-      if(type == "amount") setDiscountValue(value)
+      if(type == "amount") {setDiscountValue(value)}
         else if(type == "percentage") {
       const discountedPrice = subTotal * (1 - (value / 100));
       setDiscountValue(Math.round(subTotal - discountedPrice))
-      setCouponCodeApplied(couponCodeApplied)
+      
     }
+    console.log(coupon_code_applied)
+    
     }
   }
 
