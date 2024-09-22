@@ -397,7 +397,7 @@ const ProductPage = () => {
                 <IoMdCart className="text-xl" />
                 <p className="hidden md:flex">Add To Cart</p>
               </Button>
-              <Link to={`/checkout/${productId}/${quantity}`} className="w-full">
+              <Link to={`/checkout/${productId}/${quantity}/none/${data?.variants?.indexOf(selectedVariant)}`} className="w-full">
                 <Button className="w-full py-3.5 text-lg">Buy now</Button>
               </Link>
 

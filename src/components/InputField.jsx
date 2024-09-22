@@ -10,9 +10,10 @@ const InputField = ({
   readOnlyInput = false,
   inputValue = "",
   inputAutoComplete,
+  className=""
 }) => {
   return (
-    <div className={`relative w-full min-w-[200px] h-11 ${errorMsg && "mb-4"}`}>
+    <div className={`relative w-full min-w-[200px] h-11 ${errorMsg && "mb-4"} ${className}`}>
       <input
         className="w-full h-full px-3 py-3 font-sans text-sm font-normal transition-all bg-transparent border rounded-md peer text-blue-gray-700 outline-none focus:outline-none focus:ring-0 focus:border-gray-900 disabled:bg-blue-gray-50 disabled:border-0 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 border-t-transparent focus:border-t-transparent border-blue-gray-200"
         placeholder={placeholder}

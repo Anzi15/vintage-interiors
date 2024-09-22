@@ -5,26 +5,35 @@ import PromoCodeForm from "../components/PromoCodeForm";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { quality } from "@cloudinary/url-gen/actions/delivery";
-import { collection, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
+import { FaSmileWink } from "react-icons/fa";
+import JazzCashLogo from "../assets/Jazz cash logo vector.webp";
+import CodIcon from "../assets/cod.webp";
+import easypaisaIcon from "../assets/easypaisa.webp";
+import bankIcon from "../assets/bank.webp";
 
 const paymentMethods = [
   {
+    icon: CodIcon,
     name: "Cash on Delivery",
     context: "Purchase goods, pay when they arrive",
     identifier: "COD",
   },
   {
+    icon: JazzCashLogo,
     name: "JazzCash",
     context: "Send your payment to: ",
     identifier: "JZC",
   },
   {
+    icon: easypaisaIcon,
     name: "EasyPaisa",
     context: "Send your payment to: ",
     identifier: "EZP",
   },
   {
+    icon: bankIcon,
     name: "Bank Transfer",
     context: "Send your payment to: ",
     identifier: "BT",
@@ -32,7 +41,7 @@ const paymentMethods = [
 ];
 
 const CheckoutPage = () => {
-  const { source, quantity, coupon } = useParams();
+  const { source, quantity, coupon, selectedVariantIndex } = useParams();
   console.log(source, quantity, coupon);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -48,6 +57,7 @@ const CheckoutPage = () => {
   const [subTotal, setSubTotal] = useState(null);
   const [total, setTotal] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [calculationsLoading, setCalculationsLoading] = useState(true);
   const [allProductTags, setAllProductTags] = useState([]);
   const [discountValue, setDiscountValue] = useState(0);
   const [discountType, setDiscountType] = useState(null);
@@ -73,32 +83,58 @@ const CheckoutPage = () => {
     }
   };
 
-  useEffect(async () => {
-    if (source == "cart") {
-      if (cartItems?.length) {
-        let subtotal = 0;
-        const productTags = [];
-        cartItems.forEach((item) => {
-          subtotal +=
-            parseInt(item.selectedVariant.price) * parseInt(item.quantity);
-          productTags.push(item.data.tags);
-        });
-        setProducts([...cartItems]);
-        setSubTotal(subtotal);
-        const shipping_fees = subtotal > 1500 ? 0 : 300;
-        setShippingFees(shipping_fees);
-        console.log(couponCodeApplied);
-        setAllProductTags(productTags);
-      } else {
-        navigate("/cart");
+  useEffect(()=>{
+    setCalculationsLoading(true)
+    let subtotal = 0;
+    products.forEach((product)=>{
+      subtotal += JSON.parse(product.selectedVariant.price) * product.quantity;
+    })
+    setSubTotal(subtotal)
+    setShippingFees(subtotal > 1500 ? 0 : 300)
+    setCalculationsLoading(false)
+  },[products])
+
+  useEffect(() => {
+    setProductsLoading(true)
+    const getProducts = async()=>{
+      if (source == "cart") {
+        if (cartItems?.length) {
+          let subtotal = 0;
+          const productTags = [];
+          cartItems.forEach((item) => {
+            subtotal +=
+              parseInt(item.selectedVariant.price) * parseInt(item.quantity);
+            productTags.push(item.data.tags);
+          });
+          setProducts([...cartItems]);
+          setProductsLoading(false)
+          setSubTotal(subtotal);
+          const shipping_fees = subtotal > 1500 ? 0 : 300;
+          setShippingFees(shipping_fees);
+          setAllProductTags(productTags);
+        } else {
+          navigate("/cart");
+        }
+      }else{
+        try {
+          const productDocRef = doc(db, "Products", source);
+          const productSnapshot = await getDoc(productDocRef);
+          const productData = productSnapshot.data()
+          setProducts([ 
+            {productId: source, quantity: parseInt(quantity), selectedVariant: productData.variants[selectedVariantIndex], data: productData}])
+          setProductsLoading(false)
+            
+          console.log([{data:productData, quantity: parseInt(quantity), productId: null}])
+        } catch (error) {
+          navigate("/")
+        }
       }
-    }else{
-      const productData = await getDoc(collection(db,"Products"), source)
-      console.log(productData)
+      if (coupon) {
+        setCouponCodeApplied(coupon);
+      }
     }
-    if (coupon) {
-      setCouponCodeApplied(coupon);
-    }
+
+    getProducts()
   }, [source, quantity]);
   useEffect(() => {
     setTotal(subTotal + shippingFees - discountValue);
@@ -113,13 +149,23 @@ const CheckoutPage = () => {
         <section className="md:w-1/2 px-8 w-full">
           <h3 className="text-xl text-left my-9">Contact information</h3>
           <form action="">
-            <div className="border-b pb-8 ">
+            <div className="border-b pb-8 gap-4 flex md:flex-row flex-col">
               <InputField
                 inputAutoComplete={"email"}
                 inputName={"Email"}
                 valueReturner={setEmail}
                 inputValue={email}
-                requiredInput={true}
+                requiredInput={true} 
+                className="w-1/2"
+              />
+              <InputField
+                inputAutoComplete={"tel"}
+                inputType="tel"
+                inputName="Phone Number"
+                inputValue={phoneNumber}
+                valueReturner={setPhoneNumber}
+                className="w-1/2"
+
               />
             </div>
 
@@ -128,7 +174,7 @@ const CheckoutPage = () => {
                 Shipping Information
               </h3>
 
-              <div className="flex gap-4 flex-wrap ">
+              <div className="flex md:flex-row flex-col gap-4">
                 <InputField
                   inputAutoComplete={"given-name"}
                   requiredInput={true}
@@ -157,7 +203,7 @@ const CheckoutPage = () => {
                 inputValue={extraAddress}
                 valueReturner={setExtraAddress}
               />
-              <div className="flex gap-4 flex-wrap">
+              <div className="flex gap-4 md:flex-row flex-col">
                 <InputField
                   requiredInput={true}
                   inputAutoComplete={"address-level2"}
@@ -172,13 +218,7 @@ const CheckoutPage = () => {
                   valueReturner={setState}
                 />
               </div>
-              <InputField
-                inputAutoComplete={"tel"}
-                inputType="tel"
-                inputName="Phone Number"
-                inputValue={phoneNumber}
-                valueReturner={setPhoneNumber}
-              />
+              
             </div>
             <div className="w-full flex flex-col gap-4 border-b pb-8">
               <h3 className="text-xl text-left my-5 Shipping information">
@@ -188,7 +228,7 @@ const CheckoutPage = () => {
                 {paymentMethods.map((method, i) => {
                   return (
                     <div
-                      className={`md:w-[48%] w-full transition-all duration-300 rounded-xl text-left gap-4  px-3 py-5 relative border-2 items-start cursor-pointer flex flex-col ${
+                      className={`md:w-[48%] w-full transition-all duration-300 rounded-xl text-left gap-4 select-none  px-3 py-5 relative border-2 cursor-pointer flex items-center ${
                         method.identifier == paymentMethod && "border-brandRed"
                       } justify-start`}
                       key={i}
@@ -196,6 +236,7 @@ const CheckoutPage = () => {
                         setPaymentMethod(method.identifier);
                       }}
                     >
+                      <img src={method?.icon} className="h-8" alt="" />
                       <div>
                         <h3>{method.name}</h3>
                         <p className="text-sm text-gray-500">
@@ -221,33 +262,54 @@ const CheckoutPage = () => {
             </div>
           </form>
         </section>
-        <section className="md:w-1/2 w-full px-8 md:sticky top-4">
+        <section className="md:w-1/2 w-full px-8 md:!sticky top-4">
           <div className="flex w-full justify-between">
             <h3 className="text-xl text-left my-9">Order summary</h3>
-            <h3 className="text-xl text-left my-9">{products.length} Items</h3>
+            <h3 className={`text-xl text-left my-9 ${productsLoading ? "skeleton-loading" : ""}`}>{products.length} Items</h3>
           </div>
 
           <div className="products flex flex-wrap px-4 md:flex-row flex-col gap-y-4">
-            {products.map((product, i) => {
-              return (
-                <div key={i} className="flex text-left  gap-4 md:w-1/2 w-full">
-                  <div>
-                    <img
-                      src={product.data.primaryImg}
-                      className="w-[7rem] skeleton-loading aspect-square rounded"
-                      alt={product.data.title}
-                    />
+            {
+            productsLoading ? (
+            <div className="flex text-left  gap-4 md:w-1/2 w-full">
+              <div>
+                <img
+                  
+                  className="w-[7rem] skeleton-loading aspect-square rounded"
+                  
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="skeleton-loading">Best Perfumes</h3>
+                <h4 className="text-gray-600 skeleton-loading w-fit">
+                  Rs. 1500
+                </h4>
+                <h5 className="text-gray-400 skeleton-loading w-fit">x 2</h5>
+              </div>
+            </div>) : (
+              products.map((product, i) => {
+                return (
+                  <div key={i} className="flex text-left  gap-4 md:w-1/2 w-full">
+                    <div>
+                      <img
+                        src={product.data.primaryImgThumbnails[0].url}
+                        className="w-[7rem] skeleton-loading aspect-square rounded"
+                        alt={product.data.title}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h3>{product.data.title}</h3>
+                      <h4 className="text-gray-600">
+                        Rs. {product.selectedVariant.price}
+                      </h4>
+                      <h5 className="text-gray-400">x {product.quantity}</h5>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <h3>{product.data.title}</h3>
-                    <h4 className="text-gray-600">
-                      Rs. {product.selectedVariant.price}
-                    </h4>
-                    <h5 className="text-gray-400">x {product.quantity}</h5>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )
+            
+            }
           </div>
           <div className="py-8 flex flex-col gap-4 ">
               <div>
@@ -257,7 +319,7 @@ const CheckoutPage = () => {
                   <p className="font-medium text-md leading-8 text-gray-800">
                     Sub Total
                   </p>
-                  <p className="font-semibold text-md leading-8 text-red-800">
+                  <p className={`font-semibold text-md leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
                     Rs. {subTotal}
                   </p>
                 </div>
@@ -267,7 +329,7 @@ const CheckoutPage = () => {
                   <p className="font-medium text-md leading-8 text-gray-800">
                     Shipping
                   </p>
-                  <p className="font-semibold text-md leading-8 text-red-800">
+                  <p className={`font-semibold text-md leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
                     {shippingFees == 0 ? "FREE" : `Rs. ${shippingFees}`}
                   </p>
                 </div>
@@ -290,7 +352,7 @@ const CheckoutPage = () => {
                 <p className="font-medium text-xl leading-8 text-gray-800">
                   Total
                 </p>
-                <p className="font-semibold text-2xl leading-8 text-red-800">
+                <p className={`font-semibold text-2xl leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
                   Rs.{total}
                 </p>
               </div>
@@ -311,7 +373,7 @@ const CheckoutPage = () => {
               productTags={allProductTags}
               discountValueReturner={getDiscountValue}
               discountTypeReturner={setDiscountType}
-              coupon={coupon}
+              coupon={coupon !== "none" && coupon}
             />
           </div>
         </section>

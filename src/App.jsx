@@ -43,7 +43,7 @@ function App() {
           <Route path="cart" element={<CartPage />} />
           <Route path="about" element={<AboutPage />} />
         </Route>
-        <Route path="checkout/:source/:quantity?/:coupon?" element={<EmptyLayout />}>
+        <Route path="checkout/:source/:quantity?/:coupon?/:selectedVariantIndex?" element={<EmptyLayout />}>
           <Route index element={<CheckoutPage />}/>
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
