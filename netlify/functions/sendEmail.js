@@ -4,7 +4,7 @@ const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
 const mg = mailgun({ apiKey, domain: "alzehrabygm.store" });
 
-export const handler = async (event) => {
+module.exports.handler = async (event) => {
   // Allow CORS from any origin (replace '*' with your frontend domain if needed)
   const headers = {
     "Access-Control-Allow-Origin": "*", // or 'https://your-frontend-domain.com'

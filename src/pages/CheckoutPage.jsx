@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import InputField from "../components/InputField";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import PromoCodeForm from "../components/PromoCodeForm";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { quality } from "@cloudinary/url-gen/actions/delivery";
-import { collection, doc, getDoc } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 import { FaSmileWink } from "react-icons/fa";
 import JazzCashLogo from "../assets/Jazz cash logo vector.webp";
 import CodIcon from "../assets/cod.webp";
 import easypaisaIcon from "../assets/easypaisa.webp";
 import bankIcon from "../assets/bank.webp";
+import { Button } from "@material-tailwind/react";
+import ConfirmationEmail from "../components/ConfirmationEmail";
+import AdminOrderNotification from "../components/admin/AdminOrderNotification";
 
 const paymentMethods = [
   {
@@ -23,19 +35,21 @@ const paymentMethods = [
   {
     icon: JazzCashLogo,
     name: "JazzCash",
-    context: "Send your payment to: ",
+    context:
+      "Send your payment to JazzCash on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336'> send us a screenshot </a>",
     identifier: "JZC",
   },
   {
     icon: easypaisaIcon,
     name: "EasyPaisa",
-    context: "Send your payment to: ",
+    context:
+      "Send your payment to easypaisa on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336'> send us a screenshot </a>",
     identifier: "EZP",
   },
   {
     icon: bankIcon,
     name: "Bank Transfer",
-    context: "Send your payment to: ",
+    context: "Send your payment to this IBAN number: ",
     identifier: "BT",
   },
 ];
@@ -58,10 +72,13 @@ const CheckoutPage = () => {
   const [total, setTotal] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
   const [calculationsLoading, setCalculationsLoading] = useState(true);
+  const [isSubmissionLoading, setIsSubmissionLoading] = useState(false);
   const [allProductTags, setAllProductTags] = useState([]);
   const [discountValue, setDiscountValue] = useState(0);
   const [discountType, setDiscountType] = useState(null);
   const [shippingFees, setShippingFees] = useState(null);
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+
   const [couponCodeApplied, setCouponCodeApplied] = useState(
     sessionStorage.getItem("couponApplied")
   );
@@ -83,20 +100,20 @@ const CheckoutPage = () => {
     }
   };
 
-  useEffect(()=>{
-    setCalculationsLoading(true)
+  useEffect(() => {
+    setCalculationsLoading(true);
     let subtotal = 0;
-    products.forEach((product)=>{
+    products.forEach((product) => {
       subtotal += JSON.parse(product.selectedVariant.price) * product.quantity;
-    })
-    setSubTotal(subtotal)
-    setShippingFees(subtotal > 1500 ? 0 : 300)
-    setCalculationsLoading(false)
-  },[products])
+    });
+    setSubTotal(subtotal);
+    setShippingFees(subtotal > 1500 ? 0 : 300);
+    setCalculationsLoading(false);
+  }, [products]);
 
   useEffect(() => {
-    setProductsLoading(true)
-    const getProducts = async()=>{
+    setProductsLoading(true);
+    const getProducts = async () => {
       if (source == "cart") {
         if (cartItems?.length) {
           let subtotal = 0;
@@ -107,7 +124,7 @@ const CheckoutPage = () => {
             productTags.push(item.data.tags);
           });
           setProducts([...cartItems]);
-          setProductsLoading(false)
+          setProductsLoading(false);
           setSubTotal(subtotal);
           const shipping_fees = subtotal > 1500 ? 0 : 300;
           setShippingFees(shipping_fees);
@@ -115,47 +132,123 @@ const CheckoutPage = () => {
         } else {
           navigate("/cart");
         }
-      }else{
+      } else {
         try {
           const productDocRef = doc(db, "Products", source);
           const productSnapshot = await getDoc(productDocRef);
-          const productData = productSnapshot.data()
-          setProducts([ 
-            {productId: source, quantity: parseInt(quantity), selectedVariant: productData.variants[selectedVariantIndex], data: productData}])
-          setProductsLoading(false)
-            
-          console.log([{data:productData, quantity: parseInt(quantity), productId: null}])
+          const productData = productSnapshot.data();
+          setProducts([
+            {
+              productId: source,
+              quantity: parseInt(quantity),
+              selectedVariant: productData.variants[selectedVariantIndex],
+              data: productData,
+            },
+          ]);
+          setProductsLoading(false);
+
+          console.log([
+            {
+              data: productData,
+              quantity: parseInt(quantity),
+              productId: null,
+            },
+          ]);
         } catch (error) {
-          navigate("/")
+          navigate("/");
         }
       }
       if (coupon) {
         setCouponCodeApplied(coupon);
       }
-    }
+    };
 
-    getProducts()
+    getProducts();
   }, [source, quantity]);
   useEffect(() => {
     setTotal(subTotal + shippingFees - discountValue);
   }, [products, subTotal, shippingFees, discountValue]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmissionLoading(true);
+
+    const orderData = {
+      orderId: uuidv4(),
+      customer: {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        shippingAddress: {
+          street: address,
+          nearSpot: extraAddress,
+          city,
+          state,
+        },
+      },
+      createdAt: new Date(),
+      status: "pending",
+      items: [...products],
+      payment: {
+        method: paymentMethod,
+        amount: total,
+        currency: "PKR",
+      },
+      subTotalAmount: subTotal,
+      discounts: [
+        {
+          code: couponCodeApplied,
+          amount: discountValue,
+        },
+      ],
+      shippingFees,
+      grandTotal: total,
+    };
+
+    try {
+      await setDoc(doc(db, "orders", orderData.orderId), orderData);
+      if (discountValue) {
+        const docRef = doc(db, "coupons", couponCodeApplied);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const currentUsedCount = docSnap.data().usedCount || 0;
+          await updateDoc(docRef, {
+            usedCount: currentUsedCount + 1,
+          });
+        }
+        await ConfirmationEmail(orderData.customer.email, orderData.customer.firstName);
+        await AdminOrderNotification("djam4343@gmail.com", orderData.grandTotal);
+
+        navigate(`/order/confirmed/${orderData.orderId}/${orderData.payment.method}`)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    console.log(orderData);
+  };
 
   return (
     <>
       <header className="bg-[#F9FAFB] py-8">
         <h1 className="text-4xl">Quick Checkout</h1>
       </header>
-      <main className="w-full bg-[#F9FAFB] py-10 flex md:flex-row flex-col">
+      <main className="w-full bg-[#F9FAFB] py-10 flex md:flex-row flex-col-reverse">
         <section className="md:w-1/2 px-8 w-full">
           <h3 className="text-xl text-left my-9">Contact information</h3>
-          <form action="">
+          <form
+            onSubmit={(e) => {
+              handleSubmit(e);
+            }}
+          >
             <div className="border-b pb-8 gap-4 flex md:flex-row flex-col">
               <InputField
                 inputAutoComplete={"email"}
                 inputName={"Email"}
                 valueReturner={setEmail}
                 inputValue={email}
-                requiredInput={true} 
+                requiredInput={true}
                 className="w-1/2"
               />
               <InputField
@@ -165,7 +258,6 @@ const CheckoutPage = () => {
                 inputValue={phoneNumber}
                 valueReturner={setPhoneNumber}
                 className="w-1/2"
-
               />
             </div>
 
@@ -218,7 +310,6 @@ const CheckoutPage = () => {
                   valueReturner={setState}
                 />
               </div>
-              
             </div>
             <div className="w-full flex flex-col gap-4 border-b pb-8">
               <h3 className="text-xl text-left my-5 Shipping information">
@@ -228,7 +319,7 @@ const CheckoutPage = () => {
                 {paymentMethods.map((method, i) => {
                   return (
                     <div
-                      className={`md:w-[48%] w-full transition-all duration-300 rounded-xl text-left gap-4 select-none  px-3 py-5 relative border-2 cursor-pointer flex items-center ${
+                      className={`lg:w-[48%] w-full transition-all duration-300 rounded-xl text-left gap-4 select-none  px-3 py-5 relative border-2 cursor-pointer flex items-center ${
                         method.identifier == paymentMethod && "border-brandRed"
                       } justify-start`}
                       key={i}
@@ -239,9 +330,10 @@ const CheckoutPage = () => {
                       <img src={method?.icon} className="h-8" alt="" />
                       <div>
                         <h3>{method.name}</h3>
-                        <p className="text-sm text-gray-500">
-                          {method.context}
-                        </p>
+                        <p
+                          className="text-sm text-gray-500"
+                          dangerouslySetInnerHTML={{ __html: method.context }}
+                        ></p>
                       </div>
 
                       <div
@@ -254,110 +346,168 @@ const CheckoutPage = () => {
                     </div>
                   );
                 })}
-                <button className="w-full bg-black py-3 rounded-xl text-white text-xl flex items-center justify-center gap-2 group my-3">
+                <Button
+                  className="w-full bg-black py-3 rounded-xl text-white text-lg flex items-center justify-center gap-2 group my-3 !font-semibold"
+                  loading={isSubmissionLoading}
+                  type="submit"
+                >
                   Confirm Order
                   <MdOutlineKeyboardArrowRight className="group-hover:translate-x-2 transition-all duration-200" />
-                </button>
+                </Button>
               </div>
             </div>
           </form>
         </section>
+
         <section className="md:w-1/2 w-full px-8 md:!sticky top-4">
-          <div className="flex w-full justify-between">
+          <div
+            className="flex w-full justify-between"
+            onClick={() => {
+              setIsSummaryExpanded(!isSummaryExpanded);
+            }}
+          >
             <h3 className="text-xl text-left my-9">Order summary</h3>
-            <h3 className={`text-xl text-left my-9 ${productsLoading ? "skeleton-loading" : ""}`}>{products.length} Items</h3>
+            <h3
+              className={`text-xl flex gap-4 items-center text-left my-9 ${
+                productsLoading ? "skeleton-loading" : ""
+              }`}
+            >
+              {products.length} Items{" "}
+              <div
+                className={`"flex md:hidden  ${
+                  isSummaryExpanded ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                <svg
+                  className="ml-2 my-auto"
+                  width={16}
+                  viewBox="0 0 12 7"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1.5L4.58578 5.08578C5.25245 5.75245 5.58579 6.08579 6 6.08579C6.41421 6.08579 6.74755 5.75245 7.41421 5.08579L11 1.5"
+                    stroke="#6B7280"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </h3>
           </div>
 
-          <div className="products flex flex-wrap px-4 md:flex-row flex-col gap-y-4">
-            {
-            productsLoading ? (
-            <div className="flex text-left  gap-4 md:w-1/2 w-full">
-              <div>
-                <img
-                  
-                  className="w-[7rem] skeleton-loading aspect-square rounded"
-                  
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <h3 className="skeleton-loading">Best Perfumes</h3>
-                <h4 className="text-gray-600 skeleton-loading w-fit">
-                  Rs. 1500
-                </h4>
-                <h5 className="text-gray-400 skeleton-loading w-fit">x 2</h5>
-              </div>
-            </div>) : (
-              products.map((product, i) => {
-                return (
-                  <div key={i} className="flex text-left  gap-4 md:w-1/2 w-full">
-                    <div>
-                      <img
-                        src={product.data.primaryImgThumbnails[0].url}
-                        className="w-[7rem] skeleton-loading aspect-square rounded"
-                        alt={product.data.title}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <h3>{product.data.title}</h3>
-                      <h4 className="text-gray-600">
-                        Rs. {product.selectedVariant.price}
-                      </h4>
-                      <h5 className="text-gray-400">x {product.quantity}</h5>
-                    </div>
+          <div>
+            <div
+              className={`products md:flex flex-wrap px-4 md:flex-row flex-col gap-y-4 ${
+                isSummaryExpanded ? "flex " : "hidden"
+              }`}
+            >
+              {productsLoading ? (
+                <div className="flex text-left  gap-4 md:w-1/2 w-full">
+                  <div>
+                    <img className="w-[7rem] skeleton-loading aspect-square rounded" />
                   </div>
-                );
-              })
-            )
-            
-            }
-          </div>
-          <div className="py-8 flex flex-col gap-4 ">
-              <div>
-
-              <div>
-                <div className="flex items-center justify-between ">
-                  <p className="font-medium text-md leading-8 text-gray-800">
-                    Sub Total
-                  </p>
-                  <p className={`font-semibold text-md leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
-                    Rs. {subTotal}
-                  </p>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="skeleton-loading">Best Perfumes</h3>
+                    <h4 className="text-gray-600 skeleton-loading w-fit">
+                      Rs. 1500
+                    </h4>
+                    <h5 className="text-gray-400 skeleton-loading w-fit">
+                      x 2
+                    </h5>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                products.map((product, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className="flex text-left  gap-4 md:w-1/2 w-full"
+                    >
+                      <div>
+                        <img
+                          src={product.data.primaryImgThumbnails[0].url}
+                          className="w-[7rem] skeleton-loading aspect-square rounded"
+                          alt={product.data.title}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <h3>{product.data.title}</h3>
+                        <h4 className="text-gray-600">
+                          Rs. {product.selectedVariant.price}
+                        </h4>
+                        <h5 className="text-gray-400">x {product.quantity}</h5>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <div
+              className={`py-8 md:flex flex-col gap-4 ${
+                isSummaryExpanded ? "flex " : "hidden"
+              }`}
+            >
               <div>
-                <div className="flex items-center justify-between ">
-                  <p className="font-medium text-md leading-8 text-gray-800">
-                    Shipping
-                  </p>
-                  <p className={`font-semibold text-md leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
-                    {shippingFees == 0 ? "FREE" : `Rs. ${shippingFees}`}
-                  </p>
-                </div>
-              </div>
-              {discountValue ? (
                 <div>
                   <div className="flex items-center justify-between ">
                     <p className="font-medium text-md leading-8 text-gray-800">
-                      Coupon Discount
+                      Sub Total
                     </p>
-                    <p className="font-semibold text-md leading-8 text-red-800">
-                      - Rs. {discountValue}
+                    <p
+                      className={`font-semibold text-md leading-8 text-red-800 ${
+                        productsLoading ? "skeleton-loading" : ""
+                      }`}
+                    >
+                      Rs. {subTotal}
                     </p>
                   </div>
                 </div>
-              ) : ""}
+                <div>
+                  <div className="flex items-center justify-between ">
+                    <p className="font-medium text-md leading-8 text-gray-800">
+                      Shipping
+                    </p>
+                    <p
+                      className={`font-semibold text-md leading-8 text-red-800 ${
+                        productsLoading ? "skeleton-loading" : ""
+                      }`}
+                    >
+                      {shippingFees == 0 ? "FREE" : `Rs. ${shippingFees}`}
+                    </p>
+                  </div>
+                </div>
+                {discountValue ? (
+                  <div>
+                    <div className="flex items-center justify-between ">
+                      <p className="font-medium text-md leading-8 text-gray-800">
+                        Coupon Discount
+                      </p>
+                      <p className="font-semibold text-md leading-8 text-red-800">
+                        - Rs. {discountValue}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
-            <div>
-              <div className="flex items-center justify-between ">
-                <p className="font-medium text-xl leading-8 text-gray-800">
-                  Total
-                </p>
-                <p className={`font-semibold text-2xl leading-8 text-red-800 ${productsLoading ? "skeleton-loading" : ""}`}>
-                  Rs.{total}
-                </p>
-              </div>
+              <div>
+                <div className="flex items-center justify-between ">
+                  <p className="font-medium text-xl leading-8 text-gray-800">
+                    Total
+                  </p>
+                  <p
+                    className={`font-semibold text-2xl leading-8 text-red-800 ${
+                      productsLoading ? "skeleton-loading" : ""
+                    }`}
+                  >
+                    Rs.{total}
+                  </p>
+                </div>
 
-              {/* 
+                {/* 
                    {discountValue > 0 && <div className="flex items-center justify-between ">
                       <p className="font-medium text-md leading-8 text-gray-800">
                         Coupon Discount:
@@ -366,15 +516,16 @@ const CheckoutPage = () => {
                           - Rs. discountValue
                       </p>
                     </div>} */}
+              </div>
             </div>
-          </div>
-          <div className="py-8">
-            <PromoCodeForm
-              productTags={allProductTags}
-              discountValueReturner={getDiscountValue}
-              discountTypeReturner={setDiscountType}
-              coupon={coupon !== "none" && coupon}
-            />
+            <div className={`py-8 md:block w-full ${isSummaryExpanded ? "flex " : "hidden"}`}>
+              <PromoCodeForm
+                productTags={allProductTags}
+                discountValueReturner={getDiscountValue}
+                discountTypeReturner={setDiscountType}
+                coupon={coupon !== "none" && coupon}
+              />
+            </div>
           </div>
         </section>
       </main>

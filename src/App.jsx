@@ -26,6 +26,8 @@ import AdminCouponEdit from './pages/admin/AdminCouponEdit.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import EmptyLayout from './layouts/EmptyLayout.jsx';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
+import OrderConfirmationPage from './pages/OrderConfirmationPage.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -42,6 +44,7 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="/order/confirmed/:orderId/:paymentMethod" element={<OrderConfirmationPage />} />
         </Route>
         <Route path="checkout/:source/:quantity?/:coupon?/:selectedVariantIndex?" element={<EmptyLayout />}>
           <Route index element={<CheckoutPage />}/>
@@ -54,6 +57,7 @@ function App() {
           <Route path='/admin/management' element={<AdminManagementPage />} />
           <Route path='/admin/management/coupons/new' element={<AdminNewCoupon />} />
           <Route path='/admin/management/coupons/:couponCode/edit' element={<AdminCouponEdit />} />
+          <Route path='/admin/orders' element={<AdminOrdersPage />} />
         </Route>
           <Route path='/admin/login' element={<AdminLoginPage />} />
           <Route path='/admin/signup' element={<AdminSignUpPage />} />
