@@ -14,6 +14,7 @@ import {
   query,
   where,
   getDocs,
+  updateDoc
 } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 import { FaSmileWink } from "react-icons/fa";
@@ -24,6 +25,8 @@ import bankIcon from "../assets/bank.webp";
 import { Button } from "@material-tailwind/react";
 import ConfirmationEmail from "../components/ConfirmationEmail";
 import AdminOrderNotification from "../components/admin/AdminOrderNotification";
+import { toast } from "react-toastify";
+import { responsive } from "@cloudinary/react";
 
 const paymentMethods = [
   {
@@ -56,7 +59,6 @@ const paymentMethods = [
 
 const CheckoutPage = () => {
   const { source, quantity, coupon, selectedVariantIndex } = useParams();
-  console.log(source, quantity, coupon);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -172,7 +174,7 @@ const CheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmissionLoading(true);
-
+    let success = false;
     const orderData = {
       orderId: uuidv4(),
       customer: {
@@ -204,29 +206,50 @@ const CheckoutPage = () => {
       ],
       shippingFees,
       grandTotal: total,
+      ConfirmationEmailSent: false
     };
 
     try {
       await setDoc(doc(db, "orders", orderData.orderId), orderData);
-      if (discountValue) {
-        const docRef = doc(db, "coupons", couponCodeApplied);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const currentUsedCount = docSnap.data().usedCount || 0;
+      if (discountValue > 0) {
+        const q = query(
+          collection(db, "coupons"),
+          where("couponCode", "==", couponCodeApplied)
+        );
+    
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          // Assuming there's only one document with this couponCode
+          const docRef = doc(db, "coupons", querySnapshot.docs[0].id);
+          const docSnap = querySnapshot.docs[0];
+        
+          const docSnapData = docSnap.data();
+          console.warn(docSnapData);
+        
+          // Increment the usedCount field
+          const updatedUsedCount = (docSnapData.usedCount || 0) + 1;
+          
+          console.log({ ...docSnapData, usedCount: updatedUsedCount });
+          
+          // Update the document with the new usedCount
           await updateDoc(docRef, {
-            usedCount: currentUsedCount + 1,
+            usedCount: updatedUsedCount
           });
+        } else {
+          console.warn("No document found with the specified couponCode");
         }
-        await ConfirmationEmail(orderData.customer.email, orderData.customer.firstName);
-        await AdminOrderNotification("djam4343@gmail.com", orderData.grandTotal);
-
-        navigate(`/order/confirmed/${orderData.orderId}/${orderData.payment.method}`)
       }
+      if(source == "cart") localStorage.removeItem("cart-items");
+      toast.success("Your order has been placed")
+      navigate(`/order/confirmed/${orderData.orderId}/${orderData.payment.method}/${orderData.customer.firstName}/${orderData.customer.email}`)
     } catch (error) {
+      console.log("there a error")
       console.log(error);
+      success= false
+    } finally {
+      
     }
-
-    console.log(orderData);
   };
 
   return (

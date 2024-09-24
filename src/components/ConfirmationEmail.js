@@ -1,11 +1,61 @@
 import React from "react";
 
-const ConfirmationEmail = ({email, name}) => {
+const ConfirmationEmail = (email, name) => {
   const emailData = {
     toEmail: email,
     subject: `Your Order has been placed, ${name}`,
     textContent: "Your order has been successfully placed.",
-    htmlContent: "<h1>Your order has been placed!!<h1/>"
+    htmlContent: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0056b3;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Confirmation</h1>
+        <p>Dear ${name},</p>
+        <p>Thank you for your order! We are pleased to inform you that your order has been successfully placed.</p>
+        
+        <p>Your order will arrive in 3-5 working days. If you have any questions or need further assistance, please do not hesitate to contact us.</p>
+        <p>Thank you for shopping with us!</p>
+        <p>Best regards,<br>Al Zehra Perfumes</p>
+        <div class="footer">
+            <p>If you did not place this order, please contact our support team immediately.</p>
+            <p>Al Zehra Perfumes<br>Main Lakhi der, shikarpur, sindh pakistan<br>+92 332 3947336<br>info@alzehrabygm.store</p>
+        </div>
+    </div>
+</body>
+</html>`
   };
   
   // Define the request options
@@ -21,7 +71,7 @@ const ConfirmationEmail = ({email, name}) => {
   fetch('https://alzehrareact.netlify.app/.netlify/functions/sendEmail', requestOptions)
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        console.error('Network response was not ok');
       }
       return response.json();
     })
