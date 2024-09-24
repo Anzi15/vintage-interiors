@@ -59,21 +59,6 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://alzehrareact.netlify.app/.netlify/functions/sendEmail', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            toEmail: "djam4343@gmail.com",
-            subject: "order confirmed",
-            textContent:"your order has been confirmed",
-            htmlFilePath : "../components/OrderConfirmation.html", // Send the path to the HTML file
-          }),
-        });
-    
-        const result = await response.json();
-        console.log(result);
         const products = await getMultipleDocuments("Products", 4);
         console.log(products);
         setTopProducts(products);
