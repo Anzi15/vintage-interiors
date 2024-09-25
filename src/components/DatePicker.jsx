@@ -10,12 +10,13 @@ export const convertTimestampToDate = (timestamp) => {
   return null;
 };
 
-export default function DatePicker({ initialDate = null, dateReturner, mode = "date", label="Select a date" }) {
+export default function DatePicker({ initialDate = null, dateReturner, mode = "date", label="Select a date", allowPast=false }) {
   const [date, setDate] = useState(initialDate ? convertTimestampToDate(initialDate) : null); 
   const [time, setTime] = useState("12:00"); // Default time
   const tomorrow = addDays(new Date(), 1);
 
   useEffect(() => {
+    if(initialDate== null) return
     const convertedDate = convertTimestampToDate(initialDate);
     console.log("Converted Date:", convertedDate);
     if (convertedDate && isValid(convertedDate)) {
@@ -46,6 +47,9 @@ export default function DatePicker({ initialDate = null, dateReturner, mode = "d
     dateReturner(null);
   };
 
+  const hiddenProps = allowPast ? {} : { hidden: { before: tomorrow } };
+  const disabledProps = allowPast ? {} : { disabled: { before: tomorrow } };
+
   return (
     <div className="w-full">
       <Popover placement="bottom">
@@ -62,8 +66,12 @@ export default function DatePicker({ initialDate = null, dateReturner, mode = "d
             mode="single"
             selected={date}
             onSelect={(selectedDate) => setDate(selectedDate)}
-            disabled={{ before: tomorrow }}
-            hidden={{ before: tomorrow }}
+            // disabled={{ before: tomorrow }}
+            // {...(!allowPast ? { hidden: { before: tomorrow } } : {})}
+            // {...(!allowPast ? { disabled: { before: tomorrow } } : {})}
+            {...hiddenProps}
+            {...disabledProps}
+
             showOutsideDays
             className="border-0"
             classNames={{

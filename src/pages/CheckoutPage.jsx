@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+
 import { v4 as uuidv4 } from "uuid";
 import InputField from "../components/InputField";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import PromoCodeForm from "../components/PromoCodeForm";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
+import { Timestamp } from 'firebase/firestore'; 
 import { quality } from "@cloudinary/url-gen/actions/delivery";
 import {
   setDoc,
@@ -39,20 +41,20 @@ const paymentMethods = [
     icon: JazzCashLogo,
     name: "JazzCash",
     context:
-      "Send your payment to JazzCash on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336'> send us a screenshot </a>",
+      "Send your payment to JazzCash on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using jazzcash for a order on your website' target='_blank'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to share my payment receipt' target='_blank'> send us a screenshot </a>",
     identifier: "JZC",
   },
   {
     icon: easypaisaIcon,
     name: "EasyPaisa",
     context:
-      "Send your payment to easypaisa on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336'> send us a screenshot </a>",
+      "Send your payment to easypaisa on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using easypasia for a order on your website' target='_blank'>03323947336 </a>, and <a class='text-light-blue-800' target='_blank' href='https://wa.me/923323947336?text=Hi, please guide me i share my screenshot with you of my payment'> send us a screenshot </a>",
     identifier: "EZP",
   },
   {
     icon: bankIcon,
     name: "Bank Transfer",
-    context: "Send your payment to this IBAN number: ",
+    context: "Send your payment to this IBAN number:  <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using bank transfer for a order on your website' target='_blank'>PK05 BAHL 1252 0981 0005 9601</a>",
     identifier: "BT",
   },
 ];
@@ -189,7 +191,7 @@ const CheckoutPage = () => {
           state,
         },
       },
-      createdAt: new Date(),
+      createdAt: Timestamp.fromDate(new Date()),
       status: "pending",
       items: [...products],
       payment: {

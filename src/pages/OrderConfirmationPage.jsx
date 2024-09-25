@@ -19,7 +19,9 @@ const OrderConfirmationPage = () => {
       if(!orderDoc.data().ConfirmationEmailSent){
         // const res = ConfirmationEmail(email, name)
         try {
+          ConfirmationEmail(orderDoc.data().customer.email, orderDoc.data().customer.firstName)
           const adminRes = AdminOrderNotification(orderDoc.data())
+          
           await sendNotification()
           await updateDoc(doc(db, "orders", orderId), {
             ConfirmationEmailSent: true
