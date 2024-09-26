@@ -4,9 +4,27 @@ import CustomerBenefits from "../components/CustomerBenefits";
 import Testimonials from "../components/Testimonials";
 import "animate.css/animate.compat.css";
 import ScrollAnimation from "react-animate-on-scroll";
+import { Helmet } from 'react-helmet-async';
 
 const AboutPage = () => {
   return (
+    <>
+    <Helmet>
+      <title>About Us</title>
+      <meta name="description" content="Our story of becoming one of the most quality fragrance perfume makers in the history of pakisan." />
+      
+      {/* Open Graph tags for social media preview */}
+      <meta property="og:title" content="About us - Al Zehra perfumes" />
+      <meta property="og:description" content="Our story of becoming one of the most quality fragrance perfume makers in the history of pakisan" />
+      <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/images%2Faman-chaturvedi-DoXaiQ__JEI-unsplash.jpg?alt=media&token=5a9cba1e-1c40-4f16-9089-e766307b3b0f" />
+      <meta property="og:url" content="https://alzehrabygm.store" />
+      
+      {/* Twitter Card tags */}
+      <meta name="twitter:card" content="Our story of becoming one of the most quality fragrance perfume makers in the history of pakisan" />
+      <meta name="twitter:title" content="About us - Al Zehra Perfumes" />
+      <meta name="twitter:description" content="Our story of becoming one of the most quality fragrance perfume makers in the history of pakisan" />
+      <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/images%2Faman-chaturvedi-DoXaiQ__JEI-unsplash.jpg?alt=media&token=5a9cba1e-1c40-4f16-9089-e766307b3b0f" />
+    </Helmet>
     <main>
       <section className="bg-white dark:bg-gray-900">
         <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6 text-left">
@@ -183,6 +201,7 @@ const AboutPage = () => {
       <Testimonials bgColor="#575761" />
       <FaqsSection />
     </main>
+    </>
   );
 };
 

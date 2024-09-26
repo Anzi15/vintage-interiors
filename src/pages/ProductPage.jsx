@@ -17,6 +17,7 @@ import MobileCarousel from "../components/MobileCarousel.jsx";
 import CountdownTimer, { formatRemainingTime } from "../components/CountDownTimer.jsx";
 import { Button } from "@material-tailwind/react";
 import { IoMdCart } from "react-icons/io";
+import { Helmet } from "react-helmet-async";
 const reviews = [
   {
     stars: 5,
@@ -98,8 +99,6 @@ const ProductPage = () => {
     setIsLoading(true);
   }, [location]);
 
-  console.log(selectedVariant.comparePrice)
-
   const addToCart = () => {
     const prevCartItems = JSON.parse(localStorage.getItem("cart-items")) || [];
     const productIndex = prevCartItems.findIndex(
@@ -158,20 +157,10 @@ const ProductPage = () => {
   if (error) {
     return <Navigate to="/" />;
   }
-
-  const now = new Date();
-  // const timestamp = data.discountExpiryDate; // Assuming this is an object with seconds and nanoseconds
-// const expiryDatee = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
-
   useEffect(()=>{
     if(isLoading) return;
-    if(data.discountExpiryDate == null){
-      setIsExpiryDateValid(true);
-      return;
-    }else{
-      const remainingTime = formatRemainingTime(data.discountExpiryDate);
-      console.log(remainingTime)
-    }
+    const expiryDateValid = data.expiryDateValid ? true : formatRemainingTime(data.discountExpiryDate) !== "00:00:00" && true;
+    setIsExpiryDateValid(expiryDateValid)
   },[data.discountExpiryDate])
   const parsePrice = (price) => {
     const parsed = parseFloat(price);
@@ -180,20 +169,20 @@ const ProductPage = () => {
 
   useEffect(()=>{
     if(isLoading) return;
+    console.log(data.comparePrice, selectedVariant.comparePrice)
     if(parsePrice(selectedVariant?.comparePrice || parsePrice(data?.comparePrice))){
       if((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)){
-        if(isExpiryDateValid){
           setShouldShowComparePrice(true)
-        }
       }
     }
   },[data.comparePrice, selectedVariant.comparePrice])
-  // (parsePrice(selectedVariant?.comparePrice) || parsePrice(data.comparePrice)) &&
-  //   ((parsePrice(selectedVariant?.comparePrice) !== 0) || (parsePrice(data.comparePrice) !== 0)) &&
-  //   isExpiryDateValid;
 
   return (
     <>
+    <Helmet>
+        <title>{data.title !== "Loading..." ? data.title : "Best fragrances" } | Al Zehra By GM</title>
+        <meta name="description" content={data.description} />
+      </Helmet>
       <main className="flex justify-evenly w-full md:flex-row flex-col relative h-full">
         <ProductImgsCarousel
           className=" md:max-h-[565px] md:max-w-[445px] md:gap-8"
@@ -258,7 +247,7 @@ const ProductPage = () => {
                 </div>
               )}
             </div>
-            {shouldShowComparePrice && isExpiryDateValid && (
+            {isExpiryDateValid && (
               <CountdownTimer expiryTimestamp={data.discountExpiryDate} />
             )}
             {data.variants && data.variants.length > 1 && (
@@ -270,7 +259,7 @@ const ProductPage = () => {
                       key={index}
                       role="button"
                       onClick={() => handleVariantChange(variant)}
-                      className={`border flex items-center md:w-full w-fit p-0 leading-tight transition-all max-w-[80%] rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 
+                      className={`border flex items-center w-fit p-0 leading-tight transition-all max-w-[80%] rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 
                           ${
                             selectedVariant === variant
                               ? "bg-blue-gray-50 text-blue-gray-900"

@@ -7,7 +7,7 @@ export const formatRemainingTime = (expiryTimestamp) => {
   const remainingTime = expiryDate - now;
 
   if (remainingTime <= 0) {
-    return "00:00:00"; // Time is up or in the past
+    return "00h 00m 00s"; // Time is up or in the past
   }
 
   const hours = Math.floor(remainingTime / (1000 * 60 * 60));
@@ -19,29 +19,26 @@ export const formatRemainingTime = (expiryTimestamp) => {
   return [
     hours.toString().padStart(2, "0") + "h",
     " ",
-    minutes.toString().padStart(2, "0") +"m",
+    minutes.toString().padStart(2, "0") + "m",
     " ",
-    seconds.toString().padStart(2, "0")+"s",
-  ];
+    seconds.toString().padStart(2, "0") + "s",
+  ].join(""); // Join into a single string
 };
+
 const CountdownTimer = ({ expiryTimestamp }) => {
-  const [remainingTime, setRemainingTime] = useState("");
+  const [remainingTime, setRemainingTime] = useState(formatRemainingTime(expiryTimestamp));
 
   useEffect(() => {
-    // Function to format remaining time
+    // Ensure expiryTimestamp is valid before proceeding
+    if (!expiryTimestamp || !expiryTimestamp.seconds) {
+      return;
+    }
 
-    // Convert the expiry timestamp to a Date object
-    const expiryDate = new Date(expiryTimestamp.seconds * 1000);
-
-    // Update the countdown immediately
-    setRemainingTime(formatRemainingTime(expiryTimestamp));
-
-    // Set up interval to update every second
     const intervalId = setInterval(() => {
-      setRemainingTime(formatRemainingTime(expiryDate));
+      const updatedRemainingTime = formatRemainingTime(expiryTimestamp);
+      setRemainingTime(updatedRemainingTime);
     }, 1000);
 
-    // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, [expiryTimestamp]);
 

@@ -11,19 +11,20 @@ const ProductImgsCarousel = ({ productImages, thumbnails }) => {
   return (
     <div className="md:px-8 px-4 md:w-1/3 w-full  md:block">
       <div className="activeImg relative w-full aspect-square">
-        {productImages.map((img, i) => {
-          return (
-            <img
-              src={img}
-              key={i}
-              alt="Al Zehra Perfumes"
-              className={`w-full  aspect-square rounded-md skeleton-loading  inset-0 ${
-                i == activeImg ? "opacity-100 block" : "opacity-0 absolute"
-              }`}
-              onClick={zoomImage}
-            />
-          );
-        })}
+      {productImages.map((img, i) => {
+  return (
+    <img
+      src={img}
+      key={i}
+      alt="Al Zehra Perfumes"
+      className={`w-full aspect-square rounded-md skeleton-loading absolute transition-opacity duration-300 ${
+        i === activeImg ? "opacity-100 z-20" : "opacity-0 z-10"
+      }`}
+      onClick={zoomImage}
+    />
+  );
+})}
+
         {/* <img src={productImages[activeImg]} alt="" className='w-full aspect-square rounded-md skeleton-loading'/> */}
       </div>
       <div className="w-full flex py-4 gap-4">
