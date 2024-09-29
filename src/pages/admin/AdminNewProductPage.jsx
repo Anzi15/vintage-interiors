@@ -1,6 +1,7 @@
 import axios from "axios";
 import { db } from "../../modules/firebase-modules/firestore.js";
 import { useState, useEffect, useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import ImageDropZone from "../../components/admin/ImageDropZone";
 import TiptapEditor from "../../components/admin/TiptapEditor";
 import ProductCard from "../../components/ProductCard.jsx";
@@ -90,7 +91,7 @@ const AdminNewProductPage = () => {
   const uploadImage = async (file) => {
     try {
       // Create a reference to the file in Firebase Storage
-      const storageRef = ref(storage, `images/${file.name}`);
+      const storageRef = ref(storage, `images/${ uuidv4()}`);
       
       // Create an image element and canvas for resizing
       const img = document.createElement('img');
@@ -115,7 +116,7 @@ const AdminNewProductPage = () => {
             // Convert canvas to blob
             canvas.toBlob(async (blob) => {
               try {
-                const thumbnailRef = ref(storage, `thumbnails/${size}_${file.name}`);
+                const thumbnailRef = ref(storage, `thumbnails/${size}_${ uuidv4()}`);
                 await uploadBytes(thumbnailRef, blob);
                 const thumbnailUrl = await getDownloadURL(thumbnailRef);
                 thumbnailUrls.push({ size, url: thumbnailUrl });

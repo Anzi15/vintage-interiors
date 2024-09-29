@@ -110,6 +110,11 @@ const Footer = () => {
       </div>
 
     </div>
+    <div className="w-full">
+       <p>
+        Designed And Developed By - <a href="https://anziandco.com" className="underline font-bold" targert="_blank">Anzi &. CO</a>
+       </p>
+    </div>
   </footer>
   
   );

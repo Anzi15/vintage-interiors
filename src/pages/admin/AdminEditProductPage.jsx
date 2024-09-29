@@ -21,6 +21,7 @@ import { useParams } from "react-router-dom";
 import { getDocument } from "../../modules/firebase-modules/firestore";
 import { GrUpdate } from "react-icons/gr";
 import DatePicker from "../../components/DatePicker.jsx";
+import { v4 as uuidv4 } from "uuid";
 
 const AdminEditProductPage = () => {
   const navigate = useNavigate();
@@ -198,8 +199,9 @@ const AdminEditProductPage = () => {
 
   const uploadImage = async (file, oldFileUrl) => {
     try {
+      const uid=  uuidv4()
       // Create a reference to the file in Firebase Storage
-      const storageRef = ref(storage, `images/${file.name}`);
+      const storageRef = ref(storage, `images/${uid}`);
       
       // If there's an old file URL, delete the old file
       if (oldFileUrl) {
@@ -335,7 +337,7 @@ const AdminEditProductPage = () => {
       discountExpiryDate,
       createdAt: data.createdAt,
       shippingFees,
-      tags: selectedTags,
+      tags: data.tags,
       variants,
       primaryImg:
         primaryImg === initialPrimaryImg
