@@ -43,18 +43,16 @@ const AdminLayout = () => {
 
   useEffect(() => {
     if (user && Adminvalue) {
-      Adminvalue.docs.map((doc) => {
-        console.log(doc);
-        console.log(doc.data().Email == user.email);
-        console.log(user.email);
-        if (user.email !== doc.data().Email) {
-          navigate("/admin/unauthorized");
-        } else {
-          setUserIsAdmin(true);
-        }
-      });
+      const isAuthorized = Adminvalue.docs.some((doc) => doc.data().Email === user.email);
+  
+      if (!isAuthorized) {
+        navigate("/admin/unauthorized");
+      } else {
+        setUserIsAdmin(true);
+      }
     }
-  }, [Adminvalue, user]);
+  }, [Adminvalue, user, navigate]);
+  
 
   return (
     //

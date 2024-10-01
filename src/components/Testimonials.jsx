@@ -1,50 +1,55 @@
 import { Carousel } from "@material-tailwind/react";
 import StarRating from "./StarRating";
 
-const Testimonials = ({ reviews=[
-  {
-    stars: 5,
-    text: "I was really impressed with the timely delivery and good packaging of my order from Al Zehra By GM. The product was delivered on the promised date and was well-protected during shipping.",
-    author: "Saad Arain",
-  },
-  {
-    stars: 5,
-    text: "I have been a customer of Al Zehra by GM for many years and I have always been happy with the service. The order is always delivered on time and is packaged well. They do a great job of assisting to get the perfect fragrance for their loved ones.",
-    author: "Rahat Raja",
-  },
-  {
-    stars: 5,
-    text: "I had a great experience shopping with Al Zehra by GM. The shopping experience was a breeze and the product quality was excellent. their team asked the next day for reviews of the perfume. Great service.",
-    author: "Waqas Ashraf",
-  },
-  {
-    stars: 5,
-    text: "The scent collection at Al Zehra by GM is absolutely amazing. I ordered a few perfumes, and each one exceeded my expectations. The customer support was very responsive and helped me choose the best fragrances for my needs. Highly recommended!",
-    author: "Fatima Malik",
-  },
-  {
-    stars: 4,
-    text: "I ordered a perfume from Al Zehra by GM, and while the delivery took a bit longer than expected, the quality of the fragrance made up for it. I will definitely be ordering again. The scent is long-lasting and exactly what I was looking for.",
-    author: "Ahmed Khan",
-  },
-  {
-    stars: 5,
-    text: "Al Zehra by GM never disappoints! The perfumes are of top-notch quality, and the prices are very reasonable. I’ve recommended this store to all my friends, and they love it too. Great job!",
-    author: "Sara Sheikh",
-  },
-  {
-    stars: 5,
-    text: "I recently purchased a gift set from Al Zehra by GM, and it was beautifully packaged and delivered on time. The recipient loved the fragrance. I'll definitely be coming back for more.",
-    author: "Naveed Anwar",
-  },
-], bgColor = "#5E2C05", textColor = "white" }) => {
+const Testimonials = ({
+  reviews = [
+    {
+      stars: 5,
+      text: "I purchased a vintage table from Vintage Interiors, and I couldn't be happier! The craftsmanship is incredible, and it fits perfectly in my living room. Highly recommended!",
+      author: "Ayesha Batool",
+    },
+    {
+      stars: 5,
+      text: "The delivery was prompt, and the packaging was impeccable. I ordered some decor pieces, and they arrived in perfect condition. Excellent service!",
+      author: "Fahad Malik",
+    },
+    {
+      stars: 5,
+      text: "Vintage Interiors has an amazing selection of furniture. I was thrilled with my new sofa! It’s stylish and super comfortable. Great shopping experience!",
+      author: "Sara",
+    },
+    {
+      stars: 5,
+      text: "I love my new dining set from Vintage Interiors. It’s perfect for family gatherings. The quality is top-notch, and the customer service was very helpful.",
+      author: "Bilal Ahmed",
+    },
+    {
+      stars: 4,
+      text: "I ordered a decorative item that took a bit longer to arrive than expected, but it was worth the wait! The piece is stunning and adds a unique touch to my home.",
+      author: "Maya Mangi",
+    },
+    {
+      stars: 5,
+      text: "Vintage Interiors exceeded my expectations! The furniture quality is outstanding, and the prices are very reasonable. I’ll definitely be back for more.",
+      author: "Abdul Rehman",
+    },
+    {
+      stars: 5,
+      text: "I gifted my friend a beautiful lamp from Vintage Interiors, and she absolutely loved it! The presentation and quality were exceptional. I’ll be shopping here again soon.",
+      author: "Hina Shah",
+    },
+  ],
+  bgColor = "#5E2C05",
+  textColor = "white",
+}) => {
   return (
     <section
       className="my-20 max-w-screen"
       style={{ backgroundColor: bgColor }}
     >
-      <h1 className={`py-8 text-3xl font-bold uppercase text-[${textColor}] md:w-1/2 m-auto`}
-      style={{ color: textColor }}
+      <h1
+        className={`py-8 text-3xl font-bold uppercase`}
+        style={{ color: textColor }}
       >
         We take pride in our customer's words
       </h1>
@@ -71,9 +76,10 @@ const Testimonials = ({ reviews=[
         {reviews.map((review, index) => (
           <div
             key={index}
-            className={`flex w-full p-8 items-center justify-center flex-col h-[15rem] gap-4 text-[${textColor}]`}
+            className={`flex w-full p-8 items-center justify-center flex-col h-[15rem] gap-4`}
             aria-labelledby={`review-${index}`}
-            style={{ color: textColor }}>
+            style={{ color: textColor }}
+          >
             <StarRating activeStars={review.stars} />
             <p className="md:w-[50%] w-[90%]">{review.text}</p>
             <b className="uppercase">{review.author}</b>

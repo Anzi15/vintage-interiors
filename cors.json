@@ -1,6 +1,6 @@
 [
     {
-      "origin": ["http://localhost:5173","https://arux.store","https://alzehrabygms.store"],
+      "origin": ["http://localhost:5173","https://thevintageinteriors.com","https://wwww.thevintageinteriors.com/"],
       "method": ["GET"],
       "maxAgeSeconds": 3600
     }

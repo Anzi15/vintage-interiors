@@ -2,7 +2,7 @@ import { Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import WhatsAppLeadForm from "./WhatsAppLeadForm";
 import { FaFacebookSquare, FaInstagramSquare, FaWhatsappSquare } from "react-icons/fa";
-import { AiFillTikTok } from "react-icons/ai";
+import { AiFillTikTok, AiFillYoutube } from "react-icons/ai";
 
 const LINKS = [
   {
@@ -87,24 +87,28 @@ const Footer = () => {
   
       <div className="sm:flex sm:items-center sm:justify-between">
       <p className="font-sans p-8 text-start md:text-center md:text-lg md:p-4">
-        © 2023 Al Zehra By GM. All rights reserved.
+        © {currentYear} Vintage Interiors. All rights reserved.
       </p>
   
         <div className="flex gap-4 hover:cursor-pointer items-center md:justify-normal justify-center">
-          <Link to={"https://wa.link/kljcq1"} target="_blank">
+          <Link to={"https://wa.me/923177260000?text=AoA"} target="_blank">
           <FaWhatsappSquare className="text-4xl transition-all hover:scale-105" />
           </Link>
 
-          <Link to={"https://www.facebook.com/profile.php?id=61562034141262"} target="_blank">
+          <Link to={"https://www.facebook.com/Vintageinteriors.pk/"} target="_blank">
           <FaFacebookSquare  className="text-4xl transition-all hover:scale-105" />
           </Link>
 
-          <Link to={"https://www.instagram.com/alzehrabygm"} target="_blank">
+          <Link to={"https://www.instagram.com/vintageinteriorspk"} target="_blank">
           <FaInstagramSquare  className="text-4xl transition-all hover:scale-105" />
           </Link>
         
-          <Link to={"https://www.tiktok.com/@alzehrabygm"} target="_blank">
+          <Link to={"https://www.tiktok.com/@vintageinteriors.pk"} target="_blank">
           <AiFillTikTok  className="text text-[2.6rem] transition-all hover:scale-105" />
+          </Link>
+
+          <Link to={"https://www.youtube.com/@VintageInteriorspk"} target="_blank">
+          <AiFillYoutube  className="text text-[2.6rem] transition-all hover:scale-105" />
           </Link>
         </div>
       </div>

@@ -2,12 +2,12 @@ const mailgun = require("mailgun-js");
 
 const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
-const mg = mailgun({ apiKey, domain: "alzehrabygm.store" });
+const mg = mailgun({ apiKey, domain});
 
 module.exports.handler = async (event) => {
   // Allow CORS from any origin (replace '*' with your frontend domain if needed)
   const headers = {
-    "Access-Control-Allow-Origin": "https://alzehrabygm.store", // or 'https://your-frontend-domain.com'
+    "Access-Control-Allow-Origin": "https://thevintageinteriors.com/", // or 'https://your-frontend-domain.com'
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
@@ -34,7 +34,7 @@ module.exports.handler = async (event) => {
   const { toEmail, subject, textContent, htmlContent } = JSON.parse(event.body);
 
   const emailData = {
-    from: "AL ZEHRA PERFUMES <noreply@alzehrabygm.store>",
+    from: "Vintage Interiors <noreply@thevintageinteriors.com>",
     to: toEmail,
     subject: subject,
     text: textContent,

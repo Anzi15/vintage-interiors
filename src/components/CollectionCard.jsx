@@ -7,8 +7,8 @@ const CollectionCard = ({image, collectionName, collectionSlug}) => {
     <Link to={`/collection/${collectionSlug}`} className="md:w-1/5 w-[45%] md:m-0 my-4 flex flex-col group relative group">
     <img
       src={image}
-      className="rounded-lg rounded-tr-[10rem] aspect- group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-500 w-full uppercase aspect-square skeleton-loading group-hover:rounded-tr-lg "
-      alt={`${collectionName} collection | Al Zehra Perfumes`}
+      className="rounded-lg rounded-tr-[10rem] aspect- group-hover:brightness-50 group-hover:scale-105 relative transition-all duration-500 w-full uppercase aspect-square skeleton-loading group-hover:rounded-tr-lg object-cover "
+      alt={`${collectionName} collection | Vintage Interiors`}
     />
     <h2 className="hidden uppercase group-hover:flex text-4xl font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 font-sans">
       {collectionName}

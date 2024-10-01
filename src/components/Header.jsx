@@ -34,7 +34,7 @@ const links = [
 
 function Header() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [headerText, setHeaderText] = useState("Al Zehra Perfumes")
+  const [headerText, setHeaderText] = useState("Vintage Interiors ")
 
   useEffect(()=>{
     const fetchHeaderMsg = async () => {

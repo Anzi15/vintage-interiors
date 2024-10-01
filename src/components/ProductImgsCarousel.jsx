@@ -16,7 +16,7 @@ const ProductImgsCarousel = ({ productImages, thumbnails }) => {
     <img
       src={img}
       key={i}
-      alt="Al Zehra Perfumes"
+      alt="Vintage Interiors"
       className={`w-full aspect-square rounded-md skeleton-loading absolute transition-opacity duration-300 ${
         i === activeImg ? "opacity-100 z-20" : "opacity-0 z-10"
       }`}

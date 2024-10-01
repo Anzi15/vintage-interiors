@@ -13,7 +13,7 @@ const FaqsSection = () => {
         <div className="flex flex-col justify-center items-center gap-x-16 gap-y-5 xl:gap-28 lg:flex-row lg:justify-between max-lg:max-w-2xl mx-auto max-w-full">
           <div className="w-full lg:w-1/3">
             <img
-              src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/images%2Fpavlo-t-MfGoZ-QoJFc-unsplash.jpg?alt=media&token=ed302f67-c79d-43e8-a63e-9b5bcfa582f9"
+              src="https://firebasestorage.googleapis.com/v0/b/vintage-interiors.appspot.com/o/assets%2Fhutomo-abrianto-X5BWooeO4Cw-unsplash%20(1).jpg?alt=media&token=2027fc66-e680-4155-b8b2-d3b53a2c7082"
               alt="FAQ tailwind section"
               draggable={false}
             onContextMenu={(e)=>{e.preventDefault()}}
@@ -33,24 +33,28 @@ const FaqsSection = () => {
               <div className="accordion-group text-left">
                 {[
                   {
-                    question: 'What types of perfumes do you offer?',
-                    answer: 'At Al Zehra By GM, we offer a diverse range of high-quality perfumes including floral, oriental, woody, and fresh scents. Each fragrance is crafted to provide a unique and captivating aroma to suit every preference.',
+                    question: 'What kind of vintage furniture do you offer?',
+                    answer: 'We specialize in high-quality, handpicked vintage furniture that ranges from mid-century modern to classic antique pieces. Our collection includes vintage sofas, dining tables, chairs, cabinets, and more to elevate your home décor.',
+                  },
+                  {
+                    question: 'Do you offer customization for furniture?',
+                    answer: 'Yes, we offer customization on select vintage furniture pieces. Whether it’s reupholstery, paint finishes, or minor structural changes, we can work with you to tailor the item to your taste.',
                   },
                   {
                     question: 'How can I place an order?',
-                    answer: 'To place an order, visit our website and browse through our selection of perfumes. Once you find your desired product, add it to your cart and proceed to checkout. Follow the prompts to enter your shipping details and payment information to complete your order.',
+                    answer: 'You can easily place an order through our website. Browse through our furniture and décor collections, add your desired items to your cart, and follow the checkout process. We also offer in-store consultations if you prefer.',
                   },
                   {
-                    question: 'Can I return or exchange a product?',
-                    answer: 'Yes, we offer a return and exchange policy. If you are not satisfied with your purchase, please contact our customer service within 14 days of receiving the product. We will provide instructions for returning the item and processing your refund or exchange.',
+                    question: 'Do you provide interior design consultations?',
+                    answer: 'Yes, we provide professional interior design consultations to help you style your space with our vintage furniture and décor items. Contact us to schedule an appointment with our design team.',
                   },
                   {
-                    question: 'How do I track my order?',
-                    answer: 'Once your order is shipped, you will receive a confirmation email with a tracking number. Use this number to track your shipment through our courier’s website or contact our customer service for assistance.',
+                    question: 'What is your return policy?',
+                    answer: 'Due to the unique nature of vintage items, all sales are final. However, if an item arrives damaged or is not as described, we will work with you to resolve the issue and offer a return or exchange where applicable.',
                   },
                   {
-                    question: 'Do you offer international shipping?',
-                    answer: 'Currently, we offer shipping within Pakistan. For international shipping options, please reach out to our customer service team for more information on availability and rates.',
+                    question: 'Do you offer delivery or shipping services?',
+                    answer: 'Yes, we offer delivery within the local area and can arrange shipping for customers outside of our delivery zone. For international shipping, please contact us to discuss the options and associated costs.',
                   },
                 ].map((item, index) => (
                   <div

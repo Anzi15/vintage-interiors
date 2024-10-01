@@ -46,7 +46,7 @@ const AdminDropdownMenu = ({ userImg, name, email, signOutFunc }) => {
         onClick={toggleDropdown}
         className="w-10 h-10 rounded-full cursor-pointer"
         src={
-          userImg.length
+          userImg?.length
             ? userImg
             : "https://cdn-icons-png.flaticon.com/128/1077/1077114.png"
         }

@@ -80,7 +80,7 @@ const AdminOrderNotification = (orderObj, emails = ["djam4343@gmail.com"]) => {
     body: JSON.stringify(emailData)
   };
   
-  fetch('https://alzehrareact.netlify.app/.netlify/functions/sendEmail', requestOptions)
+  fetch('https://vintage-interiors.netlify.app/.netlify/functions/sendEmail', requestOptions)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');

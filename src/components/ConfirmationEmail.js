@@ -48,10 +48,10 @@ const ConfirmationEmail = (email, name) => {
         
         <p>Your order will arrive in 3-5 working days. If you have any questions or need further assistance, please do not hesitate to contact us.</p>
         <p>Thank you for shopping with us!</p>
-        <p>Best regards,<br>Al Zehra Perfumes</p>
+        <p>Best regards,<br>Vintage Interiors</p>
         <div class="footer">
             <p>If you did not place this order, please contact our support team immediately.</p>
-            <p>Al Zehra Perfumes<br>Main Lakhi der, shikarpur, sindh pakistan<br>+92 332 3947336<br>info@alzehrabygm.store</p>
+            <p>Vintage Interiors<br>100 ft. road sukkur, sindh, pakistan<br>+92 317 7260000<br>info@thevintageinteriors.com</p>
         </div>
     </div>
 </body>
@@ -68,7 +68,7 @@ const ConfirmationEmail = (email, name) => {
   };
   
   // Perform the fetch request
-  fetch('https://alzehrareact.netlify.app/.netlify/functions/sendEmail', requestOptions)
+  fetch('https://https://.netlify.app/.netlify/functions/sendEmail', requestOptions)
     .then(response => {
       if (!response.ok) {
         console.error('Network response was not ok');
