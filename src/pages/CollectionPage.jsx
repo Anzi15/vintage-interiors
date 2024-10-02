@@ -137,22 +137,7 @@ const CollectionPage = () => {
                     Sort by Price
                   </button>
                 </MenuItem>
-                <MenuItem>
-                  <button
-                    onClick={() => handleFilterChange("Perfumes")}
-                    className="block px-4 py-2 text-sm text-gray-700"
-                  >
-                    Filter by Perfumes
-                  </button>
-                </MenuItem>
-                <MenuItem>
-                  <button
-                    onClick={() => handleFilterChange("Attars")}
-                    className="block px-4 py-2 text-sm text-gray-700"
-                  >
-                    Filter by Attars
-                  </button>
-                </MenuItem>
+               
                 <MenuItem>
                   <button
                     onClick={() => handleFilterChange("")}

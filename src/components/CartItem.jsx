@@ -64,7 +64,7 @@ const CartItem = ({product, productsLoading, quantity, cartItemsUpdater}) => {
     <div className="w-[40%] md:max-w-[126px]">
       <img
         src={productsLoading ? "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984" : product.primaryImg}
-        alt="perfume bottle image"
+        alt="Furniture image"
         className={`mx-auto skeleton-loading rounded-xl ${productsLoading && "skeleton-loading"}`}
       />
     </div>

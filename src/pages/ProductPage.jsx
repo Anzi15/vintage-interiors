@@ -7,9 +7,11 @@ import ProductCardGroup from "../components/ProductCardGroup.jsx";
 import HtmlRenderer from "../components/HtmlRenderer.jsx";
 import { placeholder } from "@cloudinary/react";
 import orangePerfumeImg from "../assets/jessica-weiller-So4eFi-d1nc-unsplash.webp";
+import luxuryInteriorImg from "../assets/luxuryInteriorImg.webp";
+import flowerVase from "../assets/flowerVase.webp";
 import flowersWithPerfume from "../assets/olena-bohovyk-KPkR3e6BZG0-unsplash.webp";
-import lavenderBottleImg from "../assets/lavender-bottle.webp";
-import roseScentImg from "../assets/scent-of-roses.webp";
+import stuffedDeer from "../assets/stuffedDeer.webp";
+import blueInterior from "../assets/blueInterior.webp";
 import Testimonials from "../components/Testimonials.jsx";
 import { toast } from "react-toastify";
 import ProductImgsCarousel from "../components/ProductImgsCarousel";
@@ -395,97 +397,98 @@ const ProductPage = () => {
           </div>
 
           <ul className="space-y-4 text-left text-gray-500 dark:text-gray-400 my-8">
-            <li className="flex items-center space-x-3 rtl:space-x-reverse">
-              <svg
-                className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 12"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5.917L5.724 10.5 15 1.5"
-                />
-              </svg>
-              <span>Long lasting</span>
-            </li>
-            <li className="flex items-center space-x-3 rtl:space-x-reverse">
-              <svg
-                className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 12"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5.917L5.724 10.5 15 1.5"
-                />
-              </svg>
-              <span>Elegant fragrance</span>
-            </li>
-            <li className="flex items-center space-x-3 rtl:space-x-reverse">
-              <svg
-                className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 12"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5.917L5.724 10.5 15 1.5"
-                />
-              </svg>
-              <span>Perfect for all occasions</span>
-            </li>
-            <li className="flex items-center space-x-3 rtl:space-x-reverse">
-              <svg
-                className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 12"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5.917L5.724 10.5 15 1.5"
-                />
-              </svg>
-              <span>Attractive packaging</span>
-            </li>
-            <li className="flex items-center space-x-3 rtl:space-x-reverse">
-              <svg
-                className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 16 12"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 5.917L5.724 10.5 15 1.5"
-                />
-              </svg>
-              <span>High-quality ingredients</span>
-            </li>
-          </ul>
+  <li className="flex items-center space-x-3 rtl:space-x-reverse">
+    <svg
+      className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 16 12"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M1 5.917L5.724 10.5 15 1.5"
+      />
+    </svg>
+    <span>Handcrafted with care</span>
+  </li>
+  <li className="flex items-center space-x-3 rtl:space-x-reverse">
+    <svg
+      className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 16 12"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M1 5.917L5.724 10.5 15 1.5"
+      />
+    </svg>
+    <span>Timeless vintage design</span>
+  </li>
+  <li className="flex items-center space-x-3 rtl:space-x-reverse">
+    <svg
+      className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 16 12"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M1 5.917L5.724 10.5 15 1.5"
+      />
+    </svg>
+    <span>Perfect for any space</span>
+  </li>
+  <li className="flex items-center space-x-3 rtl:space-x-reverse">
+    <svg
+      className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 16 12"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M1 5.917L5.724 10.5 15 1.5"
+      />
+    </svg>
+    <span>High-quality craftsmanship</span>
+  </li>
+  <li className="flex items-center space-x-3 rtl:space-x-reverse">
+    <svg
+      className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 16 12"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M1 5.917L5.724 10.5 15 1.5"
+      />
+    </svg>
+    <span>Elegant and functional</span>
+  </li>
+</ul>
+
         </div>
       </main>
 
@@ -499,33 +502,30 @@ const ProductPage = () => {
       <div className="bg-black w-full  overflow-hidden object-center flex items-center relative justify-center aspect-video flex-col p-8 gap-4 md:min-h-fit min-h-[20rem]">
         <img
           className="opacity-50 w-full object-cover h-full absolute inset-0 z-[1]"
-          src={orangePerfumeImg}
+          src={luxuryInteriorImg}
           alt=""
         />
         <h1 className="z-[2] md:text-5xl text-3xl text-white font-bold font-serif">
           It's All About Luxury
         </h1>
         <p className="z-[1] text-gray-100 md:w-[35%]">
-          Discover a world of enchanting fragrances that will elevate your
-          personality to new heights of beauty and charm.
+          Discover a world of enchanting Furniture that will elevate your
+          place to new heights of luxury and charm.
         </p>
       </div>
 
       <div className="flex justify-center md:flex-row flex-col-reverse my-12">
         <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center">
           <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%]">
-            Fragrance with a Purpose
+            Decor for a Purpose
           </h1>
           <p className="text-left md:w-[80%]">
-            Experience the harmony of elegance and practicality with our curated
-            selection of signature perfumes. Each scent is crafted to offer a
-            unique sensory journey while complementing your personal style and
-            enhancing your daily presence.
+          Experience the harmony of elegance and functionality with our curated selection of vintage decor pieces. Each item is thoughtfully crafted to evoke timeless charm while seamlessly complementing your personal aesthetic, enhancing the ambiance of your living space with a touch of nostalgia and sophistication.
           </p>
         </div>
         <div className="md:w-1/2 w-screen flex justify-center items-center">
           <img
-            src={flowersWithPerfume}
+            src={flowerVase}
             className="md:w-[80%] w-[90%] rounded-lg"
             alt=""
           />
@@ -536,37 +536,33 @@ const ProductPage = () => {
 
       <div className="flex w-[98%] justify-center py-9 flex-wrap md:px-4">
         <img
-          src={lavenderBottleImg}
+          src={stuffedDeer}
           className="md:w-1/2 object-cover rounded-lg w-[90%] aspect-video"
           alt=""
         />
         <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center">
-          <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%] w-full">
-            Elevate Your Senses with Exquisite Fragrances
-          </h1>
-          <p className="text-left md:w-[80%]">
-            Transform your daily routine into a luxurious experience with our
-            premium collection of perfumes. Crafted with the finest ingredients,
-            each scent embodies elegance and sophistication, making it the
-            perfect companion for any occasion.
-          </p>
+        <h1 className="md:text-4xl text-left text-3xl font-bold text-brandRed md:w-[80%] w-full">
+  Elevate Your Space with Timeless Vintage Decor
+</h1>
+<p className="text-left md:w-[80%]">
+  Transform your home into a haven of elegance with our curated collection of vintage furniture and decor. Each piece is crafted to bring charm and character, making it the perfect addition to any room or occasion.
+</p>
+
         </div>
       </div>
 
       <div className="flex w-[98%] justify-center py-9 flex-wrap">
         <div className="md:w-1/2 w-full flex flex-col md:items-end p-10 gap-8 justify-center md:px-4">
-          <h1 className=" md:text-4xl text-left text-3xl font-bold  text-brandRed md:w-[80%] w-full">
-            Discover Your Signature Scent
-          </h1>
-          <p className="text-left md:w-[80%]">
-            Discover the art of self-expression with our captivating range of
-            fragrances. Whether you prefer the allure of a floral bouquet or the
-            depth of a woody aroma, our perfumes are designed to leave a lasting
-            impression, effortlessly enhancing your presence.
-          </p>
+        <h1 className="md:text-4xl text-left text-3xl font-bold text-brandRed md:w-[80%] w-full">
+  Discover Timeless Vintage Elegance
+</h1>
+<p className="text-left md:w-[80%]">
+  Uncover the beauty of classic design with our captivating range of vintage furniture and decor. Whether you prefer the warmth of rustic charm or the sophistication of antique pieces, our collection is crafted to leave a lasting impression, effortlessly elevating your space.
+</p>
+
         </div>
         <img
-          src={roseScentImg}
+          src={blueInterior}
           className="md:w-1/2 object-cover rounded-lg w-[90%] aspect-video"
           alt=""
         />

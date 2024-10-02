@@ -137,22 +137,6 @@ const HomePage = () => {
         },
       ]}/>
 
-      <section className="grid md:grid-cols-2 grid-cols-1 gap-4 p-8">
-        <Link className="hover:scale-105 transition-all">
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2F1.png?alt=media&token=da140821-3e2d-44fe-bf28-bb973014e2c1"
-            alt="Vintage Interiors"
-            className="rounded-lg"
-          />
-        </Link>
-        <Link className="hover:scale-105 transition-all">
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/collections-images%2F2.png?alt=media&token=d2b7ca20-05b0-4bdb-953d-d4611e19f30e"
-            alt="Vintage Interiors"
-            className="rounded-lg"
-          />
-        </Link>
-      </section>
 
       <ProductCardGroup
         products={topProducts}
