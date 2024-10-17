@@ -34,28 +34,22 @@ const paymentMethods = [
   {
     icon: CodIcon,
     name: "Cash on Delivery",
-    context: "Purchase goods, pay when they arrive",
+    context: "Purchase goods, pay when they arrive (only for sukkur)",
     identifier: "COD",
   },
   {
     icon: JazzCashLogo,
     name: "JazzCash",
     context:
-      "Send your payment to JazzCash on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using jazzcash for a order on your website' target='_blank'>03323947336 </a>, and <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to share my payment receipt' target='_blank'> send us a screenshot </a>",
+      "Send your payment to JazzCash on this number: <a class='text-light-blue-800' href='https://wa.me/923177260000?text=Hi, please guide me i want to pay using jazzcash for a order on your website' target='_blank'>0331 2918848 </a>, and <a class='text-light-blue-800' href='https://wa.me/923177260000?text=Hi, please guide me i want to share my payment receipt' target='_blank'> send us a screenshot </a>",
     identifier: "JZC",
   },
   {
     icon: easypaisaIcon,
     name: "EasyPaisa",
     context:
-      "Send your payment to easypaisa on this number: <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using easypasia for a order on your website' target='_blank'>03323947336 </a>, and <a class='text-light-blue-800' target='_blank' href='https://wa.me/923323947336?text=Hi, please guide me i share my screenshot with you of my payment'> send us a screenshot </a>",
+      "Send your payment to easypaisa on this number: <a class='text-light-blue-800' href='https://wa.me/923177260000?text=Hi, please guide me i want to pay using easypasia for a order on your website' target='_blank'>0331 2918848 </a>, and <a class='text-light-blue-800' target='_blank' href='https://wa.me/923177260000?text=Hi, please guide me i share my screenshot with you of my payment'> send us a screenshot </a>",
     identifier: "EZP",
-  },
-  {
-    icon: bankIcon,
-    name: "Bank Transfer",
-    context: "Send your payment to this IBAN number:  <a class='text-light-blue-800' href='https://wa.me/923323947336?text=Hi, please guide me i want to pay using bank transfer for a order on your website' target='_blank'>PK05 BAHL 1252 0981 0005 9601</a>",
-    identifier: "BT",
   },
 ];
 

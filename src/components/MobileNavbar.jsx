@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Logo from "./Logo";
 import NavLink from "./NavLink.jsx";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 function MobileNavbar({ links, isMobileOpen, onClick }) {
   return (
@@ -29,13 +30,48 @@ function MobileNavbar({ links, isMobileOpen, onClick }) {
       </header>
       <div className="flex flex-col gap-4 py-6 justify-start">
         {links.map((link) => {
-          return (
-            <Link key={link.id} className="flex justify-start text-lg" to={link.href} mobile={true} onClick={onClick}>
+          return link.collections ? (
+            <Dropdown key={link.id} label={`${link.name} ▼`} collections={link.collections} onClick={onClick} />
+          ) : (
+            <Link key={link.id} className="flex justify-start text-lg" to={link.href} onClick={onClick}>
               {link.name}
             </Link>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function Dropdown({ label, collections, onClick }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleToggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  return (
+    <div className="flex flex-col">
+      <button
+        onClick={handleToggleDropdown}
+        className="flex justify-start text-lg"
+      >
+        {label}
+      </button>
+      {isDropdownOpen && (
+        <div className="flex flex-col mt-2">
+          {collections.map((collection, index) => (
+            <Link
+              key={index}
+              className="flex justify-start text-lg pl-4"
+              to={collection.href}
+              onClick={onClick}
+            >
+              {collection.name}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

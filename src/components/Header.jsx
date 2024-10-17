@@ -8,6 +8,7 @@ import MobileNavbar from "./MobileNavbar";
 import Navbar from "../components/NavBar.jsx";
 import {db} from "../modules/firebase-modules/firestore.js"
 import { doc, getDoc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 const links = [
   {
@@ -17,8 +18,13 @@ const links = [
   },
   {
     id: 2,
-    name: "Shop all",
+    name: `Shop all `,
     href: "/products",
+    collections: [
+      { name: "Furniture", href: "/collection/furniture" },
+      { name: "Lighting", href: "/collection/lighting" },
+      { name: "Decor", href: "/collection/decor" },
+    ],
   },
   {
     id: 3,
@@ -31,6 +37,7 @@ const links = [
     href: "/contact",
   },
 ];
+
 
 function Header() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -60,7 +67,9 @@ function Header() {
     <>
     <div className="w-full bg-black py-2 text-white md:text-lg sm:text-sm text-[0.85rem]">{headerText}</div>
     <header className="max-w-[1440px] mx-auto pt-7 pb-3 flex items-center gap-[103px] h-[84px] min-[1440px]:h-fit px-4 md:px-8 min-[1440px]:px-28">
+      <Link to={"/"}>
       <Logo />
+      </Link>
       <Navbar links={links} />
       <div className="flex justify-center items-center gap-4 ml-auto">
         <CartButton />
