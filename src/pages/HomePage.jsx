@@ -12,12 +12,16 @@ import CustomerBenefits from "../components/CustomerBenefits";
 import Testimonials from "../components/Testimonials";
 import CollectionCard from "../components/CollectionCard";
 import CollectionCardGroup from "../components/CollectionCardGroup";
+import { processRecords } from "../modules/algolia/config";
 
 const HomePage = () => {
   // const [menuOpen, setMenuOpen] = useState(false);
   const [topProducts, setTopProducts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  processRecords()
+  .then(() => console.log('Successfully indexed objects!'))
+  .catch((err) => console.error(err));
 
   useEffect(() => {
     const fetchProducts = async () => {

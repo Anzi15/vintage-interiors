@@ -35,6 +35,21 @@ const getMultipleDocuments = async (collectionName, numDocs) => {
   }
 }
 
+const getAllDocs = async (collectionName) =>{
+  try {
+    const q = query(collection(db, collectionName));
+    const querySnapshot = await getDocs(q);
+    const documents = [];
+    querySnapshot.forEach((doc) => {
+        documents.push({ id: doc.id, ...doc.data() });
+    });
+    return documents;
+} catch (error) {
+    console.error('Error getting documents:', error);
+    throw error;
+}
+}
+
 const loadProductsWithPagination = async (collectionName, numDocs, lastVisibleDoc = null, sortOrder = 'title', filterTag = '') => {
   try {
     let q;
@@ -69,4 +84,4 @@ const loadProductsWithPagination = async (collectionName, numDocs, lastVisibleDo
   }
 };
 
-export { getDocument, getMultipleDocuments, loadProductsWithPagination, db }
+export { getDocument, getMultipleDocuments, loadProductsWithPagination, db, getAllDocs }

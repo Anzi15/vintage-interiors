@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import abstractImg from "../assets/pink-abstract.webp";
 import InputField from "../components/InputField";
 import { Button } from "@material-tailwind/react";
-import { toast } from "react-toastify";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
+import { toast } from "react-hot-toast";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "../modules/firebase-modules/firestore";
 
 const ContactPage = () => {
@@ -43,7 +43,7 @@ const ContactPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    console.log(honeypot)
+    console.log(honeypot);
     // Honeypot check
     if (honeypot) {
       toast.error("Spam detected!");
@@ -63,24 +63,27 @@ const ContactPage = () => {
           name,
           whatsappNumber,
           message,
-          createdAt: new Date()
+          createdAt: new Date(),
         };
 
         const leadData = {
           whatsappNumber,
-          createdAt: new Date()
+          createdAt: new Date(),
         };
 
         const leadsCollection = collection(db, "leads");
         const msgCollection = collection(db, "msgs");
 
-        const q = query(leadsCollection, where("phoneNumber", "==", whatsappNumber));
+        const q = query(
+          leadsCollection,
+          where("phoneNumber", "==", whatsappNumber)
+        );
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
           await addDoc(leadsCollection, leadData);
         }
-        
+
         await addDoc(msgCollection, msgData);
         handleReset();
         toast.success("Message sent successfully");
@@ -102,7 +105,11 @@ const ContactPage = () => {
         onSubmit={handleSubmission}
       >
         <div className="md:flex  hidden">
-          <img src={abstractImg} alt="" className="max-h-[30rem] rounded-xl  md:aspect-auto aspect-video" />
+          <img
+            src={abstractImg}
+            alt=""
+            className="max-h-[30rem] rounded-xl  md:aspect-auto aspect-video"
+          />
         </div>
         <div className="w-full p-4 md:p-0 md:w-1/3 flex flex-col gap-4 ">
           <h3 className="text-2xl text-left">Let's Talk!</h3>
@@ -140,7 +147,11 @@ const ContactPage = () => {
             placeholder="Your Message"
             onInput={(e) => setMessage(e.target.value.trim())}
           ></textarea>
-          <Button className="bg-black flex justify-center" loading={loading} type="submit">
+          <Button
+            className="bg-black flex justify-center"
+            loading={loading}
+            type="submit"
+          >
             Submit
           </Button>
         </div>

@@ -45,7 +45,7 @@ const ProductCard = ({
             <span
               className={`text-2xl font-semibold text-slate-900  ${
                 loading && "skeleton-loading"
-              } text-brandRed`}
+              } text-black `}
             >
               Rs. {price}
             </span>

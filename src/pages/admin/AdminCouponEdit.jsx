@@ -6,7 +6,7 @@ import DatePicker from "../../components/DatePicker";
 import { expression } from "@cloudinary/url-gen/qualifiers/expression";
 import { TagsInput } from "react-tag-input-component";
 import { GoGoal } from "react-icons/go";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { getCouponDoc } from "../../components/PromoCodeForm";
 import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../../modules/firebase-modules/firestore";
@@ -41,8 +41,8 @@ const AdminCouponEdit = () => {
         const data = couponDoc[0]; // Access the document's data
 
         if (data) {
-        setProductId(data.id)
-        console.log(data.id)
+          setProductId(data.id);
+          console.log(data.id);
           setCouponCode(data.couponCode);
           setDiscountType(data.discountType);
           setDiscountValue(data.discountValue);
@@ -75,14 +75,14 @@ const AdminCouponEdit = () => {
     }
     setPublishing(true);
     try {
-        if(couponCode !== couponId){
-            const doesCouponExist =
-            (await getCouponDoc(couponCode, setError)).length !== 0;
-            if (doesCouponExist) {
-                toast.error("Coupon already exist");
-                return;
-            }
+      if (couponCode !== couponId) {
+        const doesCouponExist =
+          (await getCouponDoc(couponCode, setError)).length !== 0;
+        if (doesCouponExist) {
+          toast.error("Coupon already exist");
+          return;
         }
+      }
       const data = {
         couponCode,
         discountType,
@@ -117,32 +117,31 @@ const AdminCouponEdit = () => {
     }
   };
 
-
-  const deleteCoupon = ()=>{
+  const deleteCoupon = () => {
     setConfirmationDialog(
-        <TailwindDialog
-          title={"Are you sure?"}
-          text={"Are you sure to delete this coupon"}
-          actionBtnText={"Delete"}
-          cancelBtnText={"Cancel"}
-          initialOpen={true}
-          actionReturner={async (action) => {
-            if(action=== "confirmed"){
-                try {
-                    await deleteDoc(doc(db, "coupons", productId));
-                    navigate("/admin/management")
-                } catch (error) {
-                    toast.error("Something went wrong :( ")
-                    console.log(error)
-                }
-            }else{
-                setConfirmationDialog(null)
+      <TailwindDialog
+        title={"Are you sure?"}
+        text={"Are you sure to delete this coupon"}
+        actionBtnText={"Delete"}
+        cancelBtnText={"Cancel"}
+        initialOpen={true}
+        actionReturner={async (action) => {
+          if (action === "confirmed") {
+            try {
+              await deleteDoc(doc(db, "coupons", productId));
+              navigate("/admin/management");
+            } catch (error) {
+              toast.error("Something went wrong :( ");
+              console.log(error);
             }
-          }}
-          icon="error"
-        />
-      );
-  }
+          } else {
+            setConfirmationDialog(null);
+          }
+        }}
+        icon="error"
+      />
+    );
+  };
 
   const handleStatusUpdate = () => {
     Swal.fire({
@@ -274,7 +273,11 @@ const AdminCouponEdit = () => {
               <GoGoal className="text-2xl" />
               Update Coupon
             </button>
-            <button className="bg-red-800 h-fit px-4 py-3  rounded-lg text-white text-nowrap" type="button"  onClick={deleteCoupon}>
+            <button
+              className="bg-red-800 h-fit px-4 py-3  rounded-lg text-white text-nowrap"
+              type="button"
+              onClick={deleteCoupon}
+            >
               Delete coupon
             </button>
           </div>

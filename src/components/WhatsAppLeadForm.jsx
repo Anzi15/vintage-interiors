@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
 import { Button } from "@material-tailwind/react";
 import { db } from "../modules/firebase-modules/firestore";
-import { toast } from "react-toastify";
+import { toast } from 'react-hot-toast';
 function WhatsAppLeadForm() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");

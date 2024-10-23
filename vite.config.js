@@ -12,6 +12,7 @@ export default defineConfig({
       'prosemirror-view',
       'prosemirror-commands',
       'prosemirror-schema-list',
+      'algoliasearch'
     ],
   },
 })

@@ -2,23 +2,25 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../modules/firebase-modules/firestore";
 import { PiHeadlightsDuotone } from "react-icons/pi";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import AdminCouponManager from "../../components/admin/AdminCouponManager";
 
 const AdminManagementPage = () => {
-  const [headline, setHeadline] = useState(null);
+  const [headline, setHeadline] = useState("");
+  const [headlineLink, setHeadlineLink] = useState("Discount");
 
   const updateHeadline = async (e) => {
     e.preventDefault();
     const docRef = doc(db, "storeManagement", "headerNotificationMsg");
-    const data = { value: headline };
+    const data = { value: headline, link: headlineLink };
     try {
       const updateTask = await setDoc(docRef, data);
-      toast.success("Headline Updated!");
+      toast.success("Headline and link Updated!");
     } catch (error) {
       toast.error("Error updating headline, try again latter!");
     }
   };
+
   useEffect(() => {
     // Async function to get the headline from Firestore
     const getHeadline = async () => {
@@ -28,15 +30,17 @@ const AdminManagementPage = () => {
 
         if (headlineDoc.exists()) {
           const headlineData = headlineDoc.data(); // Extract document data
-          setHeadline(headlineData.value); // Assuming `message` is the field in your Firestore document
+          setHeadline(headlineData?.value); // Assuming `message` is the field in your Firestore document
+          setHeadlineLink(headlineData.link); // Assuming `message` is the field in your Firestore document
         } else {
           console.log("No such document!");
         }
+        console.log(headlineDoc.data());
       } catch (error) {
         console.error("Error fetching headline:", error);
       }
     };
-
+    updateHeadline();
     getHeadline();
   }, []);
   return (
@@ -57,8 +61,30 @@ const AdminManagementPage = () => {
                 !headline && "skeleton-loading"
               }`}
               value={headline}
-              onInput={(e) => {
+              onChange={(e) => {
                 setHeadline(e.target.value);
+              }}
+            />
+            <button className="px-4 bg-indigo-600 rounded-r-lg text-white ">
+              Update
+            </button>
+          </form>
+        </div>
+
+        <div className={`p-4 `}>
+          <h3 className="text-left">Edit Store Headline Link (redirect)</h3>
+          <form
+            className="flex w-full border rounded-lg border-gray-900 min-h-[3rem]"
+            onSubmit={updateHeadline}
+          >
+            <input
+              type="text"
+              className={`w-full border-none rounded-l-lg min-h-full ${
+                !headline && "skeleton-loading"
+              }`}
+              value={headlineLink}
+              onChange={(e) => {
+                setHeadlineLink(e.target.value);
               }}
             />
             <button className="px-4 bg-indigo-600 rounded-r-lg text-white ">
@@ -78,13 +104,12 @@ const AdminManagementPage = () => {
                 clip-rule="evenodd"
               />
             </svg>
-            For a better Experience, keep it under 35 characters
+            use path relative to home
           </p>
         </div>
       </section>
 
-    <AdminCouponManager/>
-      
+      <AdminCouponManager />
     </main>
   );
 };

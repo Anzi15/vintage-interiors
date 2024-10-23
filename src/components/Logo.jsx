@@ -2,9 +2,9 @@ import React from "react";
 
 const Logo = () => {
   return (
-    <div>
-      <img src="/vite.svg" alt="Logo" className="logo" />
-    </div>
+    <div className="flex w-full">
+      <img src="/logo.png" alt="Logo" className="logo w-full aspect-video object-cover" />
+     </div>
   );
 };
 

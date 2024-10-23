@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, Navigate, useLocation } from "react-router-dom";
+import { Link, useParams, Navigate, useLocation, useNavigate } from "react-router-dom";
 import CustomerBenefits from "../components/CustomerBenefits.jsx";
 import { getDocument } from "../modules/firebase-modules/firestore";
 import ProductSuggestions from "../components/ProductSuggestions";
@@ -13,15 +13,17 @@ import flowersWithPerfume from "../assets/olena-bohovyk-KPkR3e6BZG0-unsplash.web
 import stuffedDeer from "../assets/stuffedDeer.webp";
 import blueInterior from "../assets/blueInterior.webp";
 import Testimonials from "../components/Testimonials.jsx";
-import { toast } from "react-toastify";
+import { Toaster, toast } from 'react-hot-toast';
 import ProductImgsCarousel from "../components/ProductImgsCarousel";
 import MobileCarousel from "../components/MobileCarousel.jsx";
 import CountdownTimer, { formatRemainingTime } from "../components/CountDownTimer.jsx";
 import { Button } from "@material-tailwind/react";
 import { IoMdCart } from "react-icons/io";
 import { Helmet } from "react-helmet-async";
+import { IoCheckmark } from "react-icons/io5";
 
 const ProductPage = () => {
+  const navigate = useNavigate()
   const placeholderImg =
     "https://firebasestorage.googleapis.com/v0/b/al-zehra.appspot.com/o/640px-HD_transparent_picture.png?alt=media&token=6b3789c8-da36-47ad-b36a-b2dfe62eb984";
   const [quantity, setQuantity] = useState(1);
@@ -70,17 +72,74 @@ const ProductPage = () => {
       (item) => item.productId === productId
     );
     const productData = { productId, quantity, selectedVariant, data };
-
+  
     if (productIndex === -1) {
       // Product is not in the cart, add a new item
       prevCartItems.push(productData);
       localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
-      toast.success("Item Added to Cart");
+  
+      toast.custom((t) => (
+        <div 
+          id="toast-success" 
+          onClick={()=>{navigate("/cart")}}
+          className={`${t.visible ? 'animate-enter' : 'animate-leave'} flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800`} 
+        >
+          <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+            </svg>
+            <span className="sr-only">Check icon</span>
+          </div>
+          <div className="ms-3 text-sm font-normal">
+            Item added to your cart!{' '}
+          </div>
+          <button 
+            type="button" 
+            className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" 
+            aria-label="Close"
+            onClick={() => toast.dismiss(t.id)} // Close the toast when clicked
+          >
+            <span className="sr-only">Close</span>
+            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+          </button>
+        </div>
+      ));
+      
     } else {
       // Product is already in the cart, update its quantity
       prevCartItems[productIndex].quantity += quantity;
       localStorage.setItem("cart-items", JSON.stringify(prevCartItems));
-      toast.success("Item Quantity Updated");
+  
+      toast.custom((t) => (
+        <div 
+          id="toast-success" 
+          onClick={()=>{navigate("/cart")}}
+          className={`${t.visible ? 'animate-enter' : 'animate-leave'} flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800`} 
+        >
+          <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+            </svg>
+            <span className="sr-only">Check icon</span>
+          </div>
+          <div className="ms-3 text-sm font-normal">
+            Cart item quantity updated!{' '}
+          </div>
+          <button 
+            type="button" 
+            className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" 
+            aria-label="Close"
+            onClick={() => toast.dismiss(t.id)} // Close the toast when clicked
+          >
+            <span className="sr-only">Close</span>
+            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+          </button>
+        </div>
+      ));
     }
   };
 
@@ -120,7 +179,7 @@ const ProductPage = () => {
   }, [productId]);
 
   if (error) {
-    return <Navigate to="/" />;
+    return navigate("/");
   }
   useEffect(()=>{
     if(isLoading) return;
@@ -144,6 +203,7 @@ const ProductPage = () => {
 
   return (
     <>
+      <Toaster />
     <Helmet>
         <title>{data.title !== "Loading..." ? data.title : "Best fragrances" } | Al Zehra By GM</title>
         <meta name="description" content={data.description} />

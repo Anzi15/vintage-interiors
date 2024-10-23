@@ -13,7 +13,7 @@ import { MdOutlineArchive } from "react-icons/md";
 import "rsuite/TagInput/styles/index.css";
 import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { Toast } from "flowbite-react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { TagInput } from "rsuite";
 import { TagsInput } from "react-tag-input-component";
 import InputField from "../../components/InputField.jsx";
@@ -91,58 +91,61 @@ const AdminNewProductPage = () => {
   const uploadImage = async (file) => {
     try {
       // Create a reference to the file in Firebase Storage
-      const storageRef = ref(storage, `images/${ uuidv4()}`);
-      
+      const storageRef = ref(storage, `images/${uuidv4()}`);
+
       // Create an image element and canvas for resizing
-      const img = document.createElement('img');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-  
+      const img = document.createElement("img");
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
       return new Promise((resolve, reject) => {
         img.onload = async () => {
           // Upload the original image
           await uploadBytes(storageRef, file);
           const originalUrl = await getDownloadURL(storageRef);
-  
+
           // Resize and upload thumbnails
           const sizes = [200, 400, 800];
           const thumbnailUrls = [];
-  
+
           for (const size of sizes) {
             canvas.width = size;
             canvas.height = size;
             ctx.drawImage(img, 0, 0, size, size);
-            
+
             // Convert canvas to blob
             canvas.toBlob(async (blob) => {
               try {
-                const thumbnailRef = ref(storage, `thumbnails/${size}_${ uuidv4()}`);
+                const thumbnailRef = ref(
+                  storage,
+                  `thumbnails/${size}_${uuidv4()}`
+                );
                 await uploadBytes(thumbnailRef, blob);
                 const thumbnailUrl = await getDownloadURL(thumbnailRef);
                 thumbnailUrls.push({ size, url: thumbnailUrl });
-  
+
                 // Resolve when all thumbnails are processed
                 if (thumbnailUrls.length === sizes.length) {
                   resolve({ originalUrl, thumbnails: thumbnailUrls });
                 }
               } catch (error) {
-                console.error('Error uploading thumbnail:', error);
+                console.error("Error uploading thumbnail:", error);
                 reject(error);
               }
-            }, 'image/jpeg');
+            }, "image/jpeg");
           }
-  
+
           // Handle case where no thumbnails are generated
           if (sizes.length === 0) {
             resolve({ originalUrl, thumbnails: [] });
           }
         };
-  
+
         img.onerror = (error) => {
-          console.error('Error loading image:', error);
+          console.error("Error loading image:", error);
           reject(error);
         };
-  
+
         img.src = URL.createObjectURL(file);
       });
     } catch (error) {
@@ -150,7 +153,6 @@ const AdminNewProductPage = () => {
       throw error;
     }
   };
-  
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -220,7 +222,7 @@ const AdminNewProductPage = () => {
         createdAt: Timestamp.now(),
         tags: selectedTags,
         variants,
-        shippingFees
+        shippingFees,
       };
 
       try {
@@ -263,7 +265,6 @@ const AdminNewProductPage = () => {
           <p>{publishingMsg}</p>
         </div>
       )}
-
 
       <main className="py-16 px-4 md:w-[80vw] w-screen p-4">
         <div className="w-full flex flex-col justify-center items-center mb-16">
@@ -319,7 +320,6 @@ const AdminNewProductPage = () => {
                 valueReturner={setPrice}
                 requiredInput={true}
                 inputValue={price}
-
               />
 
               <InputField
@@ -329,7 +329,11 @@ const AdminNewProductPage = () => {
                 requiredInput={false}
                 inputValue={comparePrice}
               />
-              <DatePicker dateReturner={setDiscountExpiryDate} mode="datetime" label="Discount Expire Time (optional - no expiry by default)" />
+              <DatePicker
+                dateReturner={setDiscountExpiryDate}
+                mode="datetime"
+                label="Discount Expire Time (optional - no expiry by default)"
+              />
 
               <InputField
                 inputName={"Shipping Fees"}
@@ -574,8 +578,6 @@ const AdminNewProductPage = () => {
           </div>
         </section>
       </main>
-
-      
     </>
   );
 };

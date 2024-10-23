@@ -23,7 +23,7 @@ import { Value } from "sass";
 
 import { Sidebar } from "flowbite-react";
 import AdminDropdownMenu from "../components/admin/AdminDropdownMenu";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const AdminLayout = () => {
   const [sideBarExpanded, setSideBarExpanded] = useState(false);
@@ -43,8 +43,10 @@ const AdminLayout = () => {
 
   useEffect(() => {
     if (user && Adminvalue) {
-      const isAuthorized = Adminvalue.docs.some((doc) => doc.data().Email === user.email);
-  
+      const isAuthorized = Adminvalue.docs.some(
+        (doc) => doc.data().Email === user.email
+      );
+
       if (!isAuthorized) {
         navigate("/admin/unauthorized");
       } else {
@@ -52,7 +54,6 @@ const AdminLayout = () => {
       }
     }
   }, [Adminvalue, user, navigate]);
-  
 
   return (
     //

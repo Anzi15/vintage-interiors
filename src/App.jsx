@@ -28,6 +28,7 @@ import CheckoutPage from './pages/CheckoutPage.jsx';
 import EmptyLayout from './layouts/EmptyLayout.jsx';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import OrderConfirmationPage from './pages/OrderConfirmationPage.jsx';
+import SearchPage from './pages/SearchPage.jsx';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -44,6 +45,7 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="search" element={<SearchPage />} />
           <Route path="/order/confirmed/:orderId/:paymentMethod/:name/:email" element={<OrderConfirmationPage />} />
         </Route>
         <Route path="checkout/:source/:quantity?/:coupon?/:selectedVariantIndex?" element={<EmptyLayout />}>

@@ -2,7 +2,7 @@ import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../modules/firebase-modules/firestore";
 import { PiHeadlightsDuotone } from "react-icons/pi";
-import { toast } from "react-toastify";
+import { toast } from 'react-hot-toast';
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 

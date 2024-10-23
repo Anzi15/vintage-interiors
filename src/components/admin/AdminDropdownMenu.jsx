@@ -2,7 +2,7 @@ import { signInAnonymously } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { auth } from "../../modules/firebase-modules/fireauth";
 import { signOut } from "firebase/auth";
-import { toast } from "react-toastify";
+import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
 const AdminDropdownMenu = ({ userImg, name, email, signOutFunc }) => {
