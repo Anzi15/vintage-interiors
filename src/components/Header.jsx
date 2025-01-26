@@ -490,8 +490,8 @@ export default function Header() {
                       required
                       className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none transition-all duration-300 ease-in-out w-12 focus:w-64 aspect-square"
                       placeholder="Search..."
-                      onfocus="this.classList.remove('w-12'); this.classList.add('w-64');"
-                      onblur="if(this.value === '') { this.classList.remove('w-64'); this.classList.add('w-12'); }"
+                      onFocus="this.classList.remove('w-12'); this.classList.add('w-64');"
+                      onBlur="if(this.value === '') { this.classList.remove('w-64'); this.classList.add('w-12'); }"
                       value={searchQuery}
                       onChange={(e)=>{setSearchQuery(e.target.value)}}
                     />
